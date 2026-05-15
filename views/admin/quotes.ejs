@@ -1,0 +1,431 @@
+<%- include('partials/head', { title: 'Quản lý Yêu cầu Báo giá - Admin Nhất Linh Nhi' }) %>
+
+<div class="flex h-screen w-full">
+    <div id="admin-toast-container" class="fixed top-20 right-6 z-50 flex flex-col gap-3 overflow-x-hidden p-2 pointer-events-none"></div>
+    <%- include('partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50">
+        <%- include('partials/topbar', { pageTitle: 'Trung tâm Báo giá' }) %>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="admin-page block animate-fade-in">
+                <!-- Header -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Trung tâm Báo giá</h2>
+                        <p class="text-gray-500 text-sm mt-1">Quản lý yêu cầu báo giá từ khách hàng, xử lý và phản hồi nhanh chóng.</p>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="exportQuotes()" class="bg-white border border-green-200 text-green-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-green-50 transition text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-file-export"></i> Xuất CSV
+                        </button>
+                        <button type="button" onclick="resetFilters()" class="bg-white border border-gray-200 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-rotate-left"></i> Xóa lọc
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Stats Cards -->
+                <div id="quote-stats" class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                    <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                        <p class="text-xs text-gray-500">Tổng yêu cầu</p>
+                        <p class="text-2xl font-bold text-gray-800" data-stat="total">...</p>
+                    </div>
+                    <button type="button" onclick="quickFilter('status', 'pending')" class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm text-left hover:border-yellow-300 hover:bg-yellow-50 transition">
+                        <p class="text-xs text-gray-500">Chờ xử lý</p>
+                        <p class="text-2xl font-bold text-yellow-600" data-stat="pending">...</p>
+                    </button>
+                    <button type="button" onclick="quickFilter('status', 'replied')" class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm text-left hover:border-green-300 hover:bg-green-50 transition">
+                        <p class="text-xs text-gray-500">Đã phản hồi</p>
+                        <p class="text-2xl font-bold text-green-600" data-stat="replied">...</p>
+                    </button>
+                    <button type="button" onclick="quickFilter('status', 'rejected')" class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm text-left hover:border-red-300 hover:bg-red-50 transition">
+                        <p class="text-xs text-gray-500">Từ chối</p>
+                        <p class="text-2xl font-bold text-red-600" data-stat="rejected">...</p>
+                    </button>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div class="relative xl:col-span-2">
+                            <input type="text" id="search-quote" placeholder="Tìm theo mã báo giá, tên, SĐT, email..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+
+                        <select id="filter-status" class="border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary text-sm text-gray-700">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="pending">Chờ xử lý</option>
+                            <option value="replied">Đã phản hồi</option>
+                            <option value="rejected">Từ chối</option>
+                        </select>
+
+                        <input type="date" id="filter-from-date" class="border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary text-sm text-gray-700">
+                        <input type="date" id="filter-to-date" class="border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary text-sm text-gray-700">
+
+                        <select id="page-limit" class="border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary text-sm text-gray-700">
+                            <option value="20">20 dòng/trang</option>
+                            <option value="50">50 dòng/trang</option>
+                            <option value="100">100 dòng/trang</option>
+                        </select>
+
+                        <button onclick="loadQuotes(1)" class="bg-blue-50 border border-blue-200 text-primary font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-100 transition text-sm">
+                            <i class="fa-solid fa-filter mr-1"></i> Áp dụng bộ lọc
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Quotes Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-3 bg-white">
+                        <div class="text-sm text-gray-600">
+                            <span id="total-quotes">0</span> yêu cầu báo giá
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[1000px]">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                                    <th class="p-4 font-semibold">Mã báo giá</th>
+                                    <th class="p-4 font-semibold">Khách hàng</th>
+                                    <th class="p-4 font-semibold">Nội dung</th>
+                                    <th class="p-4 font-semibold text-center">Trạng thái</th>
+                                    <th class="p-4 font-semibold text-center">Ngày gửi</th>
+                                    <th class="p-4 font-semibold text-right">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-100" id="quotes-tbody">
+                                <tr><td colspan="6" class="p-8 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50">
+                        <div class="text-sm text-gray-500" id="pagination-info">Hiển thị 0 yêu cầu</div>
+                        <div class="flex items-center gap-1 flex-wrap justify-center" id="pagination-controls"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Quote Detail Modal -->
+<div id="quote-detail-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-3xl max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50">
+            <h3 class="text-lg font-bold text-gray-800">Chi tiết báo giá <span id="modal-quote-code"></span></h3>
+            <button onclick="closeQuoteModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto p-5" id="modal-quote-content"></div>
+        <div class="p-4 border-t border-gray-100 bg-gray-50 flex justify-between items-center">
+            <div class="flex gap-2">
+                <button onclick="updateQuoteStatus('replied')" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i> Đánh dấu đã phản hồi
+                </button>
+                <button onclick="updateQuoteStatus('rejected')" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-xmark"></i> Từ chối
+                </button>
+            </div>
+            <button onclick="closeQuoteModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition text-sm">Đóng</button>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/scripts') %>
+<script>
+    const token = localStorage.getItem('token');
+    let currentPage = 1;
+    let currentQuoteId = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!token) window.location.href = '/admin/login';
+        loadQuoteStats();
+        loadQuotes();
+
+        document.getElementById('search-quote').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') loadQuotes(1);
+        });
+
+        ['filter-status', 'page-limit'].forEach(id => {
+            document.getElementById(id).addEventListener('change', () => loadQuotes(1));
+        });
+
+        document.getElementById('filter-from-date').addEventListener('change', () => loadQuotes(1));
+        document.getElementById('filter-to-date').addEventListener('change', () => loadQuotes(1));
+    });
+
+    async function loadQuoteStats() {
+        try {
+            const res = await fetch('/api/v1/quotes/stats', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.querySelector('[data-stat="total"]').textContent = data.data.total;
+                document.querySelector('[data-stat="pending"]').textContent = data.data.pending;
+                document.querySelector('[data-stat="replied"]').textContent = data.data.replied;
+                document.querySelector('[data-stat="rejected"]').textContent = data.data.rejected;
+            }
+        } catch (err) { console.error('Lỗi load stats:', err); }
+    }
+
+    async function loadQuotes(page = 1) {
+        currentPage = page;
+        const params = new URLSearchParams({ page, limit: document.getElementById('page-limit').value });
+        
+        const status = document.getElementById('filter-status').value;
+        const search = document.getElementById('search-quote').value;
+        const fromDate = document.getElementById('filter-from-date').value;
+        const toDate = document.getElementById('filter-to-date').value;
+
+        if (status) params.append('status', status);
+        if (search) params.append('search', search);
+        if (fromDate) params.append('fromDate', fromDate);
+        if (toDate) params.append('toDate', toDate);
+
+        try {
+            const res = await fetch(`/api/v1/quotes?${params}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                renderQuotes(data.data);
+                renderPagination(data.pagination);
+                document.getElementById('total-quotes').textContent = data.pagination.total;
+            }
+        } catch (err) { console.error('Lỗi load quotes:', err); }
+    }
+
+    function renderQuotes(quotes) {
+        const tbody = document.getElementById('quotes-tbody');
+        if (!quotes.length) {
+            tbody.innerHTML = '<tr><td colspan="6" class="p-8 text-center text-gray-500">Không có yêu cầu báo giá nào</td></tr>';
+            return;
+        }
+        tbody.innerHTML = quotes.map(quote => `
+            <tr class="hover:bg-gray-50 transition">
+                <td class="p-4">
+                    <span class="font-semibold text-primary">${quote.quoteCode}</span>
+                </td>
+                <td class="p-4">
+                    <div class="font-medium">${quote.customerName || 'Khách vãng lai'}</div>
+                    <div class="text-xs text-gray-500">${quote.customerPhone || ''}</div>
+                    ${quote.customerEmail ? `<div class="text-xs text-gray-400">${quote.customerEmail}</div>` : ''}
+                </td>
+                <td class="p-4 max-w-xs">
+                    <p class="text-gray-700 truncate">${quote.content || 'Không có nội dung'}</p>
+                </td>
+                <td class="p-4 text-center">
+                    <span class="px-3 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(quote.status)}">
+                        ${getStatusLabel(quote.status)}
+                    </span>
+                </td>
+                <td class="p-4 text-center text-xs text-gray-500">${formatDate(quote.createdAt)}</td>
+                <td class="p-4 text-right">
+                    <div class="flex items-center justify-end gap-2">
+                        <button onclick="viewQuoteDetail('${quote._id}')" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Xem chi tiết">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <button onclick="deleteQuote('${quote._id}')" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Xóa">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function renderPagination(pagination) {
+        const container = document.getElementById('pagination-controls');
+        const info = document.getElementById('pagination-info');
+        
+        info.textContent = `Hiển thị ${pagination.page} / ${pagination.pages} trang (${pagination.total} yêu cầu)`;
+        
+        if (pagination.pages <= 1) { container.innerHTML = ''; return; }
+
+        let html = '';
+        if (pagination.page > 1) html += `<button onclick="loadQuotes(${pagination.page - 1})" class="px-3 py-1 border rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-left"></i></button>`;
+        
+        for (let i = 1; i <= pagination.pages; i++) {
+            if (i === 1 || i === pagination.pages || (i >= pagination.page - 2 && i <= pagination.page + 2)) {
+                html += `<button onclick="loadQuotes(${i})" class="px-3 py-1 border rounded ${i === pagination.page ? 'bg-primary text-white' : 'hover:bg-gray-100'}">${i}</button>`;
+            } else if (i === pagination.page - 3 || i === pagination.page + 3) {
+                html += `<span class="px-2">...</span>`;
+            }
+        }
+        
+        if (pagination.page < pagination.pages) html += `<button onclick="loadQuotes(${pagination.page + 1})" class="px-3 py-1 border rounded hover:bg-gray-100"><i class="fa-solid fa-chevron-right"></i></button>`;
+        
+        container.innerHTML = html;
+    }
+
+    async function viewQuoteDetail(id) {
+        currentQuoteId = id;
+        try {
+            const res = await fetch(`/api/v1/quotes/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                document.getElementById('modal-quote-code').textContent = data.data.quoteCode;
+                document.getElementById('modal-quote-content').innerHTML = renderQuoteDetail(data.data);
+                document.getElementById('quote-detail-modal').classList.remove('hidden');
+            }
+        } catch (err) { showToast('Lỗi khi tải chi tiết báo giá', 'error'); }
+    }
+
+    function renderQuoteDetail(quote) {
+        return `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Thông tin khách hàng</h4>
+                    <div class="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+                        <p><span class="text-gray-500">Tên:</span> <span class="font-medium">${quote.customerName || 'Khách vãng lai'}</span></p>
+                        <p><span class="text-gray-500">SĐT:</span> ${quote.customerPhone || '-'}</p>
+                        <p><span class="text-gray-500">Email:</span> ${quote.customerEmail || '-'}</p>
+                        <p><span class="text-gray-500">Công ty:</span> ${quote.company || '-'}</p>
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-semibold text-gray-800 mb-3">Thông tin báo giá</h4>
+                    <div class="bg-gray-50 rounded-lg p-4 space-y-2 text-sm">
+                        <p><span class="text-gray-500">Mã báo giá:</span> <span class="font-medium text-primary">${quote.quoteCode}</span></p>
+                        <p><span class="text-gray-500">Ngày gửi:</span> ${formatDate(quote.createdAt)}</p>
+                        <p><span class="text-gray-500">Trạng thái:</span> <span class="px-2 py-0.5 rounded text-xs font-semibold ${getStatusBadgeClass(quote.status)}">${getStatusLabel(quote.status)}</span></p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <h4 class="font-semibold text-gray-800 mb-3">Nội dung yêu cầu</h4>
+                <div class="bg-blue-50 border border-blue-100 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-wrap">${quote.content || 'Không có nội dung'}</div>
+            </div>
+
+            ${quote.items && quote.items.length > 0 ? `
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-800 mb-3">Sản phẩm quan tâm</h4>
+                    <div class="border rounded-lg overflow-hidden">
+                        <table class="w-full text-sm">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="p-3 text-left">Sản phẩm</th>
+                                    <th class="p-3 text-center">SL mong muốn</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                ${quote.items.map(item => `
+                                    <tr>
+                                        <td class="p-3">${item.product?.name || item.productName || 'Sản phẩm'}</td>
+                                        <td class="p-3 text-center">${item.quantity || 1}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            ` : ''}
+
+            ${quote.adminNote ? `
+                <div class="mt-6">
+                    <h4 class="font-semibold text-gray-800 mb-2">Ghi chú nội bộ</h4>
+                    <div class="bg-yellow-50 border border-yellow-100 rounded-lg p-3 text-sm text-gray-700">${quote.adminNote}</div>
+                </div>
+            ` : ''}
+        `;
+    }
+
+    async function updateQuoteStatus(status) {
+        if (!currentQuoteId) return;
+        try {
+            const res = await fetch(`/api/v1/quotes/${currentQuoteId}/status`, {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                },
+                body: JSON.stringify({ status })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Cập nhật trạng thái thành công!', 'success');
+                closeQuoteModal();
+                loadQuoteStats();
+                loadQuotes(currentPage);
+            } else {
+                showToast(data.message || 'Lỗi khi cập nhật', 'error');
+            }
+        } catch (err) { showToast('Lỗi khi cập nhật trạng thái', 'error'); }
+    }
+
+    async function deleteQuote(id) {
+        if (!confirm('Bạn có chắc muốn xóa yêu cầu báo giá này?')) return;
+        try {
+            const res = await fetch(`/api/v1/quotes/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                showToast('Đã xóa yêu cầu báo giá!', 'success');
+                loadQuoteStats();
+                loadQuotes(currentPage);
+            } else {
+                showToast(data.message || 'Lỗi khi xóa', 'error');
+            }
+        } catch (err) { showToast('Lỗi khi xóa báo giá', 'error'); }
+    }
+
+    function closeQuoteModal() {
+        document.getElementById('quote-detail-modal').classList.add('hidden');
+        currentQuoteId = null;
+    }
+
+    function quickFilter(key, value) {
+        if (key === 'status') document.getElementById('filter-status').value = value;
+        loadQuotes(1);
+    }
+
+    function resetFilters() {
+        document.getElementById('search-quote').value = '';
+        document.getElementById('filter-status').value = '';
+        document.getElementById('filter-from-date').value = '';
+        document.getElementById('filter-to-date').value = '';
+        loadQuotes(1);
+    }
+
+    function formatDate(date) {
+        return new Date(date).toLocaleString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+
+    function getStatusBadgeClass(status) {
+        const classes = {
+            pending: 'bg-yellow-100 text-yellow-700',
+            replied: 'bg-green-100 text-green-700',
+            rejected: 'bg-red-100 text-red-700'
+        };
+        return classes[status] || 'bg-gray-100 text-gray-700';
+    }
+
+    function getStatusLabel(status) {
+        const labels = {
+            pending: 'Chờ xử lý',
+            replied: 'Đã phản hồi',
+            rejected: 'Từ chối'
+        };
+        return labels[status] || status;
+    }
+
+    function showToast(message, type = 'info') {
+        const container = document.getElementById('admin-toast-container');
+        const toast = document.createElement('div');
+        const colors = { success: 'bg-green-500', error: 'bg-red-500', info: 'bg-blue-500' };
+        toast.className = `${colors[type]} text-white px-4 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in`;
+        toast.innerHTML = `<i class="fa-solid fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>${message}`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+</script>

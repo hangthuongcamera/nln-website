@@ -1,0 +1,124 @@
+<!-- Backdrop cho mobile sidebar -->
+    <div id="sidebar-backdrop" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-20 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+    <!-- ==================== SIDEBAR ==================== -->
+    <aside id="sidebar" class="bg-primary text-white w-64 flex-shrink-0 fixed inset-y-0 left-0 transform -translate-x-full lg:relative lg:translate-x-0 transition-transform duration-300 ease-in-out z-30 flex flex-col shadow-2xl lg:shadow-none">
+        <div class="h-16 flex items-center justify-center border-b border-blue-800 px-4">
+            <a href="/" class="flex items-center gap-2 group" target="_blank" title="Xem trang khách hàng">
+                <i class="fa-solid fa-bolt text-secondary text-2xl group-hover:scale-110 transition-transform"></i>
+                <span class="text-xl font-bold uppercase tracking-wider">NLN Admin</span>
+            </a>
+        </div>
+
+        <!-- Navigation Menu -->
+        <div class="flex-1 overflow-y-auto py-4 hide-scrollbar">
+            <ul class="space-y-1 px-3 text-sm font-medium">
+                <!-- Dashboard -->
+                <li>
+                    <a href="/admin" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath === '/admin' ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-chart-pie w-5 text-center text-blue-300 group-hover:text-white transition-colors"></i>
+                        <span>Tổng quan</span>
+                    </a>
+                </li>
+
+                <!-- Divider -->
+                <li class="pt-4 pb-2 px-3 text-xs font-semibold text-blue-300 uppercase tracking-wider">Sản Phẩm & Kho</li>
+                <li>
+                    <a href="/admin/categories" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/categories') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-layer-group w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i>
+                        <span>Danh mục sản phẩm</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/products" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/products') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-box-open w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i>
+                        <span>Danh sách sản phẩm</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/inventory" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/inventory') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-warehouse w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i>
+                        <span>Tồn kho</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/prices" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/prices') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-tags w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i>
+                        <span>Bảng giá</span>
+                    </a>
+                </li>
+
+                <!-- Divider -->
+                <li class="pt-4 pb-2 px-3 text-xs font-semibold text-blue-300 uppercase tracking-wider">Bán Hàng</li>
+                <li>
+                    <a href="/admin/orders" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors justify-between <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/orders') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-cart-shopping w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Đơn hàng</span></div>
+                        <span class="bg-secondary text-white text-xs px-2 py-0.5 rounded-full">5</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/quotes" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors justify-between <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/quotes') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-file-invoice-dollar w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Yêu cầu báo giá</span></div>
+                        <span class="bg-yellow-500 text-white text-xs px-2 py-0.5 rounded-full">2</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/customers" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/customers') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-users w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Khách hàng</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/contacts" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/contacts') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %> justify-between">
+                        <div class="flex items-center gap-3"><i class="fa-solid fa-envelope w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Tin nhắn liên hệ</span></div>
+                        <span class="bg-red-500 text-white text-xs px-2 py-0.5 rounded-full">1</span>
+                    </a>
+                </li>
+
+                <!-- Divider -->
+                <li class="pt-4 pb-2 px-3 text-xs font-semibold text-blue-300 uppercase tracking-wider">Hệ Thống</li>
+                <li>
+                    <a href="/admin/blogs" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/blogs') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-newspaper w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Bài viết & Blog</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/dynamic-ui" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/dynamic-ui') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-desktop w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Giao diện (Dynamic UI)</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/static-pages" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/static-pages') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-file-lines w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Trang tĩnh</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/projects" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/projects') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-building w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Dự án công trình</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/brands" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/brands') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-copyright w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Thương hiệu đối tác</span>
+                    </a>
+                </li>
+
+                <!-- Divider -->
+                <li class="pt-4 pb-2 px-3 text-xs font-semibold text-blue-300 uppercase tracking-wider">Phân Quyền & Vận Hành</li>
+                <li>
+                    <a href="/admin/activity-logs" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/activity-logs') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-history w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Nhật ký hoạt động</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/roles" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/roles') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-user-shield w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Phân quyền</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="/admin/settings" class="flex items-center gap-3 px-3 py-2.5 rounded-lg group transition-colors <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/settings') ? 'bg-blue-800 text-white' : 'text-gray-300 hover:bg-blue-800 hover:text-white' %>">
+                        <i class="fa-solid fa-gear w-5 text-center text-blue-400 group-hover:text-white transition-colors"></i><span>Cài đặt hệ thống</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </aside>

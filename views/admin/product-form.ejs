@@ -1,0 +1,372 @@
+<%- include('partials/head', { title: 'Thêm/Sửa Sản Phẩm - Admin Nhất Linh Nhi' }) %>
+
+<div class="flex h-screen w-full">
+    <div id="admin-toast-container" class="fixed top-20 right-6 z-50 flex flex-col gap-3 overflow-x-hidden p-2 pointer-events-none"></div>
+    <%- include('partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50">
+        <%- include('partials/topbar', { pageTitle: 'Sản Phẩm' }) %>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="admin-page block animate-fade-in">
+                <div class="flex items-center gap-4 mb-6">
+                    <a href="/admin/products" class="text-gray-500 hover:text-primary transition bg-white w-10 h-10 rounded-full shadow-sm flex items-center justify-center border border-gray-200">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h2 id="product-form-title" class="text-2xl font-bold text-gray-800">Thêm Sản Phẩm Mới</h2>
+                        <p class="text-sm text-gray-500 mt-1">Quản lý thông tin cơ bản, thông số kỹ thuật và biến thể SKU độc lập.</p>
+                    </div>
+                </div>
+
+                <form id="product-form">
+                    <input type="hidden" id="prod-id">
+                    <div class="flex flex-col xl:flex-row gap-6">
+                        <div class="w-full xl:w-2/3 flex flex-col gap-6">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Thông tin cơ bản</h3>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên sản phẩm <span class="text-red-500">*</span></label>
+                                    <input type="text" id="prod-name" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mô tả ngắn</label>
+                                    <textarea id="prod-short-desc" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm resize-none"></textarea>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mô tả chi tiết</label>
+                                    <textarea id="prod-desc" rows="6" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none text-sm resize-none"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Hình ảnh sản phẩm (Link ảnh)</h3>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nhập link ảnh (cách nhau bởi dấu phẩy)</label>
+                                    <input type="text" id="prod-images" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" placeholder="https://domain.com/img1.jpg, https://domain.com/img2.jpg">
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <div class="flex items-center justify-between gap-4 mb-4 border-b pb-2">
+                                    <div>
+                                        <h3 class="font-bold text-gray-800">Thông số kỹ thuật</h3>
+                                        <p class="text-xs text-gray-500 mt-1">Dùng cho tab thông số trên trang chi tiết sản phẩm.</p>
+                                    </div>
+                                    <button type="button" onclick="addSpecRow()" class="px-3 py-2 bg-blue-50 text-primary rounded-lg text-sm font-semibold hover:bg-primary hover:text-white transition">
+                                        <i class="fa-solid fa-plus mr-1"></i> Thêm thông số
+                                    </button>
+                                </div>
+                                <div id="specs-container" class="space-y-3"></div>
+                                <p id="specs-empty" class="text-sm text-gray-400 italic">Chưa có thông số kỹ thuật.</p>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 border-b pb-2">
+                                    <div>
+                                        <h3 class="font-bold text-gray-800">Sản phẩm đa phân loại (Variants)</h3>
+                                        <p class="text-xs text-gray-500 mt-1">Mỗi biến thể có SKU, giá và tồn kho riêng để phục vụ 15.000 SKUs.</p>
+                                    </div>
+                                    <label class="inline-flex items-center gap-2 cursor-pointer text-sm font-semibold text-gray-700">
+                                        <input type="checkbox" id="prod-hasVariants" class="w-4 h-4 rounded text-primary focus:ring-primary" onchange="toggleVariantPanel()">
+                                        Bật biến thể
+                                    </label>
+                                </div>
+
+                                <div id="variants-panel" class="hidden transition-all duration-300">
+                                    <div class="flex justify-end mb-3">
+                                        <button type="button" onclick="addVariantRow()" class="px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm font-semibold hover:bg-green-600 hover:text-white transition">
+                                            <i class="fa-solid fa-layer-group mr-1"></i> Thêm biến thể
+                                        </button>
+                                    </div>
+                                    <div id="variants-container" class="space-y-4"></div>
+                                    <p id="variants-empty" class="text-sm text-gray-400 italic">Chưa có biến thể. Hãy thêm ít nhất một biến thể khi bật chức năng này.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="w-full xl:w-1/3 flex flex-col gap-6">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Phân loại & Trạng thái</h3>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label>
+                                    <select id="prod-isActive" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm">
+                                        <option value="true">Đang bán</option>
+                                        <option value="false">Ẩn</option>
+                                    </select>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục <span class="text-red-500">*</span></label>
+                                    <select id="prod-category" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" required></select>
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Giá & Kho sản phẩm cha</h3>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Mã SKU cha <span class="text-red-500">*</span></label>
+                                    <input type="text" id="prod-sku" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary font-mono text-sm" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Giá cũ (VNĐ)</label>
+                                    <input type="number" id="prod-oldPrice" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Giá bán (VNĐ) <span class="text-red-500">*</span></label>
+                                    <input type="number" id="prod-retailPrice" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" required>
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Giá sỉ (VNĐ)</label>
+                                    <input type="number" id="prod-wholesalePrice" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm">
+                                </div>
+                                <div class="mb-4">
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Tồn kho hiện tại</label>
+                                    <input type="number" id="prod-stock" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" value="0">
+                                </div>
+                            </div>
+
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                                <h3 class="font-bold text-gray-800 mb-4 border-b pb-2">Nhãn hiển thị</h3>
+                                <div class="flex flex-col gap-3">
+                                    <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700"><input type="checkbox" id="flag-new" class="w-4 h-4 rounded text-primary focus:ring-primary"> Sản phẩm Mới</label>
+                                    <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700"><input type="checkbox" id="flag-hot" class="w-4 h-4 rounded text-primary focus:ring-primary"> Nổi bật</label>
+                                    <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700"><input type="checkbox" id="flag-flash" class="w-4 h-4 rounded text-primary focus:ring-primary"> Flash Sale</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-3 mt-6 pt-6 border-t border-gray-200">
+                        <a href="/admin/products" class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 font-medium hover:bg-gray-50 transition">Hủy</a>
+                        <button type="submit" class="px-6 py-2 bg-primary text-white rounded-lg font-bold hover:bg-blue-800 transition shadow-md">Lưu Sản Phẩm</button>
+                    </div>
+                </form>
+            </div>
+        </main>
+    </div>
+</div>
+
+<%- include('partials/scripts') %>
+<script>
+    const token = localStorage.getItem('token');
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        if (!token) window.location.href = '/admin/login';
+        await loadCategories();
+        if (productId) {
+            document.getElementById('product-form-title').innerText = 'Cập Nhật Sản Phẩm';
+            loadProductDetail(productId);
+        }
+    });
+
+    function createSlug(text) {
+        return (text || '')
+            .toString()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '')
+            .replace(/đ/g, 'd')
+            .replace(/Đ/g, 'D')
+            .toLowerCase()
+            .trim()
+            .replace(/[^a-z0-9\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .replace(/-+/g, '-');
+    }
+
+    async function loadCategories() {
+        try {
+            const res = await fetch('/api/v1/categories');
+            const data = await res.json();
+            if (res.ok && data.success) {
+                let options = '<option value="">-- Chọn danh mục --</option>';
+                const flatten = (cats, level) => {
+                    cats.forEach(c => {
+                        options += `<option value="${c._id}">${'&nbsp;&nbsp;'.repeat(level - 1)}${c.name}</option>`;
+                        if (c.children) flatten(c.children, level + 1);
+                        if (c.subChildren) flatten(c.subChildren, level + 1);
+                    });
+                };
+                flatten(data.data, 1);
+                document.getElementById('prod-category').innerHTML = options;
+            }
+        } catch (e) {}
+    }
+
+    function updateEmptyStates() {
+        document.getElementById('specs-empty').classList.toggle('hidden', document.querySelectorAll('.spec-row').length > 0);
+        document.getElementById('variants-empty').classList.toggle('hidden', document.querySelectorAll('.variant-row').length > 0);
+    }
+
+    function addSpecRow(spec = {}) {
+        const container = document.getElementById('specs-container');
+        const row = document.createElement('div');
+        row.className = 'spec-row grid grid-cols-1 md:grid-cols-12 gap-3 items-center p-3 bg-gray-50 rounded-lg border border-gray-100 animate-fade-in';
+        row.innerHTML = `
+            <input type="text" class="spec-name md:col-span-5 px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" placeholder="Tên thông số, VD: Chất liệu" value="${(spec.name || spec.key || '').replace(/"/g, '"')}">
+            <input type="text" class="spec-value md:col-span-6 px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" placeholder="Giá trị, VD: Đồng thau" value="${(spec.value || '').replace(/"/g, '"')}">
+            <button type="button" onclick="this.closest('.spec-row').remove(); updateEmptyStates();" class="md:col-span-1 text-red-500 hover:bg-red-50 rounded-lg h-10 transition"><i class="fa-solid fa-trash-can"></i></button>
+        `;
+        container.appendChild(row);
+        updateEmptyStates();
+    }
+
+    function toggleVariantPanel() {
+        const enabled = document.getElementById('prod-hasVariants').checked;
+        document.getElementById('variants-panel').classList.toggle('hidden', !enabled);
+    }
+
+    function addVariantRow(variant = {}) {
+        const container = document.getElementById('variants-container');
+        const row = document.createElement('div');
+        row.className = 'variant-row p-4 bg-gray-50 rounded-xl border border-gray-100 animate-fade-in';
+        row.innerHTML = `
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Tên biến thể <span class="text-red-500">*</span></label>
+                    <input type="text" class="variant-name w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" placeholder="VD: Phi 21 - Dày 1.6mm" value="${(variant.variantName || '').replace(/"/g, '"')}">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">SKU biến thể <span class="text-red-500">*</span></label>
+                    <input type="text" class="variant-sku w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm font-mono" placeholder="VD: ONG-P21-D16" value="${(variant.sku || '').replace(/"/g, '"')}">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 mb-3">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Giá bán <span class="text-red-500">*</span></label>
+                    <input type="number" class="variant-retailPrice w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" value="${variant.retailPrice || ''}">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Giá cũ</label>
+                    <input type="number" class="variant-oldPrice w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" value="${variant.oldPrice || ''}">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Giá sỉ</label>
+                    <input type="number" class="variant-wholesalePrice w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" value="${variant.wholesalePrice || ''}">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Tồn kho</label>
+                    <input type="number" class="variant-stock w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" value="${variant.stock || 0}">
+                </div>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end">
+                <div class="md:col-span-11">
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Ảnh riêng của biến thể</label>
+                    <input type="text" class="variant-image w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm" placeholder="https://domain.com/variant.jpg" value="${(variant.image || '').replace(/"/g, '"')}">
+                </div>
+                <button type="button" onclick="this.closest('.variant-row').remove(); updateEmptyStates();" class="md:col-span-1 text-red-500 hover:bg-red-50 rounded-lg h-10 transition"><i class="fa-solid fa-trash-can"></i></button>
+            </div>
+        `;
+        container.appendChild(row);
+        updateEmptyStates();
+    }
+
+    async function loadProductDetail(id) {
+        try {
+            const res = await fetch(`/api/v1/products/${id}`);
+            const data = await res.json();
+            if (res.ok && data.success) {
+                const p = data.data;
+                document.getElementById('prod-id').value = p._id;
+                document.getElementById('prod-name').value = p.name;
+                document.getElementById('prod-short-desc').value = p.shortDescription || '';
+                document.getElementById('prod-desc').value = p.description || '';
+                document.getElementById('prod-images').value = p.images ? p.images.join(', ') : '';
+                document.getElementById('prod-isActive').value = p.isActive !== false ? 'true' : 'false';
+                if (p.category) document.getElementById('prod-category').value = p.category._id || p.category;
+                document.getElementById('prod-sku').value = p.sku || '';
+                document.getElementById('prod-oldPrice').value = p.oldPrice || '';
+                document.getElementById('prod-retailPrice').value = p.retailPrice || '';
+                document.getElementById('prod-wholesalePrice').value = p.wholesalePrice || '';
+                document.getElementById('prod-stock').value = p.stock || 0;
+                if (p.flags) {
+                    document.getElementById('flag-new').checked = p.flags.isNewProduct;
+                    document.getElementById('flag-hot').checked = p.flags.isHot;
+                    document.getElementById('flag-flash').checked = p.flags.isFlashSale;
+                }
+
+                const specs = p.specs || p.specifications || [];
+                specs.forEach(spec => addSpecRow(spec));
+
+                document.getElementById('prod-hasVariants').checked = !!p.hasVariants;
+                toggleVariantPanel();
+                if (Array.isArray(p.variants)) p.variants.forEach(variant => addVariantRow(variant));
+                updateEmptyStates();
+            }
+        } catch (e) {}
+    }
+
+    function collectSpecs() {
+        return Array.from(document.querySelectorAll('.spec-row')).map(row => ({
+            name: row.querySelector('.spec-name').value.trim(),
+            value: row.querySelector('.spec-value').value.trim()
+        })).filter(spec => spec.name && spec.value);
+    }
+
+    function collectVariants() {
+        return Array.from(document.querySelectorAll('.variant-row')).map(row => ({
+            variantName: row.querySelector('.variant-name').value.trim(),
+            sku: row.querySelector('.variant-sku').value.trim(),
+            retailPrice: Number(row.querySelector('.variant-retailPrice').value) || 0,
+            oldPrice: row.querySelector('.variant-oldPrice').value ? Number(row.querySelector('.variant-oldPrice').value) : null,
+            wholesalePrice: row.querySelector('.variant-wholesalePrice').value ? Number(row.querySelector('.variant-wholesalePrice').value) : null,
+            stock: Number(row.querySelector('.variant-stock').value) || 0,
+            image: row.querySelector('.variant-image').value.trim()
+        })).filter(variant => variant.variantName && variant.sku && variant.retailPrice > 0);
+    }
+
+    document.getElementById('product-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const hasVariants = document.getElementById('prod-hasVariants').checked;
+        const variants = collectVariants();
+        if (hasVariants && variants.length === 0) {
+            showAdminToast('Thiếu biến thể', 'Vui lòng thêm ít nhất một biến thể hợp lệ.', 'error');
+            return;
+        }
+
+        const productName = document.getElementById('prod-name').value.trim();
+        const payload = {
+            name: productName,
+            slug: createSlug(productName),
+            shortDescription: document.getElementById('prod-short-desc').value,
+            description: document.getElementById('prod-desc').value,
+            images: document.getElementById('prod-images').value.split(',').map(s => s.trim()).filter(s => s),
+            isActive: document.getElementById('prod-isActive').value === 'true',
+            category: document.getElementById('prod-category').value,
+            sku: document.getElementById('prod-sku').value.trim(),
+            oldPrice: document.getElementById('prod-oldPrice').value ? Number(document.getElementById('prod-oldPrice').value) : null,
+            retailPrice: Number(document.getElementById('prod-retailPrice').value) || 0,
+            wholesalePrice: document.getElementById('prod-wholesalePrice').value ? Number(document.getElementById('prod-wholesalePrice').value) : null,
+            stock: Number(document.getElementById('prod-stock').value) || 0,
+            specs: collectSpecs(),
+            hasVariants,
+            variants: hasVariants ? variants : [],
+            flags: {
+                isNewProduct: document.getElementById('flag-new').checked,
+                isHot: document.getElementById('flag-hot').checked,
+                isFlashSale: document.getElementById('flag-flash').checked
+            }
+        };
+
+        const method = productId ? 'PUT' : 'POST';
+        const url = productId ? `/api/v1/products/${productId}` : '/api/v1/products';
+        try {
+            const res = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showAdminToast('Thành công', 'Đã lưu sản phẩm!', 'success');
+                setTimeout(() => window.location.href = '/admin/products', 1000);
+            } else {
+                showAdminToast('Lỗi', data.message || data.error || 'Có lỗi xảy ra', 'error');
+            }
+        } catch (error) {
+            showAdminToast('Lỗi', 'Mất kết nối server', 'error');
+        }
+    });
+</script>

@@ -1,0 +1,112 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 max-w-7xl mt-6 mb-12">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-primary transition-colors"><i class="fa-solid fa-house mr-1"></i> Trang Chủ</a> <i class="fa-solid fa-angle-right mx-2 text-xs"></i>
+        <span class="text-gray-800 font-medium">Tin Tức & Kinh Nghiệm</span>
+    </nav>
+
+    <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Main Content: Article List -->
+        <div class="w-full lg:w-3/4">
+            <h1 class="text-2xl font-bold text-gray-800 mb-6 border-l-4 border-primary pl-3">
+                <%= currentCategory ? `Chuyên mục: ${currentCategory}` : (searchQuery ? `Kết quả tìm kiếm: "${searchQuery}"` : 'Tin Tức & Kinh Nghiệm') %>
+            </h1>
+            
+            <% if (blogs && blogs.length > 0) { %>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <% blogs.forEach(blog => { %>
+                        <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                            <a href="/tin-tuc/<%= blog.slug %>" class="block relative aspect-video overflow-hidden">
+                                <img src="<%= blog.thumbnail || '/img/default-thumbnail.jpg' %>" alt="<%= blog.title %>" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            </a>
+                            <div class="p-4">
+                                <div class="text-xs text-gray-500 mb-2 flex items-center gap-4">
+                                    <span><i class="fa-regular fa-calendar mr-1"></i> <%= new Date(blog.createdAt).toLocaleDateString('vi-VN') %></span>
+                                    <span><i class="fa-regular fa-folder mr-1"></i> <%= blog.category || 'Chung' %></span>
+                                </div>
+                                <a href="/tin-tuc/<%= blog.slug %>" class="block text-lg font-bold text-gray-800 hover:text-primary line-clamp-2 mb-2 transition-colors"><%= blog.title %></a>
+                                <p class="text-sm text-gray-600 line-clamp-3 mb-4"><%= blog.excerpt %></p>
+                                <a href="/tin-tuc/<%= blog.slug %>" class="text-sm font-bold text-primary hover:text-secondary transition-colors inline-flex items-center">Đọc tiếp <i class="fa-solid fa-arrow-right-long ml-1.5 text-xs"></i></a>
+                            </div>
+                        </div>
+                    <% }) %>
+                </div>
+                
+                <!-- Thanh Phân Trang -->
+                <% if (totalPages > 1) { %>
+                    <div class="flex justify-center items-center gap-2">
+                        <% if (currentPage > 1) { %>
+                            <a href="?page=<%= currentPage - 1 %><%= searchQuery ? '&q='+searchQuery : '' %><%= currentCategory ? '&category='+currentCategory : '' %>" class="w-10 h-10 flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors"><i class="fa-solid fa-angle-left"></i></a>
+                        <% } %>
+                        
+                        <% for(let i = 1; i <= totalPages; i++) { %>
+                            <a href="?page=<%= i %><%= searchQuery ? '&q='+searchQuery : '' %><%= currentCategory ? '&category='+currentCategory : '' %>" class="w-10 h-10 flex items-center justify-center rounded-md border <%= currentPage === i ? 'border-primary bg-primary text-white font-bold shadow-sm' : 'border-gray-200 bg-white text-gray-700 hover:bg-primary hover:text-white font-medium transition-all' %>"><%= i %></a>
+                        <% } %>
+                        
+                        <% if (currentPage < totalPages) { %>
+                            <a href="?page=<%= currentPage + 1 %><%= searchQuery ? '&q='+searchQuery : '' %><%= currentCategory ? '&category='+currentCategory : '' %>" class="w-10 h-10 flex items-center justify-center rounded-md border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 transition-colors"><i class="fa-solid fa-angle-right"></i></a>
+                        <% } %>
+                    </div>
+                <% } %>
+            <% } else { %>
+                <div class="p-8 text-center bg-white rounded-lg border border-gray-100">
+                    <p class="text-gray-500">Chưa có bài viết nào phù hợp.</p>
+                </div>
+            <% } %>
+        </div>
+        
+        <!-- Sidebar -->
+        <aside class="w-full lg:w-1/4 flex flex-col gap-6">
+            <!-- Search Blog -->
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <h2 class="font-bold text-primary mb-3 border-b pb-2 uppercase text-sm"><i class="fa-solid fa-magnifying-glass mr-2"></i>Tìm kiếm tin tức</h2>
+                <form action="/tin-tuc" method="GET" class="flex">
+                    <input type="text" name="q" value="<%= searchQuery %>" placeholder="Nhập từ khóa..." class="w-full px-3 py-2 border border-gray-300 rounded-l outline-none focus:border-primary text-sm">
+                    <button type="submit" class="bg-primary px-3 py-2 rounded-r text-white hover:bg-blue-900 transition"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </form>
+            </div>
+            
+            <!-- Categories -->
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <h2 class="font-bold text-primary mb-3 border-b pb-2 uppercase text-sm"><i class="fa-solid fa-list mr-2"></i>Chuyên Mục</h2>
+                <ul class="text-sm flex flex-col gap-3 text-gray-600">
+                    <li>
+                        <a href="/tin-tuc" class="hover:text-primary transition-colors flex justify-between items-center group <%= !currentCategory ? 'text-primary font-bold' : '' %>">
+                            <span class="group-hover:translate-x-1 transition-transform"><i class="fa-solid fa-caret-right mr-2 text-xs"></i>Tất cả</span>
+                        </a>
+                    </li>
+                    <% categoryCounts.forEach(cat => { %>
+                        <li>
+                            <a href="/tin-tuc?category=<%= encodeURIComponent(cat._id) %>" class="hover:text-primary transition-colors flex justify-between items-center group <%= currentCategory === cat._id ? 'text-primary font-bold' : '' %>">
+                                <span class="group-hover:translate-x-1 transition-transform"><i class="fa-solid fa-caret-right mr-2 text-xs"></i><%= cat._id %></span> 
+                                <span class="bg-gray-100 px-2 py-0.5 rounded text-xs group-hover:bg-primary group-hover:text-white transition"><%= cat.count %></span>
+                            </a>
+                        </li>
+                    <% }) %>
+                </ul>
+            </div>
+
+            <!-- Featured Articles -->
+            <% if (featuredBlogs && featuredBlogs.length > 0) { %>
+                <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                    <h2 class="font-bold text-primary mb-4 border-b pb-2 uppercase text-sm"><i class="fa-solid fa-fire mr-2 text-orange-500"></i>Bài Viết Nổi Bật</h2>
+                    <div class="flex flex-col gap-4">
+                        <% featuredBlogs.forEach(feat => { %>
+                            <a href="/tin-tuc/<%= feat.slug %>" class="flex gap-3 group">
+                                <img src="<%= feat.thumbnail || '/img/default-thumbnail.jpg' %>" alt="<%= feat.title %>" class="w-20 h-16 object-cover rounded border border-gray-100 flex-shrink-0">
+                                <div>
+                                    <h3 class="text-sm font-semibold text-gray-800 group-hover:text-primary line-clamp-2 transition-colors mb-1 leading-tight"><%= feat.title %></h3>
+                                    <span class="text-xs text-gray-500"><i class="fa-regular fa-clock mr-1"></i> <%= new Date(feat.createdAt).toLocaleDateString('vi-VN') %></span>
+                                </div>
+                            </a>
+                        <% }) %>
+                    </div>
+                </div>
+            <% } %>
+        </aside>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

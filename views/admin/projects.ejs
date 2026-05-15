@@ -1,0 +1,114 @@
+<%- include('partials/head', { title: 'Quản lý Dự án - Admin Nhất Linh Nhi' }) %>
+
+<div class="flex h-screen w-full">
+    <!-- Admin Toast Container -->
+    <div id="admin-toast-container" class="fixed top-20 right-6 z-50 flex flex-col gap-3 overflow-x-hidden p-2 pointer-events-none"></div>
+
+    <%- include('partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50">
+        <%- include('partials/topbar', { pageTitle: 'Quản lý Dự án Công trình' }) %>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="admin-page block animate-fade-in">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Dự Án Công Trình</h2>
+                        <p class="text-gray-500 text-sm mt-1">Quản lý danh sách các dự án tiêu biểu đã cung cấp vật tư.</p>
+                    </div>
+                    <button onclick="openProjectModal()" class="bg-primary text-white font-bold py-2.5 px-5 rounded-lg hover:bg-blue-800 transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Thêm Dự Án
+                    </button>
+                </div>
+
+                <!-- Bảng danh sách dự án -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 flex flex-col sm:flex-row justify-between items-center gap-4 bg-gray-50">
+                        <div class="relative w-full sm:w-64">
+                            <input type="text" placeholder="Tìm kiếm dự án..." class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+                        <select class="border border-gray-300 rounded-lg px-3 py-2 outline-none focus:border-primary text-sm text-gray-700 w-full sm:w-auto">
+                            <option value="">Tất cả phân loại</option>
+                            <option value="dan-dung">Dân dụng & Căn hộ</option>
+                            <option value="cong-nghiep">Công nghiệp & Nhà máy</option>
+                            <option value="nghi-duong">Nghỉ dưỡng & Resort</option>
+                        </select>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[800px]">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                                    <th class="p-4 font-semibold">Hình ảnh & Tên dự án</th>
+                                    <th class="p-4 font-semibold">Chủ đầu tư</th>
+                                    <th class="p-4 font-semibold">Phân loại</th>
+                                    <th class="p-4 font-semibold text-center">Trạng thái</th>
+                                    <th class="p-4 font-semibold text-right">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-100">
+                                <tr class="hover:bg-gray-50 transition">
+                                    <td class="p-4 flex items-center gap-3">
+                                        <img src="https://images.unsplash.com/photo-1541888086925-920a0eb411fc?auto=format&fit=crop&q=80&w=150" alt="Thumb" class="w-16 h-12 rounded object-cover border border-gray-200">
+                                        <div>
+                                            <a href="#" class="font-bold text-gray-800 hover:text-primary line-clamp-1 mb-1">Khu Phức Hợp Căn Hộ Cao Cấp Vinhomes</a>
+                                            <span class="text-xs text-gray-500"><i class="fa-solid fa-location-dot mr-1"></i> Quận 9, TP.HCM</span>
+                                        </div>
+                                    </td>
+                                    <td class="p-4 text-gray-600 font-medium">Tập đoàn Vingroup</td>
+                                    <td class="p-4"><span class="bg-blue-50 text-blue-600 border border-blue-100 px-2.5 py-1 rounded text-xs font-semibold">Dân dụng & Căn hộ</span></td>
+                                    <td class="p-4 text-center"><span class="bg-green-100 text-green-700 px-2.5 py-1 rounded-full text-xs font-semibold">Hiển thị</span></td>
+                                    <td class="p-4 text-right">
+                                        <button onclick="openProjectModal()" class="text-blue-500 hover:text-blue-700 p-2" title="Chỉnh sửa"><i class="fa-solid fa-pen-to-square"></i></button>
+                                        <button class="text-red-500 hover:text-red-700 p-2" title="Xóa"><i class="fa-solid fa-trash-can"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<!-- Modal Thêm/Sửa Dự án -->
+<div id="modal-project" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl mx-4 overflow-hidden flex flex-col max-h-[90vh] scale-95 transform transition-transform" id="modal-project-content">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h3 class="font-bold text-gray-800 text-lg">Thêm Dự Án Mới</h3>
+            <button onclick="closeProjectModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto">
+            <form onsubmit="event.preventDefault(); closeProjectModal(); showAdminToast('Thành công', 'Đã lưu thông tin dự án!', 'success');">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <div class="col-span-2"><label class="block text-sm font-medium text-gray-700 mb-1">Tên dự án <span class="text-red-500">*</span></label><input type="text" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm" required></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Chủ đầu tư</label><input type="text" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm"></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Vị trí (Địa điểm)</label><input type="text" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm"></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Phân loại</label><select class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm"><option value="dan-dung">Dân dụng & Căn hộ</option><option value="cong-nghiep">Công nghiệp & Nhà máy</option><option value="nghi-duong">Nghỉ dưỡng & Resort</option></select></div>
+                    <div><label class="block text-sm font-medium text-gray-700 mb-1">Trạng thái</label><select class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm"><option value="show">Hiển thị</option><option value="hide">Ẩn</option></select></div>
+                </div>
+                <div class="mb-4"><label class="block text-sm font-medium text-gray-700 mb-1">Ảnh đại diện (Thumbnail)</label><input type="file" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-primary"></div>
+                <div class="mb-5"><label class="block text-sm font-medium text-gray-700 mb-1">Mô tả ngắn dự án</label><textarea rows="4" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm resize-none"></textarea></div>
+                <div class="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeProjectModal()" class="bg-white border border-gray-300 text-gray-700 font-medium py-2 px-5 rounded hover:bg-gray-50 transition">Hủy bỏ</button>
+                    <button type="submit" class="bg-primary text-white font-bold py-2 px-5 rounded hover:bg-blue-800 transition">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/scripts') %>
+<script>
+    function openProjectModal() {
+        const modal = document.getElementById('modal-project');
+        modal.classList.remove('hidden'); modal.classList.add('flex');
+        setTimeout(() => document.getElementById('modal-project-content').classList.remove('scale-95'), 10);
+    }
+    function closeProjectModal() {
+        document.getElementById('modal-project-content').classList.add('scale-95');
+        setTimeout(() => { document.getElementById('modal-project').classList.add('hidden'); document.getElementById('modal-project').classList.remove('flex'); }, 200);
+    }
+</script>

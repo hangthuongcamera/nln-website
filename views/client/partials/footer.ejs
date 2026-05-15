@@ -1,0 +1,260 @@
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="bg-dark text-gray-300 pt-12 pb-6">
+        <div class="container mx-auto px-4 max-w-7xl">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8 border-b border-gray-700 pb-8">
+                <!-- Về công ty -->
+                <div>
+                    <h3 class="text-white text-xl font-bold mb-4">NHẤT LINH NHI</h3>
+                    <p class="text-sm mb-4 leading-relaxed">Nhà phân phối sỉ & lẻ thiết bị điện, vật tư nước, kim khí dụng cụ uy tín hàng đầu. Cam kết hàng chính hãng, giá cạnh tranh cho mọi công trình.</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-blue-600 transition"><i class="fa-brands fa-facebook-f"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-red-600 transition"><i class="fa-brands fa-youtube"></i></a>
+                        <a href="#" class="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center hover:bg-blue-400 transition"><i class="fa-brands fa-zalo">Zalo</i></a>
+                    </div>
+                </div>
+                
+                <!-- Liên hệ -->
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">Thông tin liên hệ</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li class="flex items-start"><i class="fa-solid fa-location-dot mt-1 mr-3 text-secondary"></i> 485 Đ.Đồng Khởi, P.Tam Hiệp, Đồng Nai</li>
+                        <li class="flex items-start"><i class="fa-solid fa-phone mt-1 mr-3 text-secondary"></i> Hotline sỉ: 0938.117.848</li>
+                        <li class="flex items-start"><i class="fa-solid fa-envelope mt-1 mr-3 text-secondary"></i> nhatlinhnhi@gmail.com</li>
+                    </ul>
+                </div>
+
+                <!-- Chính sách -->
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">Hỗ trợ khách hàng</h3>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#" class="hover:text-white transition"><i class="fa-solid fa-angle-right mr-2 text-xs"></i>Chính sách bảo hành</a></li>
+                        <li><a href="#" class="hover:text-white transition"><i class="fa-solid fa-angle-right mr-2 text-xs"></i>Chính sách đổi trả</a></li>
+                        <li><a href="#" class="hover:text-white transition"><i class="fa-solid fa-angle-right mr-2 text-xs"></i>Phương thức thanh toán</a></li>
+                        <li><a href="#" class="hover:text-white transition"><i class="fa-solid fa-angle-right mr-2 text-xs"></i>Chính sách giao hàng</a></li>
+                        <li><a href="#" class="hover:text-white transition"><i class="fa-solid fa-angle-right mr-2 text-xs"></i>Báo giá dành cho đại lý</a></li>
+                    </ul>
+                </div>
+
+                <!-- Đăng ký nhận tin -->
+                <div>
+                    <h3 class="text-white text-lg font-bold mb-4">Đăng ký nhận báo giá</h3>
+                    <p class="text-sm mb-3">Để lại email để nhận bảng giá sỉ vật tư mới nhất mỗi tháng.</p>
+                    <form class="flex">
+                        <input type="email" placeholder="Email của bạn..." class="w-full px-3 py-2 text-gray-800 rounded-l outline-none focus:ring-2 focus:ring-primary text-sm">
+                        <button class="bg-secondary px-4 py-2 rounded-r text-white hover:bg-orange-600 transition"><i class="fa-solid fa-paper-plane"></i></button>
+                    </form>
+                </div>
+            </div>
+            
+            <div class="text-center text-sm text-gray-500">
+                &copy; 2026 Công ty TNHH Nhất Linh Nhi. Thiết kế Nguyễn Ngọc Thương
+            </div>
+        </div>
+    </footer>
+
+    <!-- SCRIPT TÌM KIẾM ĐỘNG (LIVE SEARCH) & HIỆU ỨNG GÕ CHỮ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search-input');
+            const searchSuggestions = document.getElementById('search-suggestions');
+            let searchTimeout;
+
+            // 1. Hàm gọi API tìm kiếm
+            async function fetchSearchResults(query) {
+                try {
+                    const res = await fetch(`/api/v1/products?search=${encodeURIComponent(query)}&limit=5`);
+                    const data = await res.json();
+                    return data.data || data || []; 
+                } catch (error) {
+                    console.error('Lỗi khi Live Search:', error);
+                    return [];
+                }
+            }
+
+            // 2. Bắt sự kiện gõ phím (Kèm Debounce tối ưu hiệu suất)
+            if (searchInput && searchSuggestions) {
+                searchInput.addEventListener('input', function(e) {
+                    const query = e.target.value.trim();
+                    searchSuggestions.innerHTML = '';
+                    
+                    if (query.length < 2) {
+                        searchSuggestions.classList.add('hidden');
+                        return;
+                    }
+
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(async () => {
+                        const results = await fetchSearchResults(query);
+                        searchSuggestions.classList.remove('hidden');
+
+                        if (results && results.length > 0) {
+                            const ul = document.createElement('ul');
+                            results.forEach(p => {
+                                const li = document.createElement('li');
+                                li.className = 'border-b last:border-b-0 hover:bg-gray-50 transition-colors';
+                                
+                                const price = p.retailPrice ? p.retailPrice.toLocaleString('vi-VN') + 'đ' : 'Liên hệ';
+                                const imgUrl = p.images && p.images.length > 0 ? p.images[0] : '/img/placeholder.png';
+                                const sku = p.sku || 'Đang cập nhật';
+
+                                li.innerHTML = `
+                                    <a href="/product/${p.slug}" class="flex items-center p-3 gap-3">
+                                        <img src="${imgUrl}" alt="${p.name}" class="w-10 h-10 object-cover rounded border border-gray-200">
+                                        <div class="flex-1">
+                                            <h4 class="text-sm font-semibold text-gray-800 line-clamp-1">${p.name}</h4>
+                                            <p class="text-xs text-gray-500 font-mono">SKU: ${sku}</p>
+                                        </div>
+                                        <div class="text-red-600 font-bold text-sm">${price}</div>
+                                    </a>
+                                `;
+                                ul.appendChild(li);
+                            });
+                            
+                            const viewAllLi = document.createElement('li');
+                            viewAllLi.innerHTML = `<a href="/search?q=${encodeURIComponent(query)}" class="block text-center py-3 text-sm text-secondary font-semibold hover:bg-gray-50 transition-colors">Xem tất cả kết quả <i class="fa-solid fa-angle-right text-xs ml-1"></i></a>`;
+                            ul.appendChild(viewAllLi);
+                            
+                            searchSuggestions.appendChild(ul);
+                        } else {
+                            searchSuggestions.innerHTML = `<div class="p-6 text-center text-sm text-gray-500">Không tìm thấy sản phẩm nào phù hợp với "<b>${query}</b>".</div>`;
+                        }
+                    }, 300);
+                });
+
+                // Ẩn khung gợi ý khi click ra ngoài
+                document.addEventListener('click', function(e) {
+                    if (!searchInput.contains(e.target) && !searchSuggestions.contains(e.target)) {
+                        searchSuggestions.classList.add('hidden');
+                    }
+                });
+                
+                // Hiện lại khung gợi ý khi focus vào ô tìm kiếm
+                searchInput.addEventListener('focus', function(e) {
+                    if (e.target.value.trim().length >= 2) {
+                        searchInput.dispatchEvent(new Event('input'));
+                    }
+                });
+
+                // 3. Hiệu ứng gõ chữ (Typewriter effect) cho Placeholder
+                const placeholderTexts = ['Bạn cần tìm gì...?', 'Tìm kiếm sản phẩm...', 'Nhập tên hoặc mã SKU...'];
+                let placeholderTextIndex = 0;
+                let placeholderCharIndex = 0;
+                let isDeletingPlaceholder = false;
+
+                function typeWriterEffect() {
+                    const currentText = placeholderTexts[placeholderTextIndex];
+                    
+                    if (isDeletingPlaceholder) {
+                        searchInput.setAttribute('placeholder', currentText.substring(0, placeholderCharIndex - 1));
+                        placeholderCharIndex--;
+                    } else {
+                        searchInput.setAttribute('placeholder', currentText.substring(0, placeholderCharIndex + 1));
+                        placeholderCharIndex++;
+                    }
+                    
+                    let typeSpeed = isDeletingPlaceholder ? 50 : 100;
+                    
+                    if (!isDeletingPlaceholder && placeholderCharIndex === currentText.length) {
+                        typeSpeed = 1500; 
+                        isDeletingPlaceholder = true;
+                    } else if (isDeletingPlaceholder && placeholderCharIndex === 0) {
+                        isDeletingPlaceholder = false;
+                        placeholderTextIndex = (placeholderTextIndex + 1) % placeholderTexts.length;
+                        typeSpeed = 500; 
+                    }
+                    setTimeout(typeWriterEffect, typeSpeed);
+                }
+                setTimeout(typeWriterEffect, 1000);
+            }
+        });
+
+        // Hàm hiển thị Toast thông báo mượt mà dùng chung
+        function showToast(message, type = 'success') {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'fixed top-24 right-4 z-50 flex flex-col gap-2 pointer-events-none';
+                document.body.appendChild(container);
+            }
+            const toast = document.createElement('div');
+            const bgColor = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-xmark';
+            
+            toast.className = `${bgColor} text-white px-4 py-3 rounded shadow-lg flex items-center gap-3 transform transition-all duration-300 translate-x-full opacity-0 max-w-sm`;
+            toast.innerHTML = `<i class="fa-solid ${icon} text-xl"></i><p class="font-bold text-sm">${message}</p>`;
+            
+            container.appendChild(toast);
+            
+            requestAnimationFrame(() => { toast.classList.remove('translate-x-full', 'opacity-0'); });
+            
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // Hàm xử lý Thêm vào giỏ hàng dùng chung toàn hệ thống
+        function addCurrentProductToCart(btn) {
+            const qtyInput = document.getElementById('detail-quantity');
+            const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+            
+            const variantId = btn.getAttribute('data-variant-id') || '';
+            const variantName = btn.getAttribute('data-variant-name') || '';
+            const baseId = btn.getAttribute('data-id');
+            const productItem = {
+                id: variantId ? `${baseId}::${variantId}` : baseId,
+                productId: btn.getAttribute('data-product-id') || baseId,
+                variantId: variantId,
+                variantName: variantName,
+                name: variantName ? `${btn.getAttribute('data-name')} - ${variantName}` : btn.getAttribute('data-name'),
+                sku: btn.getAttribute('data-sku'),
+                price: parseInt(btn.getAttribute('data-price')) || 0,
+                image: btn.getAttribute('data-image'),
+                quantity: qty
+            };
+
+            let cart = [];
+            try {
+                cart = JSON.parse(localStorage.getItem('cart')) || [];
+                if (!Array.isArray(cart)) cart = [];
+            } catch(error) {
+                cart = [];
+            }
+
+            const existingIndex = cart.findIndex(item => item.id === productItem.id);
+            
+            if (existingIndex >= 0) {
+                cart[existingIndex].quantity += qty;
+            } else {
+                cart.push(productItem);
+            }
+            
+            localStorage.setItem('cart', JSON.stringify(cart));
+            if (typeof updateCartCounter === 'function') updateCartCounter();
+            showToast('Thêm vào giỏ hàng thành công!', 'success');
+        }
+
+        // Cập nhật số lượng trên icon giỏ hàng ở Header
+        function updateCartCounter() {
+            try {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const totalItems = cart.reduce((sum, item) => sum + (Number(item.quantity) || 1), 0);
+                
+                // Tìm tất cả các thẻ có class hoặc id là cart-count và cập nhật số lượng
+                const badges = document.querySelectorAll('.cart-badge, #cart-count, #cart-counter'); 
+                badges.forEach(badge => badge.innerText = totalItems);
+            } catch(error) {}
+        }
+        
+        // Gọi hàm hiển thị số lượng giỏ hàng ngay khi vừa load xong trang
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof updateCartCounter === 'function') updateCartCounter();
+        });
+    </script>
+
+    <%- include('auth-modal') %>
+    <%- include('floating') %>
+    <%- include('scripts') %>
+</body>
+</html>

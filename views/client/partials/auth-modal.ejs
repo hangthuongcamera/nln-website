@@ -1,0 +1,155 @@
+<!-- ==================== AUTH MODALS (LOGIN / REGISTER) ==================== -->
+<div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/60 backdrop-blur-sm transition-opacity opacity-0 duration-300" onclick="if(event.target === this) closeAuthModal()">
+    <div class="relative w-full max-w-md m-auto bg-white p-8 rounded-xl shadow-2xl border border-gray-100 transform scale-95 transition-transform duration-300" id="auth-modal-content">
+        <!-- Nút đóng -->
+        <button onclick="closeAuthModal()" class="absolute top-4 right-4 text-gray-400 hover:text-red-500 transition text-xl"><i class="fa-solid fa-xmark"></i></button>
+
+        <!-- Form Đăng Nhập -->
+        <div id="modal-login-form">
+            <h2 class="text-2xl font-bold text-primary text-center mb-2">Đăng Nhập Tài Khoản</h2>
+            <p class="text-center text-gray-500 text-sm mb-8">Chào mừng bạn quay trở lại!</p>
+            
+            <!-- Khung báo lỗi -->
+            <div id="login-error" class="hidden mb-4 bg-red-50 text-red-700 p-3 rounded-lg border border-red-200 text-sm"></div>
+            
+            <form id="loginForm">
+                <div class="mb-4">
+                    <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                    <input type="email" id="login-email" name="email" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="vidu@email.com" required>
+                </div>
+                <div class="mb-6">
+                    <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                    <input type="password" id="login-password" name="password" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="••••••••" required>
+                </div>
+                <div class="flex justify-between items-center mb-6 text-sm">
+                    <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="w-4 h-4 rounded text-primary focus:ring-primary"> Ghi nhớ đăng nhập</label>
+                    <a href="#" class="font-medium text-primary hover:text-secondary">Quên mật khẩu?</a>
+                </div>
+                <button type="submit" id="loginBtn" class="w-full bg-primary text-white font-bold py-3 rounded-lg hover:bg-blue-800 transition shadow-lg shadow-blue-200 flex justify-center items-center">
+                    <span id="loginBtnText">ĐĂNG NHẬP</span>
+                    <i id="loginBtnSpinner" class="fa-solid fa-spinner fa-spin ml-2 hidden"></i>
+                </button>
+            </form>
+            
+            <!-- Social Login -->
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-300"></div></div>
+                    <div class="relative flex justify-center text-sm"><span class="px-2 bg-white text-gray-500">Hoặc đăng nhập bằng</span></div>
+                </div>
+                <div class="mt-6 grid grid-cols-2 gap-3">
+                    <button type="button" onclick="alert('Tính năng đang phát triển')" class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                        <i class="fa-brands fa-google text-red-500 mr-2 text-lg"></i> Google
+                    </button>
+                    <button type="button" onclick="alert('Tính năng đang phát triển')" class="w-full inline-flex justify-center items-center py-2.5 px-4 border border-gray-300 rounded-lg shadow-sm bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+                        <i class="fa-brands fa-facebook text-blue-600 mr-2 text-lg"></i> Facebook
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-center text-sm text-gray-600 mt-6">
+                Chưa có tài khoản? <a href="javascript:void(0)" onclick="openAuthModal('register')" class="font-bold text-secondary hover:underline">Đăng ký ngay</a>
+            </p>
+        </div>
+
+        <!-- Form Đăng Ký -->
+        <div id="modal-register-form" class="hidden">
+            <h2 class="text-2xl font-bold text-primary text-center mb-2">Tạo Tài Khoản Mới</h2>
+            <p class="text-center text-gray-500 text-sm mb-8">Nhận nhiều ưu đãi hơn khi là thành viên!</p>
+            
+            <div id="register-error" class="hidden mb-4 bg-red-50 text-red-700 p-3 rounded-lg border border-red-200 text-sm"></div>
+            <div id="register-success" class="hidden mb-4 bg-green-50 text-green-700 p-3 rounded-lg border border-green-200 text-sm"></div>
+            
+            <form id="registerForm">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Họ và Tên <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Nguyễn Văn A" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Email <span class="text-red-500">*</span></label>
+                    <input type="email" name="email" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="vidu@email.com" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại</label>
+                    <input type="tel" name="phone" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="0909123456">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu <span class="text-red-500">*</span></label>
+                    <input type="password" name="password" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary focus:ring-1 focus:ring-primary" placeholder="Tối thiểu 6 ký tự" required minlength="6">
+                </div>
+                <button type="submit" id="registerBtn" class="w-full bg-secondary text-white font-bold py-3 rounded-lg hover:bg-orange-600 transition shadow-lg shadow-orange-200 mt-2 flex justify-center items-center">
+                    <span id="registerBtnText">TẠO TÀI KHOẢN</span>
+                    <i id="registerBtnSpinner" class="fa-solid fa-spinner fa-spin ml-2 hidden"></i>
+                </button>
+            </form>
+            <p class="text-center text-sm text-gray-600 mt-8">
+                Đã có tài khoản? <a href="javascript:void(0)" onclick="openAuthModal('login')" class="font-bold text-primary hover:underline">Đăng nhập ngay</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openAuthModal(type) {
+        const modal = document.getElementById('auth-modal');
+        const modalContent = document.getElementById('auth-modal-content');
+        
+        document.getElementById('loginForm').reset();
+        document.getElementById('registerForm').reset();
+        document.getElementById('login-error').classList.add('hidden');
+        document.getElementById('register-error').classList.add('hidden');
+        document.getElementById('register-success').classList.add('hidden');
+
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        void modal.offsetWidth; 
+        modal.classList.remove('opacity-0');
+        modalContent.classList.remove('scale-95');
+        modalContent.classList.add('scale-100');
+
+        if (type === 'login') {
+            document.getElementById('modal-login-form').classList.remove('hidden');
+            document.getElementById('modal-register-form').classList.add('hidden');
+        } else {
+            document.getElementById('modal-register-form').classList.remove('hidden');
+            document.getElementById('modal-login-form').classList.add('hidden');
+        }
+    }
+
+    function closeAuthModal() {
+        const modal = document.getElementById('auth-modal');
+        const modalContent = document.getElementById('auth-modal-content');
+        modal.classList.add('opacity-0');
+        modalContent.classList.remove('scale-100');
+        modalContent.classList.add('scale-95');
+        setTimeout(() => { modal.classList.add('hidden'); modal.classList.remove('flex'); }, 300); 
+    }
+
+    // API Đăng nhập
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('loginBtn'), text = document.getElementById('loginBtnText'), spinner = document.getElementById('loginBtnSpinner'), errorEl = document.getElementById('login-error');
+        btn.disabled = true; text.innerText = 'ĐANG ĐĂNG NHẬP...'; spinner.classList.remove('hidden'); errorEl.classList.add('hidden');
+        try {
+            const response = await fetch('/api/v1/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: this.email.value, password: this.password.value }) });
+            const data = await response.json();
+            if (response.ok) { localStorage.setItem('token', data.token); window.location.reload(); } 
+            else { errorEl.innerText = data.message || 'Đăng nhập thất bại.'; errorEl.classList.remove('hidden'); }
+        } catch (err) { errorEl.innerText = 'Lỗi kết nối máy chủ.'; errorEl.classList.remove('hidden'); } 
+        finally { btn.disabled = false; text.innerText = 'ĐĂNG NHẬP'; spinner.classList.add('hidden'); }
+    });
+
+    // API Đăng ký
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const btn = document.getElementById('registerBtn'), text = document.getElementById('registerBtnText'), spinner = document.getElementById('registerBtnSpinner'), errorEl = document.getElementById('register-error'), successEl = document.getElementById('register-success');
+        btn.disabled = true; text.innerText = 'ĐANG XỬ LÝ...'; spinner.classList.remove('hidden'); errorEl.classList.add('hidden'); successEl.classList.add('hidden');
+        try {
+            const response = await fetch('/api/v1/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ name: this.name.value, email: this.email.value, phone: this.phone.value, password: this.password.value }) });
+            const data = await response.json();
+            if (response.ok) { successEl.innerText = 'Đăng ký thành công! Đang tự động đăng nhập...'; successEl.classList.remove('hidden'); localStorage.setItem('token', data.token); setTimeout(() => window.location.reload(), 1500); } 
+            else { errorEl.innerText = data.message || 'Đăng ký thất bại.'; errorEl.classList.remove('hidden'); }
+        } catch (err) { errorEl.innerText = 'Lỗi kết nối máy chủ.'; errorEl.classList.remove('hidden'); } 
+        finally { btn.disabled = false; text.innerText = 'TẠO TÀI KHOẢN'; spinner.classList.add('hidden'); }
+    });
+</script>

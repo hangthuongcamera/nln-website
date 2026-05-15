@@ -1,0 +1,298 @@
+<%- include('partials/head', { title: title }) %>
+<%- include('partials/header') %>
+
+<!-- ==================== VIEW: CHI TIẾT SẢN PHẨM ==================== -->
+<div id="view-product-detail" class="container mx-auto px-4 max-w-7xl mt-6 mb-12">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-primary transition-colors"><i class="fa-solid fa-house mr-1"></i> Trang Chủ</a> <i class="fa-solid fa-angle-right mx-2 text-xs"></i>
+        <% if (product.category && product.category.name) { %>
+            <a href="/category?cat=<%= product.category.slug %>" class="hover:text-primary transition-colors"><%= product.category.name %></a> <i class="fa-solid fa-angle-right mx-2 text-xs"></i>
+        <% } else { %>
+            <a href="/category" class="hover:text-primary transition-colors">Sản Phẩm</a> <i class="fa-solid fa-angle-right mx-2 text-xs"></i>
+        <% } %>
+        <span class="text-gray-800 font-medium"><%= product.name %></span>
+    </nav>
+
+    <div class="flex flex-col lg:flex-row gap-8 bg-white p-6 rounded-xl shadow-sm border border-gray-100 mb-8">
+        <!-- Left: Product Gallery -->
+        <div class="w-full lg:w-2/5">
+            <div id="main-image-container" class="border border-gray-200 rounded-lg overflow-hidden mb-4 relative cursor-zoom-in">
+                <% if (product.oldPrice && product.oldPrice > product.retailPrice) { %>
+                    <span class="absolute top-3 left-3 bg-red-500 text-white text-sm font-bold px-3 py-1 rounded z-10">-<%= Math.round((1 - product.retailPrice/product.oldPrice)*100) %>%</span>
+                <% } %>
+                <img id="main-product-image" src="<%= product.images && product.images.length > 0 ? product.images[0] : '/img/placeholder.png' %>" alt="<%= product.name %>" class="w-full h-auto object-cover hover:scale-125 transition-transform duration-500">
+            </div>
+            <!-- Thumbnails -->
+            <% if (product.images && product.images.length > 1) { %>
+                <div class="flex gap-3 overflow-x-auto hide-scrollbar">
+                    <% product.images.forEach((img, index) => { %>
+                        <img src="<%= img %>" class="w-20 h-20 object-cover rounded <%= index === 0 ? 'border-2 border-primary' : 'border border-gray-200 hover:border-primary' %> cursor-pointer thumb-img" alt="Thumbnail <%= index + 1 %>" onclick="changeMainImage(this)">
+                    <% }) %>
+                </div>
+            <% } %>
+        </div>
+
+        <!-- Right: Product Info -->
+        <div class="w-full lg:w-3/5 flex flex-col">
+            <div class="border-b border-gray-100 pb-4 mb-4">
+                <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2"><%= product.name %></h1>
+                <div class="flex items-center gap-4 text-sm mb-2">
+                    <span class="text-gray-500">Mã SP: <span id="detail-sku" class="font-mono font-semibold text-gray-800"><%= product.sku || 'Đang cập nhật' %></span></span>
+                    <span class="text-gray-300">|</span>
+                    <span class="text-gray-500">Tình trạng: 
+                        <% if (product.stock > 0) { %>
+                            <span id="detail-stock-status" class="text-green-600 font-semibold"><i class="fa-solid fa-check mr-1"></i>Còn hàng</span>
+                        <% } else { %>
+                            <span id="detail-stock-status" class="text-red-600 font-semibold"><i class="fa-solid fa-xmark mr-1"></i>Hết hàng</span>
+                        <% } %>
+                    </span>
+                    <span class="text-gray-300">|</span>
+                    <span class="text-gray-500">Thương hiệu: <span class="text-primary font-semibold"><%= product.brand || 'Đang cập nhật' %></span></span>
+                </div>
+            </div>
+
+            <!-- Price -->
+            <div class="bg-gray-50 p-4 rounded-lg mb-6">
+                <div class="flex items-end gap-3 mb-1">
+                    <span id="detail-price" class="text-3xl font-bold text-red-600"><%= product.retailPrice ? product.retailPrice.toLocaleString('vi-VN') + 'đ' : 'Liên hệ' %></span>
+                    <% if (product.oldPrice && product.oldPrice > product.retailPrice) { %>
+                        <span id="detail-old-price" class="text-lg text-gray-400 line-through mb-1"><%= product.oldPrice.toLocaleString('vi-VN') %>đ</span>
+                    <% } %>
+                </div>
+                <% if (product.oldPrice && product.oldPrice > product.retailPrice) { %>
+                    <p class="text-sm text-green-600 font-medium">(Tiết kiệm <%= (product.oldPrice - product.retailPrice).toLocaleString('vi-VN') %>đ)</p>
+                <% } %>
+            </div>
+
+            <% if (product.hasVariants && product.variants && product.variants.length > 0) { %>
+                <div class="mb-6">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <h2 class="text-sm font-bold text-gray-800 uppercase">Chọn phân loại</h2>
+                        <span class="text-xs text-gray-500">Giá và tồn kho cập nhật theo SKU</span>
+                    </div>
+                    <div id="variant-options" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <% product.variants.forEach((variant, index) => { %>
+                            <button type="button"
+                                class="variant-option text-left p-3 border rounded-lg transition hover:border-primary hover:bg-blue-50 <%= index === 0 ? 'border-primary bg-blue-50 ring-1 ring-primary' : 'border-gray-200 bg-white' %>"
+                                data-index="<%= index %>"
+                                onclick="selectVariant(<%= index %>)">
+                                <span class="block font-semibold text-gray-800 text-sm"><%= variant.variantName %></span>
+                                <span class="block text-xs text-gray-500 font-mono mt-1">SKU: <%= variant.sku %></span>
+                                <span class="block text-sm font-bold text-red-600 mt-1"><%= variant.retailPrice ? variant.retailPrice.toLocaleString('vi-VN') + 'đ' : 'Liên hệ' %></span>
+                            </button>
+                        <% }) %>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Short Desc -->
+            <% if (product.shortDescription && product.shortDescription.trim() !== '') { %>
+                <ul class="list-disc pl-5 text-gray-600 text-sm space-y-2 mb-6">
+                    <% product.shortDescription.split('\n').forEach(line => { %>
+                        <% if (line.trim()) { %>
+                            <li><%- line.replace(/^-\s*/, '').trim() %></li>
+                        <% } %>
+                    <% }) %>
+                </ul>
+            <% } else { %>
+                <p class="text-gray-500 italic text-sm mb-6">Mô tả ngắn đang được cập nhật...</p>
+            <% } %>
+
+            <!-- Action Area -->
+            <div class="flex flex-col sm:flex-row items-center gap-4 mt-auto">
+                <!-- Quantity -->
+                <div class="flex items-center border border-gray-300 rounded h-12 bg-white">
+                    <button type="button" onclick="updateQuantity(-1)" class="px-4 text-gray-500 hover:text-primary hover:bg-gray-100 h-full transition"><i class="fa-solid fa-minus"></i></button>
+                    <input type="text" id="detail-quantity" value="1" class="w-12 text-center font-semibold outline-none border-x border-gray-300 h-full" readonly>
+                    <button type="button" onclick="updateQuantity(1)" class="px-4 text-gray-500 hover:text-primary hover:bg-gray-100 h-full transition"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                
+                <button type="button" 
+                    id="detail-add-to-cart-btn"
+                    data-id="<%= product.slug %>" 
+                    data-product-id="<%= product._id %>"
+                    data-name="<%= product.name ? product.name.replace(/"/g, '&#34;') : 'Sản phẩm' %>" 
+                    data-sku="<%= product.sku || 'Đang cập nhật' %>" 
+                    data-price="<%= product.retailPrice || 0 %>" 
+                    data-image="<%= product.images && product.images.length > 0 ? product.images[0] : '/img/placeholder.png' %>"
+                    data-variant-id=""
+                    data-variant-name=""
+                    onclick="addCurrentProductToCart(this)" 
+                    class="flex-1 w-full sm:w-auto h-12 bg-primary text-white font-bold rounded hover:bg-blue-800 transition flex items-center justify-center gap-2 shadow-lg shadow-blue-200">
+                    <i class="fa-solid fa-cart-plus"></i> THÊM VÀO GIỎ
+                </button>
+            </div>
+            
+            <div class="mt-4 pt-4 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
+                <button onclick="requestQuote(`<%= product.name ? product.name.replace(/`/g, '\\`') : 'Sản phẩm' %>`)" class="w-full sm:w-auto px-6 py-2.5 bg-green-50 text-green-700 font-semibold border border-green-200 rounded hover:bg-green-500 hover:text-white transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-file-invoice"></i> Yêu Cầu Báo Giá Sỉ
+                </button>
+                <div class="flex items-center text-sm text-gray-500 gap-2 justify-center mt-2 sm:mt-0 sm:ml-4">
+                    <i class="fa-solid fa-truck-fast text-secondary"></i> Giao hàng nhanh toàn quốc
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chi tiết thông số & Mô tả -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 mb-12 overflow-hidden">
+        <div class="flex border-b border-gray-200 bg-gray-50">
+            <button id="tab-desc-btn" onclick="switchTab('desc')" class="px-6 py-3 font-bold text-primary border-b-2 border-primary bg-white transition">Mô Tả Sản Phẩm</button>
+            <button id="tab-spec-btn" onclick="switchTab('spec')" class="px-6 py-3 font-semibold text-gray-600 hover:text-primary transition bg-gray-50">Thông Số Kỹ Thuật</button>
+        </div>
+        <div id="tab-desc-content" class="p-6 prose max-w-none text-gray-700 text-sm leading-relaxed block animate-fade-in">
+            <%- product.description || '<p>Nội dung đang được cập nhật...</p>' %>
+        </div>
+        <div id="tab-spec-content" class="p-6 text-gray-700 text-sm leading-relaxed hidden">
+            <% const specs = product.specs || product.specifications || []; %>
+            <% if (specs && specs.length > 0) { %>
+                <h2 class="text-lg font-bold text-gray-800 mb-3">Bảng thông số kỹ thuật chi tiết</h2>
+                <table class="w-full sm:w-2/3 border-collapse border border-gray-200 text-left">
+                    <tbody>
+                        <% specs.forEach(spec => { %>
+                            <tr class="border-b border-gray-200"><th class="bg-gray-50 p-3 w-1/3 text-gray-800 border-r border-gray-200"><%= spec.name || spec.key %></th><td class="p-3"><%= spec.value %></td></tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p>Thông số kỹ thuật đang được cập nhật...</p>
+            <% } %>
+        </div>
+    </div>
+
+    <!-- Sản Phẩm Liên Quan -->
+    <% if (typeof relatedProducts !== 'undefined' && relatedProducts.length > 0) { %>
+        <div class="mb-6">
+            <div class="flex justify-between items-center mb-6 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                <h2 class="text-xl font-bold text-primary uppercase border-l-4 border-secondary pl-2">Sản Phẩm Liên Quan</h2>
+            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
+                <% relatedProducts.slice(0, 4).forEach(related => { %>
+                    <%- include('partials/_product-card', { product: related }) %>
+                <% }) %>
+            </div>
+        </div>
+    <% } else { %>
+        <div class="mb-6 bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center text-gray-500 text-sm">
+            <p>Đang cập nhật các sản phẩm liên quan...</p>
+        </div>
+    <% } %>
+</div>
+
+<script>
+    const productVariants = <%- JSON.stringify(product.variants || []) %>;
+    let selectedVariant = null;
+
+    function formatCurrency(value) {
+        const number = Number(value) || 0;
+        return number > 0 ? number.toLocaleString('vi-VN') + 'đ' : 'Liên hệ';
+    }
+
+    function selectVariant(index) {
+        selectedVariant = productVariants[index] || null;
+        if (!selectedVariant) return;
+
+        document.querySelectorAll('.variant-option').forEach((btn, btnIndex) => {
+            const isActive = btnIndex === index;
+            btn.classList.toggle('border-primary', isActive);
+            btn.classList.toggle('bg-blue-50', isActive);
+            btn.classList.toggle('ring-1', isActive);
+            btn.classList.toggle('ring-primary', isActive);
+            btn.classList.toggle('border-gray-200', !isActive);
+            btn.classList.toggle('bg-white', !isActive);
+        });
+
+        document.getElementById('detail-sku').innerText = selectedVariant.sku || '<%= product.sku || "Dang cap nhat" %>';
+        document.getElementById('detail-price').innerText = formatCurrency(selectedVariant.retailPrice);
+        const oldPriceEl = document.getElementById('detail-old-price');
+        if (oldPriceEl) {
+            oldPriceEl.innerText = selectedVariant.oldPrice ? formatCurrency(selectedVariant.oldPrice) : '';
+            oldPriceEl.classList.toggle('hidden', !selectedVariant.oldPrice);
+        }
+
+        const stockStatus = document.getElementById('detail-stock-status');
+        const stock = Number(selectedVariant.stock) || 0;
+        stockStatus.className = stock > 0 ? 'text-green-600 font-semibold' : 'text-red-600 font-semibold';
+        stockStatus.innerHTML = stock > 0 ? '<i class="fa-solid fa-check mr-1"></i>Còn hàng' : '<i class="fa-solid fa-xmark mr-1"></i>Hết hàng';
+
+        const mainImage = document.getElementById('main-product-image');
+        if (selectedVariant.image && mainImage) mainImage.src = selectedVariant.image;
+
+        const addBtn = document.getElementById('detail-add-to-cart-btn');
+        if (addBtn) {
+            addBtn.setAttribute('data-sku', selectedVariant.sku || '');
+            addBtn.setAttribute('data-price', selectedVariant.retailPrice || 0);
+            addBtn.setAttribute('data-image', selectedVariant.image || addBtn.getAttribute('data-image'));
+            addBtn.setAttribute('data-variant-id', selectedVariant._id || selectedVariant.sku || '');
+            addBtn.setAttribute('data-variant-name', selectedVariant.variantName || '');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        if (productVariants.length > 0) selectVariant(0);
+    });
+
+    // Product Detail Quantity logic
+    function updateQuantity(change) {
+        const qtyInput = document.getElementById('detail-quantity');
+        if(qtyInput) {
+            let currentVal = parseInt(qtyInput.value) || 1;
+            let newVal = currentVal + change;
+            if(newVal < 1) newVal = 1;
+            qtyInput.value = newVal;
+        }
+    }
+
+    // Product Detail Tab logic
+    function switchTab(tabName) {
+        const descBtn = document.getElementById('tab-desc-btn');
+        const specBtn = document.getElementById('tab-spec-btn');
+        const descContent = document.getElementById('tab-desc-content');
+        const specContent = document.getElementById('tab-spec-content');
+
+        if (tabName === 'desc') {
+            descBtn.className = "px-6 py-3 font-bold text-primary border-b-2 border-primary bg-white transition";
+            specBtn.className = "px-6 py-3 font-semibold text-gray-600 hover:text-primary transition bg-gray-50";
+            descContent.classList.remove('hidden');
+            descContent.classList.add('block', 'animate-fade-in');
+            specContent.classList.add('hidden');
+            specContent.classList.remove('block', 'animate-fade-in');
+        } else {
+            specBtn.className = "px-6 py-3 font-bold text-primary border-b-2 border-primary bg-white transition";
+            descBtn.className = "px-6 py-3 font-semibold text-gray-600 hover:text-primary transition bg-gray-50";
+            specContent.classList.remove('hidden');
+            specContent.classList.add('block', 'animate-fade-in');
+            descContent.classList.add('hidden');
+            descContent.classList.remove('block', 'animate-fade-in');
+        }
+    }
+
+    // Product Detail Gallery Zoom Logic
+    function changeMainImage(imgElement) {
+        document.getElementById('main-product-image').src = imgElement.src;
+        const thumbs = document.querySelectorAll('.thumb-img');
+        thumbs.forEach(t => {
+            t.classList.remove('border-2', 'border-primary');
+            t.classList.add('border', 'border-gray-200');
+        });
+        imgElement.classList.remove('border', 'border-gray-200');
+        imgElement.classList.add('border-2', 'border-primary');
+    }
+
+    const mainImageContainer = document.getElementById('main-image-container');
+    const mainImage = document.getElementById('main-product-image');
+    if (mainImageContainer && mainImage) {
+        mainImageContainer.addEventListener('mousemove', function(e) {
+            const rect = mainImageContainer.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width * 100;
+            const y = (e.clientY - rect.top) / rect.height * 100;
+            mainImage.style.transformOrigin = `${x}% ${y}%`;
+        });
+        mainImageContainer.addEventListener('mouseleave', function() {
+            mainImage.style.transformOrigin = 'center center';
+        });
+    }
+</script>
+
+<%- include('partials/footer') %>

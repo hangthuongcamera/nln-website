@@ -1,0 +1,175 @@
+<%- include('partials/head', { title: 'Cấu hình Giao diện - Admin Nhất Linh Nhi' }) %>
+
+<div class="flex h-screen w-full">
+    <div id="admin-toast-container" class="fixed top-20 right-6 z-50 flex flex-col gap-3 overflow-x-hidden p-2 pointer-events-none"></div>
+    <%- include('partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50">
+        <%- include('partials/topbar', { pageTitle: 'Giao diện (Dynamic UI)' }) %>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="admin-page block animate-fade-in">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Cấu Hình Giao Diện (Dynamic UI)</h2>
+                        <p class="text-gray-500 text-sm mt-1">Quản lý banner, bật tắt component và thiết lập sản phẩm nổi bật trên trang chủ.</p>
+                    </div>
+                    <button onclick="showAdminToast('Thành công', 'Đã lưu cấu hình giao diện!', 'success')" class="bg-primary text-white font-bold py-2.5 px-5 rounded-lg hover:bg-blue-800 transition shadow-md flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-floppy-disk"></i> Lưu Cấu Hình
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+                    <!-- Column 1: Feature Flags -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col gap-6">
+                        <div>
+                            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-toggle-on mr-2 text-primary"></i>Tắt/Mở Khối Giao Diện</h3>
+                            <p class="text-xs text-gray-500 mb-4">Gạt nút để hiển thị hoặc ẩn các khu vực tương ứng trên trang khách hàng.</p>
+                            
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-800">Main Banner (Slider)</p>
+                                        <p class="text-xs text-gray-500">Khu vực banner chính trên cùng</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-800">Danh Mục Nổi Bật</p>
+                                        <p class="text-xs text-gray-500">10 Card danh mục</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-800">Flash Sale (Giá Sốc)</p>
+                                        <p class="text-xs text-gray-500">Slider đếm ngược thời gian</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-800">Sản Phẩm Mới Nhất</p>
+                                        <p class="text-xs text-gray-500">Slider sản phẩm mới</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                </div>
+                                <div class="flex items-center justify-between">
+                                    <div>
+                                        <p class="text-sm font-bold text-gray-800">Tin Tức & Kinh Nghiệm</p>
+                                        <p class="text-xs text-gray-500">3 bài viết mới nhất</p>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Column 2 & 3: Banner & Highlights -->
+                    <div class="xl:col-span-2 flex flex-col gap-6">
+                        
+                        <!-- CẤU HÌNH FLASH SALE MỚI THÊM -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-stopwatch mr-2 text-primary"></i>Cấu hình Flash Sale (Giá Sốc)</h3>
+                            <div class="flex flex-col md:flex-row gap-6">
+                                <div class="flex-1">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Thời điểm kết thúc đếm ngược</label>
+                                    <input type="datetime-local" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm text-gray-700" value="2026-05-07T23:59">
+                                    <p class="text-xs text-gray-500 mt-2">Hệ thống tự động hiển thị đồng hồ đếm ngược trên Frontend.</p>
+                                </div>
+                                <div class="flex-1">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Tiêu đề khu vực hiển thị</label>
+                                    <input type="text" value="GIÁ SỐC HÔM NAY" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm font-bold text-red-600">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CẤU HÌNH 2 BANNER PHỤ MỚI THÊM -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-regular fa-images mr-2 text-primary"></i>Quản lý 2 Banner Phụ (Cạnh Slider)</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:border-primary transition relative group">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Banner Phụ 1 (Trên)</label>
+                                    <div class="relative w-full h-32 mb-3 rounded-lg overflow-hidden border border-gray-300">
+                                        <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover" alt="Banner Phụ 1">
+                                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"><span class="text-white text-sm font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Thay đổi ảnh</span></div>
+                                    </div>
+                                    <input type="text" value="/category?cat=thiet-bi-dien" class="w-full text-xs px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-gray-600" placeholder="Đường dẫn liên kết (URL)">
+                                </div>
+                                <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:border-primary transition relative group">
+                                    <label class="block text-sm font-bold text-gray-700 mb-2">Banner Phụ 2 (Dưới)</label>
+                                    <div class="relative w-full h-32 mb-3 rounded-lg overflow-hidden border border-gray-300">
+                                        <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover" alt="Banner Phụ 2">
+                                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"><span class="text-white text-sm font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Thay đổi ảnh</span></div>
+                                    </div>
+                                    <input type="text" value="/category?cat=kim-khi-dung-cu" class="w-full text-xs px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-gray-600" placeholder="Đường dẫn liên kết (URL)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Banner Slider Management -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <div class="flex justify-between items-center mb-4 border-b pb-2">
+                                <h3 class="font-bold text-gray-800"><i class="fa-solid fa-images mr-2 text-primary"></i>Quản lý Banner Chính (Slider)</h3>
+                                <button class="text-sm font-medium text-primary hover:text-blue-800 transition"><i class="fa-solid fa-plus mr-1"></i>Thêm banner</button>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div class="flex gap-4 p-4 border border-gray-200 rounded-lg items-start bg-gray-50 hover:border-primary transition">
+                                    <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&q=80&w=150" class="w-32 h-20 object-cover rounded border border-gray-300 shadow-sm" alt="Banner 1">
+                                    <div class="flex-1 space-y-2">
+                                        <input type="text" value="Cung cấp Vật tư Công trình Giá Sỉ" class="w-full text-sm font-bold px-3 py-1.5 border border-gray-300 rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                                        <input type="text" value="/category" class="w-full text-xs px-3 py-1.5 border border-gray-300 rounded outline-none focus:border-primary text-gray-500" placeholder="Đường dẫn khi click">
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <button class="text-gray-400 hover:text-primary transition p-1" title="Đổi vị trí"><i class="fa-solid fa-grip-vertical"></i></button>
+                                        <button class="text-gray-400 hover:text-red-500 transition p-1" title="Xóa"><i class="fa-solid fa-trash-can"></i></button>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-4 p-4 border border-gray-200 rounded-lg items-start bg-gray-50 hover:border-primary transition">
+                                    <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=150" class="w-32 h-20 object-cover rounded border border-gray-300 shadow-sm" alt="Banner 2">
+                                    <div class="flex-1 space-y-2">
+                                        <input type="text" value="Thiết Bị Điện Công Nghiệp & Dân Dụng" class="w-full text-sm font-bold px-3 py-1.5 border border-gray-300 rounded outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                                        <input type="text" value="/category?cat=thiet-bi-dien" class="w-full text-xs px-3 py-1.5 border border-gray-300 rounded outline-none focus:border-primary text-gray-500" placeholder="Đường dẫn khi click">
+                                    </div>
+                                    <div class="flex flex-col gap-2">
+                                        <button class="text-gray-400 hover:text-primary transition p-1"><i class="fa-solid fa-grip-vertical"></i></button>
+                                        <button class="text-gray-400 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Highlight Products Selection -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-star mr-2 text-primary"></i>Ghim Sản Phẩm Nổi Bật</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2 text-red-600">Flash Sale (Giá Sốc)</label>
+                                    <div class="border border-gray-200 rounded-lg p-3 h-56 overflow-y-auto hide-scrollbar bg-gray-50 flex flex-col gap-2">
+                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Máy bơm tăng áp Panasonic</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
+                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Cuộn dây Cadivi VCmo 2x1.5</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
+                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Máy khoan pin Makita 12V</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
+                                        <button class="w-full text-center text-sm font-bold text-primary hover:bg-primary hover:text-white border border-dashed border-primary bg-blue-50 py-2 rounded mt-1 transition-colors"><i class="fa-solid fa-plus mr-1"></i> Thêm sản phẩm</button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-bold text-gray-700 mb-2 text-green-600">Sản Phẩm Bán Chạy</label>
+                                    <div class="border border-gray-200 rounded-lg p-3 h-56 overflow-y-auto hide-scrollbar bg-gray-50 flex flex-col gap-2">
+                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Dây cáp điện Cadivi CV 4.0</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
+                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Ống nhựa PVC Bình Minh Phi 27</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
+                                        <button class="w-full text-center text-sm font-bold text-primary hover:bg-primary hover:text-white border border-dashed border-primary bg-blue-50 py-2 rounded mt-1 transition-colors"><i class="fa-solid fa-plus mr-1"></i> Thêm sản phẩm</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<%- include('partials/scripts') %>

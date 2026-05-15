@@ -1,0 +1,85 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 max-w-7xl mt-6 mb-12">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-primary transition-colors"><i class="fa-solid fa-house mr-1"></i> Trang Chủ</a> <i class="fa-solid fa-angle-right mx-2 text-xs"></i>
+        <span class="text-gray-800 font-medium">Giới Thiệu</span>
+    </nav>
+
+    <!-- Hero Section -->
+    <div class="flex flex-col md:flex-row gap-8 items-center mb-16">
+        <div class="w-full md:w-1/2">
+            <h1 class="text-3xl md:text-4xl font-bold text-primary mb-4 leading-tight">Nhất Linh Nhi<br><span class="text-2xl md:text-3xl text-gray-700 font-semibold">Nhà phân phối sỉ lẻ vật tư uy tín hàng đầu</span></h1>
+            <div class="w-20 h-1.5 bg-secondary mb-6"></div>
+            <p class="text-gray-600 mb-4 leading-relaxed text-justify">Được thành lập từ năm 2016, <strong>Công ty TNHH Nhất Linh Nhi</strong> tự hào là một trong những đơn vị tiên phong trong lĩnh vực phân phối thiết bị điện, vật tư ngành nước và kim khí dụng cụ tại khu vực miền Nam.</p>
+            <p class="text-gray-600 mb-6 leading-relaxed text-justify">Với hơn 15.000 mã sản phẩm (SKUs) đến từ các thương hiệu danh tiếng toàn cầu như Panasonic, Sino, Cadivi, Bình Minh, Makita,... chúng tôi cam kết mang đến cho nhà thầu, đại lý và khách hàng lẻ những sản phẩm chính hãng với mức chiết khấu cạnh tranh nhất.</p>
+            <div class="flex gap-4">
+                <a href="/category" class="bg-primary text-white font-bold py-2.5 px-6 rounded-full hover:bg-blue-800 transition shadow-lg inline-flex items-center"><i class="fa-solid fa-cart-shopping mr-2"></i> Mua sắm ngay</a>
+                <a href="/lien-he" class="bg-white border-2 border-primary text-primary font-bold py-2.5 px-6 rounded-full hover:bg-primary hover:text-white transition inline-flex items-center"><i class="fa-regular fa-handshake mr-2"></i> Trở thành đối tác</a>
+            </div>
+        </div>
+        <div class="w-full md:w-1/2 relative">
+            <img src="https://images.unsplash.com/photo-1541888086925-920a0eb411fc?auto=format&fit=crop&q=80&w=800" alt="Kho hàng Nhất Linh Nhi" class="rounded-xl shadow-xl w-full object-cover aspect-video relative z-10 border-4 border-white">
+            <div class="absolute -bottom-6 -left-6 w-48 h-48 bg-blue-100 rounded-xl z-0"></div>
+            <div class="absolute -top-6 -right-6 w-32 h-32 bg-orange-100 rounded-full z-0"></div>
+        </div>
+    </div>
+
+    <!-- Tầm nhìn & Sứ mệnh -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+        <div class="bg-blue-50 p-8 rounded-2xl border border-blue-100 hover:shadow-md transition">
+            <div class="w-14 h-14 bg-primary text-white rounded-xl flex items-center justify-center text-2xl mb-6 shadow-lg"><i class="fa-solid fa-eye"></i></div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Tầm Nhìn</h2>
+            <p class="text-gray-600 leading-relaxed">Trở thành chuỗi siêu thị và trung tâm phân phối vật tư công trình lớn nhất khu vực miền Nam vào năm 2030, là điểm đến "Một điểm dừng - Mọi nhu cầu" (One-Stop-Shop) cho mọi nhà thầu và gia đình.</p>
+        </div>
+        <div class="bg-orange-50 p-8 rounded-2xl border border-orange-100 hover:shadow-md transition">
+            <div class="w-14 h-14 bg-secondary text-white rounded-xl flex items-center justify-center text-2xl mb-6 shadow-lg"><i class="fa-solid fa-bullseye"></i></div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Sứ Mệnh</h2>
+            <p class="text-gray-600 leading-relaxed">Mang lại giải pháp vật tư toàn diện, an toàn và tối ưu chi phí cho các công trình. Chúng tôi cam kết sát cánh cùng đối tác và khách hàng bằng sự tận tâm, chuyên nghiệp và sản phẩm 100% chất lượng chuẩn.</p>
+        </div>
+    </div>
+
+    <!-- Giá trị cốt lõi / Năng lực -->
+    <div class="text-center mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-primary mb-4 uppercase">Giá Trị Cốt Lõi</h2>
+        <p class="text-gray-600 max-w-2xl mx-auto">4 trụ cột làm nên sự phát triển bền vững của hệ thống phân phối Nhất Linh Nhi.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+        <div class="bg-white p-6 rounded-xl border border-gray-100 text-center hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-xl group">
+            <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center text-primary text-3xl mb-4 group-hover:bg-primary group-hover:text-white transition-colors"><i class="fa-solid fa-award"></i></div>
+            <h3 class="font-bold text-lg text-gray-800 mb-2">Chất lượng 100%</h3>
+            <p class="text-sm text-gray-500">Cam kết hàng chính hãng, nguồn gốc rõ ràng, đầy đủ chứng chỉ CO/CQ.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-gray-100 text-center hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-xl group">
+            <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center text-secondary text-3xl mb-4 group-hover:bg-secondary group-hover:text-white transition-colors"><i class="fa-solid fa-hand-holding-dollar"></i></div>
+            <h3 class="font-bold text-lg text-gray-800 mb-2">Giá sỉ tận gốc</h3>
+            <p class="text-sm text-gray-500">Là đại lý cấp 1 của nhiều thương hiệu, mang lại mức chiết khấu cực sâu.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-gray-100 text-center hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-xl group">
+            <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center text-blue-500 text-3xl mb-4 group-hover:bg-blue-500 group-hover:text-white transition-colors"><i class="fa-solid fa-truck-fast"></i></div>
+            <h3 class="font-bold text-lg text-gray-800 mb-2">Giao hàng thần tốc</h3>
+            <p class="text-sm text-gray-500">Hệ thống kho bãi rộng lớn và đội xe tải vận chuyển chuyên nghiệp nội khu và liên tỉnh.</p>
+        </div>
+        <div class="bg-white p-6 rounded-xl border border-gray-100 text-center hover:-translate-y-2 transition-transform duration-300 shadow-sm hover:shadow-xl group">
+            <div class="w-20 h-20 mx-auto bg-gray-50 rounded-full flex items-center justify-center text-green-500 text-3xl mb-4 group-hover:bg-green-500 group-hover:text-white transition-colors"><i class="fa-solid fa-screwdriver-wrench"></i></div>
+            <h3 class="font-bold text-lg text-gray-800 mb-2">Hỗ trợ tận tâm</h3>
+            <p class="text-sm text-gray-500">Đội ngũ kỹ thuật viên giàu kinh nghiệm tư vấn bóc tách khối lượng và hỗ trợ hậu mãi.</p>
+        </div>
+    </div>
+
+    <!-- Đối tác chiến lược -->
+    <div class="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 text-center">
+        <h2 class="text-2xl font-bold text-gray-800 mb-2">Đối Tác Chiến Lược</h2>
+        <p class="text-gray-500 mb-8">Chúng tôi phân phối ủy quyền cho hơn 100+ thương hiệu uy tín trong và ngoài nước.</p>
+        <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-70">
+            <h3 class="text-2xl md:text-4xl font-black text-gray-400">PANASONIC</h3>
+            <h3 class="text-2xl md:text-4xl font-black text-gray-400">CADIVI</h3>
+            <h3 class="text-2xl md:text-4xl font-black text-gray-400">BÌNH MINH</h3>
+            <h3 class="text-2xl md:text-4xl font-black text-gray-400">SINO</h3>
+            <h3 class="text-2xl md:text-4xl font-black text-gray-400">MAKITA</h3>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

@@ -1,0 +1,120 @@
+    <script>
+        // Toggle Sidebar Mobile
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('-translate-x-full');
+            document.getElementById('sidebar-backdrop').classList.toggle('hidden');
+        }
+
+        // Hiệu ứng đếm số động (Counter Animation)
+        function animateCounter(id, target, formatFn) {
+            let current = 0; const duration = 1500; const steps = 50; const increment = target / steps; const interval = duration / steps;
+            const el = document.getElementById(id);
+            if (!el) return;
+            clearInterval(el.timer);
+            el.timer = setInterval(() => {
+                current += increment;
+                if (current >= target) { current = target; clearInterval(el.timer); }
+                el.innerText = formatFn(current);
+            }, interval);
+        }
+
+        // Toast Notification dành riêng cho Admin
+        function showAdminToast(title, message, type = 'success') {
+            const toastContainer = document.getElementById('admin-toast-container');
+            if (!toastContainer) return;
+            const toast = document.createElement('div');
+            let icon = '<i class="fa-solid fa-circle-check"></i>'; let borderColor = 'border-green-500'; let iconBg = 'bg-green-100 text-green-600';
+            if (type === 'error') { icon = '<i class="fa-solid fa-circle-xmark"></i>'; borderColor = 'border-red-500'; iconBg = 'bg-red-100 text-red-600'; } 
+            else if (type === 'warning') { icon = '<i class="fa-solid fa-triangle-exclamation"></i>'; borderColor = 'border-orange-500'; iconBg = 'bg-orange-100 text-orange-600'; }
+
+            toast.className = `bg-white border-l-4 ${borderColor} shadow-2xl rounded-lg p-4 flex items-start gap-3 transform transition-transform duration-500 translate-x-full w-80`;
+            toast.innerHTML = `
+                <div class="w-8 h-8 ${iconBg} rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">${icon}</div>
+                <div class="flex-1">
+                    <p class="text-sm font-bold text-gray-800">${title}</p>
+                    <p class="text-xs text-gray-600 mt-1">${message}</p>
+                </div>
+            `;
+            toastContainer.appendChild(toast);
+            requestAnimationFrame(() => toast.classList.remove('translate-x-full'));
+            setTimeout(() => {
+                toast.classList.add('translate-x-full');
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+        
+        // Hàm xử lý đăng xuất Admin
+        function logoutAdmin() {
+            localStorage.removeItem('token'); // Xóa token xác thực
+            window.location.href = '/admin/login'; // Chuyển về trang đăng nhập
+        }
+
+    // Hiển thị Modal Xác nhận (Confirm) dùng chung cho Admin với hiệu ứng mượt mà
+    function showAdminConfirm(title, message, confirmCallback) {
+        let modal = document.getElementById('admin-confirm-modal');
+        if (!modal) {
+            modal = document.createElement('div');
+            modal.id = 'admin-confirm-modal';
+            modal.className = 'fixed inset-0 z-[100] hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity opacity-0 duration-300';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden transform scale-95 transition-transform duration-300" id="admin-confirm-content">
+                    <div class="p-6 text-center">
+                        <div class="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center text-3xl mx-auto mb-4">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <h3 id="admin-confirm-title" class="text-xl font-bold text-gray-800 mb-2"></h3>
+                        <p id="admin-confirm-message" class="text-sm text-gray-600 mb-6"></p>
+                        <div class="flex gap-3">
+                            <button id="btn-admin-confirm-cancel" class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-2 rounded-lg hover:bg-gray-50 transition">Hủy</button>
+                            <button id="btn-admin-confirm-ok" class="flex-1 bg-red-500 text-white font-bold py-2 rounded-lg hover:bg-red-600 transition shadow-md shadow-red-200">Đồng Ý</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+
+            document.getElementById('btn-admin-confirm-cancel').addEventListener('click', closeAdminConfirm);
+        }
+
+        document.getElementById('admin-confirm-title').innerText = title;
+        document.getElementById('admin-confirm-message').innerHTML = message;
+        
+        const btnOk = document.getElementById('btn-admin-confirm-ok');
+        const newBtnOk = btnOk.cloneNode(true);
+        btnOk.parentNode.replaceChild(newBtnOk, btnOk);
+        
+        newBtnOk.addEventListener('click', () => {
+            closeAdminConfirm();
+            if (typeof confirmCallback === 'function') confirmCallback();
+        });
+
+        const content = document.getElementById('admin-confirm-content');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        requestAnimationFrame(() => {
+            modal.classList.remove('opacity-0');
+            content.classList.remove('scale-95');
+            content.classList.add('scale-100');
+        });
+    }
+
+    function closeAdminConfirm() {
+        const modal = document.getElementById('admin-confirm-modal');
+        const content = document.getElementById('admin-confirm-content');
+        if (!modal) return;
+        
+        modal.classList.add('opacity-0');
+        content.classList.remove('scale-100');
+        content.classList.add('scale-95');
+        
+        setTimeout(() => {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }, 300);
+    }
+
+        // Các hàm phụ trợ xóa dòng, đóng modal v.v có thể thêm tại đây...
+    </script>
+</body>
+</html>

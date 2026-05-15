@@ -1,0 +1,334 @@
+<%- include('partials/head', { title: 'Quản lý Danh Mục - Admin Nhất Linh Nhi' }) %>
+
+<div class="flex h-screen w-full">
+    <div id="admin-toast-container" class="fixed top-20 right-6 z-50 flex flex-col gap-3 overflow-x-hidden p-2 pointer-events-none"></div>
+
+    <%- include('partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50">
+        <%- include('partials/topbar', { pageTitle: 'Quản lý Danh Mục' }) %>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="admin-page block animate-fade-in">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Quản lý Danh Mục</h2>
+                        <p class="text-gray-500 text-sm mt-1">Sắp xếp và cấu trúc cây danh mục sản phẩm.</p>
+                    </div>
+                    <button onclick="openCategoryModal()" class="bg-primary text-white font-bold py-2.5 px-5 rounded-lg hover:bg-blue-800 transition shadow-md flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Thêm Danh Mục
+                    </button>
+                </div>
+
+                <!-- Thanh Tìm Kiếm -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6 flex flex-col sm:flex-row justify-between items-center bg-gray-50">
+                    <div class="relative w-full sm:w-80">
+                        <input type="text" id="search-category" placeholder="Tìm kiếm tên danh mục..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                                    <th class="p-4 font-semibold w-[40%]">Tên danh mục</th>
+                                    <th class="p-4 font-semibold text-left">Đường dẫn (Slug)</th>
+                                    <th class="p-4 font-semibold text-center w-28">Sản phẩm</th>
+                                    <th class="p-4 font-semibold text-center w-32">Trạng thái</th>
+                                    <th class="p-4 font-semibold text-right w-32">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm" id="categories-tbody">
+                                <tr><td colspan="5" class="p-4 text-center text-gray-500">Đang tải dữ liệu...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<div id="modal-category" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/50 backdrop-blur-sm transition-opacity">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md mx-4 overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+            <h3 id="modal-category-title" class="font-bold text-gray-800 text-lg">Thêm Danh Mục Mới</h3>
+            <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-red-500 transition"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div class="p-6 overflow-y-auto">
+            <form id="category-form">
+                <input type="hidden" id="cat-id">
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên danh mục <span class="text-red-500">*</span></label>
+                    <input type="text" id="cat-name" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Đường dẫn (Slug)</label>
+                    <input type="text" id="cat-slug" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm" placeholder="Để trống tự động tạo từ tên">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Icon (Font Awesome Class)</label>
+                    <input type="text" id="cat-icon" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm" placeholder="VD: fa-bolt">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Danh mục cha</label>
+                    <select id="cat-parent" class="w-full px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-sm">
+                        <option value="">-- Là danh mục gốc (Level 1) --</option>
+                    </select>
+                </div>
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Trạng thái</label>
+                    <div class="flex gap-4">
+                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700"><input type="radio" name="cat_isActive" value="true" checked class="text-primary focus:ring-primary"> Hiển thị</label>
+                        <label class="flex items-center gap-2 cursor-pointer text-sm text-gray-700"><input type="radio" name="cat_isActive" value="false" class="text-primary focus:ring-primary"> Ẩn</label>
+                    </div>
+                </div>
+                <div class="flex gap-3 pt-4 border-t border-gray-100">
+                    <button type="button" onclick="closeCategoryModal()" class="flex-1 bg-white border border-gray-300 text-gray-700 font-medium py-2 rounded hover:bg-gray-50 transition">Hủy bỏ</button>
+                    <button type="submit" id="btn-save-cat" class="flex-1 bg-primary text-white font-bold py-2 rounded hover:bg-blue-800 transition">Lưu Thay Đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<%- include('partials/scripts') %>
+<script>
+    const token = localStorage.getItem('token');
+    let allCategoriesFlat = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!token) window.location.href = '/admin/login';
+        loadCategories();
+        
+        // Tính năng 1: Tìm kiếm nhanh (Live Search)
+        document.getElementById('search-category').addEventListener('input', function(e) {
+            const keyword = e.target.value.toLowerCase();
+            document.querySelectorAll('#categories-tbody .category-row').forEach(row => {
+                const name = row.cells[0].innerText.toLowerCase();
+                row.style.display = name.includes(keyword) ? '' : 'none';
+            });
+        });
+    });
+
+    async function loadCategories() {
+        try {
+            const res = await fetch('/api/v1/categories', { cache: 'no-store' }); // Tắt cache để luôn lấy data mới nhất
+            const data = await res.json();
+            if (res.ok && data.success) {
+                const allCategories = data.data;
+                const getParentId = (c) => c.parentCategory ? (typeof c.parentCategory === 'object' ? c.parentCategory._id : c.parentCategory) : null;
+                
+                // Biến đổi mảng phẳng thành Cây (Tree) VÀ tính tổng sản phẩm đệ quy
+                const categoryTree = allCategories.filter(c => c.level === 1 || !getParentId(c)).map(parent => {
+                    const children = allCategories.filter(c => getParentId(c) === parent._id).map(child => {
+                        const subChildren = allCategories.filter(sub => getParentId(sub) === child._id);
+                        // Tính tổng SP của cấp 2 = Số SP của chính nó + Các cấp 3 trực thuộc
+                        const childTotal = (child.productCount || 0) + subChildren.reduce((sum, sub) => sum + (sub.productCount || 0), 0);
+                        return { ...child, subChildren, totalProducts: childTotal };
+                    });
+                    // Tính tổng SP của cấp 1 = Số SP của chính nó + Tất cả cấp 2 trực thuộc
+                    const parentTotal = (parent.productCount || 0) + children.reduce((sum, child) => sum + child.totalProducts, 0);
+                    return { ...parent, children, totalProducts: parentTotal };
+                });
+
+                renderCategoriesTable(categoryTree);
+                
+                allCategoriesFlat = [];
+                const flatten = (cats, level) => {
+                    cats.forEach(c => {
+                        allCategoriesFlat.push({...c, level});
+                        if(c.children) flatten(c.children, level + 1);
+                        if(c.subChildren) flatten(c.subChildren, level + 1);
+                    });
+                };
+                flatten(categoryTree, 1);
+                populateCategorySelect();
+            }
+        } catch (error) {
+            showAdminToast('Lỗi', 'Không thể tải danh sách danh mục', 'error');
+        }
+    }
+
+    function renderCategoriesTable(categories) {
+        const tbody = document.getElementById('categories-tbody');
+        let html = '';
+        if (categories.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">Chưa có danh mục nào.</td></tr>'; return; }
+
+        categories.forEach(lvl1 => {
+            html += renderCategoryRow(lvl1, 0);
+            if (lvl1.children && lvl1.children.length > 0) {
+                lvl1.children.forEach(lvl2 => {
+                    html += renderCategoryRow(lvl2, 1, lvl1._id);
+                    if (lvl2.subChildren && lvl2.subChildren.length > 0) {
+                        lvl2.subChildren.forEach(lvl3 => { html += renderCategoryRow(lvl3, 2, lvl2._id); });
+                    }
+                });
+            }
+        });
+        tbody.innerHTML = html;
+    }
+
+    function renderCategoryRow(cat, level, parentId = null) {
+        let rowClass = 'border-b border-gray-100 transition category-row hover:bg-blue-50/30';
+        let nameColHTML = '';
+        
+        const hasChildren = (level === 0 && cat.children && cat.children.length > 0) || (level === 1 && cat.subChildren && cat.subChildren.length > 0);
+        const toggleBtn = hasChildren ? `<button type="button" onclick="toggleAdminCategory('${cat._id}', this)" class="w-6 h-6 flex items-center justify-center rounded hover:bg-gray-200 text-gray-500 transition-transform"><i class="fa-solid fa-chevron-down text-xs"></i></button>` : `<div class="w-6 h-6"></div>`;
+
+        if (level === 0) {
+            rowClass += ' bg-white';
+            nameColHTML = `
+                <div class="flex items-center gap-2">
+                    ${toggleBtn}
+                    <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shadow-sm border border-blue-100 flex-shrink-0"><i class="fa-solid ${cat.icon || 'fa-folder'}"></i></div>
+                    <span class="font-bold text-gray-800 text-base">${cat.name}</span>
+                </div>`;
+        } else if (level === 1) {
+            rowClass += ' bg-gray-50/40';
+            nameColHTML = `
+                <div class="flex items-center gap-2 ml-10">
+                    ${toggleBtn}
+                    <div class="w-6 h-6 rounded flex items-center justify-center text-orange-400 flex-shrink-0"><i class="fa-regular fa-folder-open"></i></div>
+                    <span class="font-semibold text-gray-700">${cat.name}</span>
+                </div>`;
+        } else if (level === 2) {
+            rowClass += ' bg-gray-50/80';
+            nameColHTML = `
+                <div class="flex items-center gap-2 ml-20">
+                    <div class="w-6 h-6"></div>
+                    <i class="fa-solid fa-turn-up rotate-90 text-gray-300 text-xs flex-shrink-0"></i>
+                    <span class="text-gray-600">${cat.name}</span>
+                </div>`;
+        }
+
+        const isChecked = cat.isActive !== false;
+        const statusBadge = `
+            <label class="relative inline-flex items-center cursor-pointer" title="${isChecked ? 'Nhấn để ẩn' : 'Nhấn để hiển thị'}">
+                <input type="checkbox" class="sr-only peer" ${isChecked ? 'checked' : ''} onchange="toggleCategoryStatus('${cat._id}', this.checked)">
+                <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
+            </label>`;
+
+        const productCountDisplay = cat.totalProducts !== undefined ? cat.totalProducts : (cat.productCount || 0);
+        const countBadge = `<span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-0.5 rounded-full text-xs font-bold ${productCountDisplay > 0 ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-gray-100 text-gray-500 border border-gray-200'}">${productCountDisplay}</span>`;
+
+        let actionBtns = '';
+        if (level < 2) {
+            actionBtns += `<button type="button" onclick="openCategoryModal(null, '${cat._id}')" class="w-8 h-8 rounded-full bg-green-50 text-green-600 hover:bg-green-500 hover:text-white transition flex items-center justify-center shadow-sm" title="Thêm mục con"><i class="fa-solid fa-plus text-xs"></i></button>`;
+        }
+        actionBtns += `<button type="button" onclick="openCategoryModal('${cat._id}')" class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-500 hover:text-white transition flex items-center justify-center shadow-sm" title="Chỉnh sửa"><i class="fa-solid fa-pen text-xs"></i></button>`;
+        actionBtns += `<button type="button" onclick="deleteCategory('${cat._id}')" class="w-8 h-8 rounded-full bg-red-50 text-red-600 hover:bg-red-500 hover:text-white transition flex items-center justify-center shadow-sm" title="Xóa"><i class="fa-solid fa-trash-can text-xs"></i></button>`;
+
+        return `
+            <tr class="${rowClass}" data-id="${cat._id}" ${parentId ? `data-parent="${parentId}"` : ''}>
+                <td class="p-3">${nameColHTML}</td>
+                <td class="p-3 text-left font-mono text-gray-500 text-xs">${cat.slug}</td>
+                <td class="p-3 text-center">${countBadge}</td>
+                <td class="p-3 text-center">${statusBadge}</td>
+                <td class="p-3">
+                    <div class="flex justify-end gap-1.5">
+                        ${actionBtns}
+                    </div>
+                </td>
+            </tr>`;
+    }
+
+    function populateCategorySelect() {
+        const select = document.getElementById('cat-parent');
+        let options = '<option value="">-- Là danh mục gốc (Level 1) --</option>';
+        allCategoriesFlat.forEach(c => {
+            if (c.level < 3) { const indent = c.level === 1 ? '' : '&nbsp;&nbsp;&nbsp;'; options += `<option value="${c._id}">${indent}${c.name}</option>`; }
+        });
+        select.innerHTML = options;
+    }
+
+    function openCategoryModal(id = null, parentId = null) {
+        const modal = document.getElementById('modal-category'); document.getElementById('category-form').reset(); document.getElementById('cat-id').value = '';
+        if (id) {
+            document.getElementById('modal-category-title').innerText = 'Cập Nhật Danh Mục';
+            const cat = allCategoriesFlat.find(c => c._id === id);
+            if (cat) {
+                document.getElementById('cat-id').value = cat._id; document.getElementById('cat-name').value = cat.name;
+                document.getElementById('cat-slug').value = cat.slug || ''; document.getElementById('cat-icon').value = cat.icon || '';
+                if(cat.parentCategory) document.getElementById('cat-parent').value = cat.parentCategory._id || cat.parentCategory;
+                document.querySelector(`input[name="cat_isActive"][value="${cat.isActive !== false}"]`).checked = true;
+            }
+        } else { 
+            document.getElementById('modal-category-title').innerText = 'Thêm Danh Mục Mới'; 
+            if (parentId) document.getElementById('cat-parent').value = parentId;
+        }
+        modal.classList.remove('hidden'); modal.classList.add('flex');
+    }
+
+    function closeCategoryModal() { const modal = document.getElementById('modal-category'); modal.classList.add('hidden'); modal.classList.remove('flex'); }
+
+    // Tính năng 2: Tự động sinh Slug khi gõ tên danh mục
+    document.getElementById('cat-name').addEventListener('input', function() {
+        const id = document.getElementById('cat-id').value;
+        if (!id) { // Chỉ sinh slug khi là chức năng Thêm Mới
+            let slug = this.value.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[đĐ]/g, "d").replace(/([^0-9a-z-\s])/g, '').replace(/(\s+)/g, '-').replace(/-+/g, '-').replace(/^-+|-+$/g, '');
+            document.getElementById('cat-slug').value = slug;
+        }
+    });
+
+    document.getElementById('category-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const id = document.getElementById('cat-id').value;
+        const payload = { name: document.getElementById('cat-name').value, slug: document.getElementById('cat-slug').value, icon: document.getElementById('cat-icon').value, parentCategory: document.getElementById('cat-parent').value || null, isActive: document.querySelector('input[name="cat_isActive"]:checked').value === 'true' };
+        const method = id ? 'PUT' : 'POST', url = id ? `/api/v1/categories/${id}` : '/api/v1/categories';
+        try {
+            const res = await fetch(url, { method, headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` }, body: JSON.stringify(payload) });
+            const data = await res.json();
+            if (res.ok && data.success) { showAdminToast('Thành công', id ? 'Đã cập nhật danh mục' : 'Đã thêm danh mục mới', 'success'); closeCategoryModal(); loadCategories(); } 
+            else { showAdminToast('Lỗi', data.message || 'Không thể lưu danh mục', 'error'); }
+        } catch (error) { showAdminToast('Lỗi', 'Lỗi kết nối server', 'error'); }
+    });
+
+    function deleteCategory(id) {
+        showAdminConfirm('Xác nhận xóa danh mục', 'Bạn có chắc chắn muốn xóa danh mục này cùng tất cả danh mục con? Hành động này không thể hoàn tác.', async () => {
+            try {
+                const res = await fetch(`/api/v1/categories/${id}`, { method: 'DELETE', headers: { 'Authorization': `Bearer ${token}` } });
+                if (res.ok) { showAdminToast('Thành công', 'Đã xóa danh mục', 'success'); loadCategories(); } 
+                else { showAdminToast('Lỗi', 'Không thể xóa', 'error'); }
+            } catch (error) { showAdminToast('Lỗi', 'Lỗi kết nối server', 'error'); }
+        });
+    }
+
+    // Tính năng mới: Quick Toggle trạng thái
+    async function toggleCategoryStatus(id, newStatus) {
+        try {
+            const res = await fetch(`/api/v1/categories/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ isActive: newStatus })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showAdminToast('Thành công', newStatus ? 'Đã bật hiển thị danh mục' : 'Đã ẩn danh mục', 'success');
+                loadCategories();
+            } else { showAdminToast('Lỗi', data.message || 'Không thể cập nhật trạng thái', 'error'); }
+        } catch (error) { showAdminToast('Lỗi', 'Lỗi kết nối server', 'error'); }
+    }
+
+    // Tính năng 3: Thu gọn / Mở rộng cây danh mục
+    function toggleAdminCategory(id, el) {
+        const isCollapsed = el.classList.contains('-rotate-90');
+        if (isCollapsed) {
+            el.classList.remove('-rotate-90');
+            document.querySelectorAll(`.category-row[data-parent="${id}"]`).forEach(row => row.style.display = '');
+        } else {
+            el.classList.add('-rotate-90');
+            hideAllChildren(id);
+        }
+    }
+
+    function hideAllChildren(parentId) {
+        document.querySelectorAll(`.category-row[data-parent="${parentId}"]`).forEach(row => {
+            row.style.display = 'none';
+            const childId = row.getAttribute('data-id');
+            if (childId) hideAllChildren(childId);
+        });
+    }
+</script>

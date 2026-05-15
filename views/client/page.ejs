@@ -1,0 +1,29 @@
+<%- include('partials/header') %>
+
+<div class="container mx-auto px-4 max-w-7xl mt-6 mb-12 min-h-[50vh]">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-primary transition-colors"><i class="fa-solid fa-house mr-1"></i> Trang Chủ</a> <i class="fa-solid fa-angle-right mx-2 text-xs"></i>
+        <span class="text-gray-800 font-medium"><%= page ? page.title : 'Không tìm thấy trang' %></span>
+    </nav>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-10">
+        <% if (page) { %>
+            <h1 class="text-2xl md:text-3xl font-bold text-primary mb-6 border-b pb-4 uppercase"><%= page.title %></h1>
+            
+            <!-- Article Body (Rich Text Content) -->
+            <div class="prose max-w-none text-gray-700 text-base leading-relaxed">
+                <%- page.content %>
+            </div>
+        <% } else { %>
+            <div class="text-center py-12">
+                <i class="fa-regular fa-file-excel text-6xl text-gray-300 mb-4 block"></i>
+                <h2 class="text-2xl font-bold text-gray-800 mb-3">Nội dung không tồn tại hoặc đã bị gỡ</h2>
+                <p class="text-gray-500 mb-6">Rất xin lỗi, trang bạn đang tìm kiếm hiện không có sẵn.</p>
+                <a href="/" class="inline-block bg-primary text-white px-6 py-2 rounded hover:bg-blue-800 transition">Trở về Trang chủ</a>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<%- include('partials/footer') %>

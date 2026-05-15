@@ -1,0 +1,161 @@
+<%- include('partials/head', { title: 'Tổng quan - Admin Nhất Linh Nhi' }) %>
+
+<div class="flex h-screen w-full">
+    <!-- Admin Toast Container -->
+    <div id="admin-toast-container" class="fixed top-20 right-6 z-50 flex flex-col gap-3 overflow-x-hidden p-2 pointer-events-none"></div>
+
+    <!-- Nhúng Sidebar -->
+    <%- include('partials/sidebar') %>
+
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50">
+        <!-- Nhúng Topbar -->
+        <%- include('partials/topbar', { pageTitle: 'Dashboard Tổng Quan' }) %>
+
+        <!-- Nội dung chính của Dashboard -->
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="admin-page block animate-fade-in">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-gray-800">Xin chào, Admin System! 👋</h2>
+                    <p class="text-gray-500 text-sm mt-1">Dưới đây là tổng quan hoạt động kinh doanh của Nhất Linh Nhi hôm nay.</p>
+                </div>
+
+                <!-- THẺ THỐNG KÊ (STATS CARDS) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-shadow">
+                        <div><p class="text-sm font-medium text-gray-500 mb-1">Tổng Doanh Thu</p><h3 id="stat-revenue" class="text-2xl font-bold text-gray-800">0đ</h3><p class="text-xs font-medium text-green-600 mt-2"><i class="fa-solid fa-arrow-trend-up mr-1"></i> +15% so với tuần trước</p></div>
+                        <div class="w-14 h-14 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center text-2xl"><i class="fa-solid fa-wallet"></i></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-shadow">
+                        <div><p class="text-sm font-medium text-gray-500 mb-1">Đơn Hàng Mới</p><h3 id="stat-orders" class="text-2xl font-bold text-gray-800">0</h3><p class="text-xs font-medium text-green-600 mt-2"><i class="fa-solid fa-arrow-trend-up mr-1"></i> +5.2%</p></div>
+                        <div class="w-14 h-14 bg-green-50 text-green-500 rounded-full flex items-center justify-center text-2xl"><i class="fa-solid fa-cart-shopping"></i></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-shadow">
+                        <div><p class="text-sm font-medium text-gray-500 mb-1">Khách Hàng (Đại lý)</p><h3 id="stat-customers" class="text-2xl font-bold text-gray-800">0</h3><p class="text-xs font-medium text-orange-500 mt-2"><i class="fa-solid fa-users mr-1"></i> 12 đối tác mới</p></div>
+                        <div class="w-14 h-14 bg-orange-50 text-secondary rounded-full flex items-center justify-center text-2xl"><i class="fa-solid fa-users"></i></div>
+                    </div>
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex items-center justify-between hover:shadow-md transition-shadow">
+                        <div><p class="text-sm font-medium text-gray-500 mb-1">Sản Phẩm Sắp Hết</p><h3 id="stat-low-stock" class="text-2xl font-bold text-red-600">0 SKUs</h3><p class="text-xs font-medium text-red-500 mt-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Nhập thêm ngay</p></div>
+                        <div class="w-14 h-14 bg-red-50 text-red-500 rounded-full flex items-center justify-center text-2xl"><i class="fa-solid fa-box-open"></i></div>
+                    </div>
+                </div>
+
+                <!-- BIỂU ĐỒ & CẢNH BÁO -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-gray-800">Biểu Đồ Doanh Thu</h3>
+                            <select class="border border-gray-200 rounded text-sm px-2 py-1 outline-none focus:border-primary text-gray-600"><option>7 ngày qua</option><option>Tháng này</option></select>
+                        </div>
+                        <div class="relative h-72 w-full"><canvas id="revenueChart"></canvas></div>
+                    </div>
+
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-triangle-exclamation text-red-500 mr-2"></i>Cảnh báo hết hàng</h3>
+                        <ul id="low-stock-list" class="space-y-4">
+                            <li class="text-center text-gray-500 py-4"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Đang tải dữ liệu...</li>
+                        </ul>
+                        <a href="/admin/products" class="block text-center text-sm font-bold text-primary mt-4 hover:text-secondary transition">Xem toàn bộ kho <i class="fa-solid fa-arrow-right-long ml-1"></i></a>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<%- include('partials/scripts') %>
+<script>
+    // Tải dữ liệu thật từ API cho Dashboard
+    document.addEventListener('DOMContentLoaded', async () => {
+        const token = localStorage.getItem('token');
+        if (!token) { window.location.href = '/admin/login'; return; }
+
+        try {
+            // 1. Lấy danh sách đơn hàng để tính Doanh thu & Tổng đơn
+            const ordersRes = await fetch('/api/v1/orders?limit=1000', { 
+                headers: { 'Authorization': `Bearer ${token}` } 
+            });
+            const ordersData = await ordersRes.json();
+            
+            let revenue = 0;
+            let ordersCount = 0;
+            
+            if (ordersRes.ok && ordersData.success) {
+                ordersCount = ordersData.pagination.total || ordersData.data.length;
+                // Tính tổng tiền các đơn hàng chưa bị hủy
+                revenue = ordersData.data
+                    .filter(o => o.status !== 'cancelled')
+                    .reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+            }
+
+            // 2. Lấy danh sách sản phẩm để lọc Cảnh báo hết hàng
+            const productsRes = await fetch('/api/v1/products?limit=1000');
+            const productsData = await productsRes.json();
+            
+            let lowStockCount = 0;
+            let lowStockHTML = '';
+            
+            if (productsRes.ok && productsData.success) {
+                // Lọc SP có tồn kho <= 10
+                const lowStockProducts = productsData.data.filter(p => p.stock <= 10).sort((a, b) => a.stock - b.stock);
+                lowStockCount = lowStockProducts.length;
+                
+                if (lowStockCount > 0) {
+                    lowStockProducts.slice(0, 5).forEach(p => {
+                        let badgeClass = p.stock === 0 ? 'bg-red-100 text-red-700' : 'bg-orange-100 text-orange-700';
+                        lowStockHTML += `
+                        <li class="flex justify-between items-center bg-gray-50 p-3 rounded-lg border border-gray-100">
+                            <div class="flex-1 min-w-0 pr-3"><p class="text-sm font-semibold text-gray-800 line-clamp-1">${p.name}</p><p class="text-xs text-gray-500 font-mono mt-0.5">${p.sku || 'N/A'}</p></div>
+                            <span class="text-xs font-bold ${badgeClass} px-2 py-1 rounded">Tồn: ${p.stock}</span>
+                        </li>`;
+                    });
+                } else {
+                    lowStockHTML = '<li class="text-center text-gray-500 py-4">Hàng hóa trong kho đang ổn định.</li>';
+                }
+                
+                document.getElementById('low-stock-list').innerHTML = lowStockHTML;
+                document.getElementById('stat-low-stock').innerText = lowStockCount + ' SKUs';
+            }
+
+            // Kích hoạt hiệu ứng đếm số (Counters)
+            if (typeof animateCounter === 'function') {
+                animateCounter('stat-revenue', revenue, val => Math.floor(val).toLocaleString('vi-VN') + 'đ');
+                animateCounter('stat-orders', ordersCount, val => Math.floor(val).toLocaleString('vi-VN'));
+                // Tạm thời hiển thị ảo số Khách hàng (sẽ gọi API sau)
+                animateCounter('stat-customers', 15, val => Math.floor(val).toLocaleString('vi-VN')); 
+            }
+        } catch (error) {
+            console.error('Lỗi tải dữ liệu dashboard:', error);
+        }
+    });
+
+    // Biểu đồ
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('revenueChart');
+        if(ctx) {
+            new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                    datasets: [{
+                        label: 'Doanh thu (Triệu VNĐ)',
+                        data: [45, 59, 80, 81, 56, 125, 90],
+                        borderColor: '#1e3a8a',
+                        backgroundColor: 'rgba(30, 58, 138, 0.1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#ea580c',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: '#ea580c',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+    });
+</script>

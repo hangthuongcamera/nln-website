@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Tối ưu SEO Meta Tags động -->
+    <title><%= typeof pageTitle !== 'undefined' ? pageTitle : 'Nhất Linh Nhi - Thiết Bị Điện, Nước & Kim Khí Tổng Hợp' %></title>
+    <% if (typeof seoDescription !== 'undefined') { %>
+    <meta name="description" content="<%= seoDescription %>">
+    <% } else { %>
+    <meta name="description" content="Nhất Linh Nhi - Nhà phân phối sỉ lẻ vật tư điện, nước, kim khí chính hãng, uy tín hàng đầu.">
+    <% } %>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/img/favicon.png">
+    
+    <!-- Tích hợp Tailwind CSS qua CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Tích hợp Font Awesome cho Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Cấu hình Tailwind (Theme Colors) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: { primary: '#1e3a8a', secondary: '#ea580c', light: '#f3f4f6', dark: '#1f2937' },
+                    fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .group:hover .mega-menu { display: block; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+    <!-- ==================== TOP BAR (Thông tin liên hệ & Auth) ==================== -->
+    <div class="bg-primary text-white text-sm py-2 hidden md:block">
+        <div class="container mx-auto px-4 flex justify-between items-center max-w-7xl">
+            <div class="flex space-x-6">
+                <span><i class="fa-solid fa-phone mr-2"></i> Hotline: 0938.117.848</span>
+                <span><i class="fa-solid fa-envelope mr-2"></i> info@nhatlinhnhi.com</span>
+            </div>
+            <div class="flex space-x-4" id="auth-links">
+                <a href="javascript:void(0)" onclick="openAuthModal('login')" class="hover:text-gray-300 transition-colors">Đăng nhập</a>
+                <span class="border-l border-gray-400"></span>
+                <a href="javascript:void(0)" onclick="openAuthModal('register')" class="hover:text-gray-300 transition-colors">Đăng ký</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kiểm tra trạng thái Đăng nhập -->
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await fetch('/api/v1/auth/me', { headers: { 'Authorization': `Bearer ${token}` } });
+                    if (response.ok) {
+                        const resData = await response.json();
+                        const user = resData.data || resData;
+                        document.getElementById('auth-links').innerHTML = `
+                            <a href="/tai-khoan" class="hover:text-yellow-300 transition-colors font-semibold"><i class="fa-regular fa-user mr-1"></i> Xin chào, ${user.name}</a>
+                            <span class="border-l border-gray-400"></span>
+                            <a href="javascript:void(0)" onclick="localStorage.removeItem('token'); window.location.reload();" class="hover:text-red-300 transition-colors text-red-200">Đăng xuất</a>
+                        `;
+                    } else { localStorage.removeItem('token'); }
+                } catch (error) { console.error('Lỗi xác thực:', error); }
+            }
+        });
+    </script>
+
+    <!-- ==================== HEADER (Logo, Search, Cart) ==================== -->
+    <header class="bg-white shadow-sm relative">
+        <div class="container mx-auto px-4 py-4 md:py-6 flex flex-wrap items-center justify-between max-w-7xl">
+            
+            <!-- Logo -->
+            <div class="flex-shrink-0 w-full md:w-auto mb-4 md:mb-0 text-center md:text-left">
+                <a href="/" class="inline-block">
+                    <img src="/img/logo.png" alt="Logo Nhất Linh Nhi" class="h-12 md:h-28 w-auto object-contain">
+                </a>
+            </div>
+
+            <!-- Khung Tìm Kiếm -->
+            <div class="w-full md:flex-1 md:max-w-2xl md:mx-8 relative">
+                <form action="/search" method="GET" class="flex w-full border-2 border-primary rounded-lg overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+                    <input type="text" id="search-input" name="q" autocomplete="off" class="w-full px-4 py-2 md:py-3 outline-none focus:ring-0 text-gray-700">
+                    <button type="submit" class="bg-primary text-white px-12 py-2 md:py-1 hover:bg-blue-900 transition-colors font-medium">
+                        <i class="fa-solid fa-magnifying-glass md:mr-2"></i> 
+                    </button>
+                </form>
+                <div id="search-suggestions" class="absolute top-full left-0 w-full bg-white shadow-xl rounded-b-lg border border-gray-200 hidden z-50 overflow-hidden mt-1 max-h-96 overflow-y-auto">
+                </div>
+            </div>
+
+            <!-- Giỏ hàng & Tư vấn nhanh -->
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/cart" class="text-center cursor-pointer group block">
+                    <div class="relative inline-block">
+                        <i class="fa-solid fa-cart-shopping text-2xl text-primary group-hover:text-secondary transition-colors"></i>
+                        <span id="cart-counter" class="absolute -top-2 -right-3 bg-secondary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center transition-transform duration-200">0</span>
+                    </div>
+                    <div class="text-xs font-semibold mt-1 text-gray-600 group-hover:text-primary">Giỏ hàng</div>
+                </a>
+            </div>
+        </div>
+
+        <!-- ==================== NAVIGATION & MEGA MENU ==================== -->
+        <nav class="bg-primary border-t border-blue-800 hidden md:block">
+            <div class="container mx-auto px-4 max-w-7xl flex">
+                <div class="relative group bg-secondary w-64">
+                    <div class="flex items-center justify-between px-4 py-3 text-white font-bold cursor-pointer">
+                        <span><i class="fa-solid fa-bars mr-2"></i> DANH MỤC SẢN PHẨM</span>
+                    </div>
+                    <!-- Mega Menu Content -->
+                    <div class="mega-menu absolute top-full left-0 w-[800px] bg-white shadow-xl rounded-b-lg border border-gray-200 hidden z-50">
+                        <div class="flex p-6 w-full">
+                            <% if (typeof categoryTree !== 'undefined' && categoryTree.length > 0) { %>
+                                <% categoryTree.forEach((lvl1, index) => { %>
+                                    <% let paddingClass = index === 0 ? 'border-r pr-4' : (index === 1 ? 'border-r px-4' : 'pl-4'); %>
+                                    <div class="w-1/3 <%= paddingClass %>">
+                                        <h3 class="font-bold text-primary mb-4 border-b pb-2 uppercase"><i class="fa-solid <%= lvl1.icon || 'fa-box' %> text-secondary mr-2"></i><%= lvl1.name %></h3>
+                                        <ul class="space-y-4 text-sm text-gray-600">
+                                            <% if (lvl1.children && lvl1.children.length > 0) { %>
+                                                <% lvl1.children.forEach(lvl2 => { %>
+                                                    <li>
+                                                        <a href="/category?cat=<%= lvl2.slug %>" class="font-bold text-gray-800 hover:text-secondary block mb-1 transition-colors"><%= lvl2.name %></a>
+                                                        <% if (lvl2.subChildren && lvl2.subChildren.length > 0) { %>
+                                                            <ul class="pl-3 border-l-2 border-gray-100 space-y-1 text-gray-500 mt-1">
+                                                                <% lvl2.subChildren.forEach(lvl3 => { %>
+                                                                    <li><a href="/category?cat=<%= lvl3.slug %>" class="hover:text-primary hover:translate-x-1 transition-transform inline-block py-0.5"><%= lvl3.name %></a></li>
+                                                                <% }) %>
+                                                            </ul>
+                                                        <% } %>
+                                                    </li>
+                                                <% }) %>
+                                            <% } %>
+                                        </ul>
+                                    </div>
+                                <% }) %>
+                            <% } else { %>
+                                <div class="text-center text-gray-500 py-4 w-full">Chưa có dữ liệu danh mục. Vui lòng thêm trong Admin.</div>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Các link menu ngang với EJS active path logic -->
+                <ul class="flex space-x-8 items-center px-6 text-white font-medium text-sm">
+                    <li><a href="/" class="hover:text-yellow-300 transition-colors uppercase <%= typeof currentPath !== 'undefined' && currentPath === '/' ? 'text-yellow-300' : '' %>">Trang Chủ</a></li>
+                    <li><a href="/trang/gioi-thieu" class="hover:text-yellow-300 transition-colors uppercase <%= typeof currentPath !== 'undefined' && currentPath.includes('/trang/gioi-thieu') ? 'text-yellow-300' : '' %>">Giới thiệu</a></li>
+                    <li><a href="/category" class="hover:text-yellow-300 transition-colors uppercase <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/category') ? 'text-yellow-300' : '' %>">Sản Phẩm</a></li>
+                    <li><a href="/du-an" class="hover:text-yellow-300 transition-colors uppercase <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/du-an') ? 'text-yellow-300' : '' %>">Dự án công trình</a></li>
+                    <li><a href="/tin-tuc" class="hover:text-yellow-300 transition-colors uppercase <%= typeof currentPath !== 'undefined' && currentPath.startsWith('/tin-tuc') ? 'text-yellow-300' : '' %>">Tin tức & Kinh nghiệm</a></li>
+                    <li><a href="/lien-he" class="hover:text-yellow-300 transition-colors uppercase <%= typeof currentPath !== 'undefined' && currentPath === '/lien-he' ? 'text-yellow-300' : '' %>">Liên hệ</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>

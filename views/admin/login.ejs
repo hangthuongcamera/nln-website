@@ -1,0 +1,93 @@
+<%- include('partials/head', { title: 'Đăng nhập Admin - Nhất Linh Nhi' }) %>
+
+    <div class="flex h-screen items-center justify-center bg-gray-900 relative">
+        <div class="absolute inset-0 bg-cover bg-center opacity-30" style="background-image: url('https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=1920');"></div>
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative z-10 mx-4 border-t-4 border-primary">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-16 h-16 bg-blue-50 text-primary rounded-full mb-4 border border-blue-100 shadow-inner">
+                    <i class="fa-solid fa-shield-halved text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-800 uppercase tracking-wide">Đăng Nhập Admin</h1>
+                <p class="text-sm text-gray-500 mt-2 font-medium">Hệ thống quản trị Nhất Linh Nhi</p>
+            </div>
+            
+            <div id="login-error-msg" class="hidden mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm font-medium text-center"></div>
+            
+            <form id="admin-login-form">
+                <div class="mb-5">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Tài khoản (Email)</label>
+                    <div class="relative"><div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><i class="fa-regular fa-user text-gray-400"></i></div><input type="email" id="email" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm transition-colors bg-gray-50 focus:bg-white" placeholder="admin@nhatlinhnhi.com" required></div>
+                </div>
+                <div class="mb-6">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Mật khẩu</label>
+                    <div class="relative"><div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none"><i class="fa-solid fa-lock text-gray-400"></i></div><input type="password" id="password" class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-xl outline-none focus:border-primary focus:ring-1 focus:ring-primary text-sm transition-colors bg-gray-50 focus:bg-white" placeholder="••••••••" required></div>
+                </div>
+                <button type="submit" id="btn-login-submit" class="w-full bg-primary text-white font-bold py-3.5 rounded-xl hover:bg-blue-800 transition-all shadow-lg shadow-blue-200 flex items-center justify-center gap-2"><i class="fa-solid fa-right-to-bracket"></i> <span id="btn-text">ĐĂNG NHẬP HỆ THỐNG</span></button>
+            </form>
+            <div class="mt-8 text-center text-xs text-gray-400 border-t border-gray-100 pt-6">
+                <p><i class="fa-solid fa-circle-info mr-1 text-gray-300"></i> Chỉ dành cho Ban quản trị và Nhân viên được cấp quyền.</p>
+            </div>
+        </div>
+    </div>
+
+<%- include('partials/scripts') %>
+
+<script>
+    // Kiểm tra nếu admin đã đăng nhập (có token) thì chuyển thẳng vào trang quản trị
+    document.addEventListener('DOMContentLoaded', () => {
+        const token = localStorage.getItem('token');
+        if (token) {
+            window.location.href = '/admin'; // Chuyển đến trang dashboard admin
+        }
+    });
+
+    const loginForm = document.getElementById('admin-login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const btnSubmit = document.getElementById('btn-login-submit');
+            const btnText = document.getElementById('btn-text');
+            const originalText = btnText ? btnText.innerText : 'ĐĂNG NHẬP HỆ THỐNG';
+            
+            if (btnSubmit) btnSubmit.disabled = true;
+            if (btnText) btnText.innerText = 'ĐANG XỬ LÝ...';
+
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const errorMsg = document.getElementById('login-error-msg');
+
+            if (errorMsg) errorMsg.classList.add('hidden'); // Ẩn thông báo lỗi khi đang tải
+
+            try {
+                const response = await fetch('/api/v1/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+
+                if (response.ok && data.success) {
+                    const userRole = data.data.role;
+                    // Chỉ cho phép các Role quản trị được truy cập
+                    const allowedRoles = ['admin', 'super_admin', 'sales', 'content'];
+                    
+                    if (allowedRoles.includes(userRole)) {
+                        localStorage.setItem('token', data.token);
+                        window.location.href = '/admin'; 
+                    } else {
+                        if (errorMsg) { errorMsg.innerText = 'Tài khoản không có quyền truy cập trang Quản trị!'; errorMsg.classList.remove('hidden'); }
+                    }
+                } else {
+                    if (errorMsg) { errorMsg.innerText = data.message || 'Sai email hoặc mật khẩu!'; errorMsg.classList.remove('hidden'); }
+                }
+            } catch (error) {
+                console.error('Lỗi đăng nhập:', error);
+                if (errorMsg) { errorMsg.innerText = 'Không thể kết nối đến máy chủ!'; errorMsg.classList.remove('hidden'); }
+            } finally {
+                if (btnSubmit) btnSubmit.disabled = false;
+                if (btnText) btnText.innerText = originalText;
+            }
+        });
+    }
+</script>

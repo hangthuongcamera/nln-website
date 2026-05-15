@@ -1,0 +1,489 @@
+<%- include('../layouts/admin-header', { title: 'Nhật ký hoạt động' }) %>
+
+<div class="p-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-6">
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">Nhật ký hoạt động</h1>
+            <p class="text-gray-500 text-sm mt-1">Theo dõi các thao tác của nhân viên trên hệ thống</p>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="exportLogs()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                </svg>
+                Export CSV
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Tổng hoạt động</p>
+                    <p class="text-2xl font-bold text-gray-800" id="totalLogs">-</p>
+                </div>
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Hôm nay</p>
+                    <p class="text-2xl font-bold text-green-600" id="todayLogs">-</p>
+                </div>
+                <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Thành công</p>
+                    <p class="text-2xl font-bold text-emerald-600" id="successLogs">-</p>
+                </div>
+                <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Thất bại</p>
+                    <p class="text-2xl font-bold text-red-600" id="failedLogs">-</p>
+                </div>
+                <div class="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="bg-white rounded-xl shadow-sm p-4 border border-gray-100 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tìm kiếm</label>
+                <input type="text" id="searchInput" placeholder="Tên, mô tả..." 
+                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Hành động</label>
+                <select id="actionFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tất cả</option>
+                    <option value="CREATE">Tạo mới</option>
+                    <option value="UPDATE">Cập nhật</option>
+                    <option value="DELETE">Xóa</option>
+                    <option value="LOGIN">Đăng nhập</option>
+                    <option value="LOGOUT">Đăng xuất</option>
+                    <option value="IMPORT">Import</option>
+                    <option value="EXPORT">Export</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Tài nguyên</label>
+                <select id="resourceFilter" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tất cả</option>
+                    <option value="PRODUCT">Sản phẩm</option>
+                    <option value="ORDER">Đơn hàng</option>
+                    <option value="QUOTE">Báo giá</option>
+                    <option value="CUSTOMER">Khách hàng</option>
+                    <option value="USER">Người dùng</option>
+                    <option value="BLOG">Blog</option>
+                    <option value="SETTING">Cấu hình</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Từ ngày</label>
+                <input type="date" id="startDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Đến ngày</label>
+                <input type="date" id="endDate" class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500">
+            </div>
+        </div>
+        <div class="flex justify-end mt-4">
+            <button onclick="loadLogs()" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                Lọc
+            </button>
+        </div>
+    </div>
+
+    <!-- Logs Table -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Thời gian</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Người dùng</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Hành động</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tài nguyên</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mô tả</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Trạng thái</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">IP</th>
+                    </tr>
+                </thead>
+                <tbody id="logsTable" class="divide-y divide-gray-200">
+                    <tr>
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">Đang tải...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="px-4 py-3 border-t border-gray-200 flex justify-between items-center">
+            <div class="text-sm text-gray-500">
+                Hiển thị <span id="showingFrom">0</span> - <span id="showingTo">0</span> của <span id="totalItems">0</span>
+            </div>
+            <div class="flex gap-2" id="pagination"></div>
+        </div>
+    </div>
+</div>
+
+<!-- Log Detail Modal -->
+<div id="logDetailModal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center">
+    <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full mx-4 max-h-[80vh] overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+            <h3 class="text-lg font-semibold">Chi tiết nhật ký</h3>
+            <button onclick="closeLogDetail()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                </svg>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto max-h-[60vh]" id="logDetailContent"></div>
+    </div>
+</div>
+
+<script>
+let currentPage = 1;
+let totalPages = 1;
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadLogs();
+    loadStats();
+    
+    // Auto search on type
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', (e) => {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => loadLogs(), 500);
+    });
+    
+    // Filter change
+    ['actionFilter', 'resourceFilter', 'startDate', 'endDate'].forEach(id => {
+        document.getElementById(id).addEventListener('change', loadLogs);
+    });
+});
+
+async function loadStats() {
+    try {
+        const res = await fetch('/api/v1/activity-logs/stats', {
+            headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('totalLogs').textContent = data.data.total || 0;
+            
+            // Calculate today logs
+            const today = new Date().toISOString().split('T')[0];
+            const todayLog = data.data.dailyActivity?.find(d => d._id === today);
+            document.getElementById('todayLogs').textContent = todayLog?.count || 0;
+            
+            // Status stats
+            const statusStats = data.data.statusStats || [];
+            const successStat = statusStats.find(s => s._id === 'SUCCESS');
+            const failedStat = statusStats.find(s => s._id === 'FAILED');
+            document.getElementById('successLogs').textContent = successStat?.count || 0;
+            document.getElementById('failedLogs').textContent = failedStat?.count || 0;
+        }
+    } catch (error) {
+        console.error('Error loading stats:', error);
+    }
+}
+
+async function loadLogs(page = 1) {
+    currentPage = page;
+    
+    const params = new URLSearchParams({
+        page,
+        limit: 50,
+        search: document.getElementById('searchInput').value,
+        action: document.getElementById('actionFilter').value,
+        resource: document.getElementById('resourceFilter').value,
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value
+    });
+    
+    try {
+        const res = await fetch(`/api/v1/activity-logs?${params}`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            renderLogs(data.data);
+            renderPagination(data.pagination);
+        }
+    } catch (error) {
+        console.error('Error loading logs:', error);
+        document.getElementById('logsTable').innerHTML = 
+            '<tr><td colspan="7" class="px-4 py-8 text-center text-red-500">Lỗi tải dữ liệu</td></tr>';
+    }
+}
+
+function renderLogs(logs) {
+    const tbody = document.getElementById('logsTable');
+    
+    if (!logs.length) {
+        tbody.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-gray-500">Không có dữ liệu</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = logs.map(log => `
+        <tr class="hover:bg-gray-50 cursor-pointer" onclick="showLogDetail('${log._id}')">
+            <td class="px-4 py-3 text-sm">
+                <div class="font-medium">${formatDate(log.createdAt)}</div>
+                <div class="text-gray-500 text-xs">${formatTime(log.createdAt)}</div>
+            </td>
+            <td class="px-4 py-3">
+                <div class="font-medium">${log.userName}</div>
+                <div class="text-xs text-gray-500">${getRoleLabel(log.userRole)}</div>
+            </td>
+            <td class="px-4 py-3">
+                <span class="px-2 py-1 text-xs font-medium rounded ${getActionClass(log.action)}">
+                    ${getActionLabel(log.action)}
+                </span>
+            </td>
+            <td class="px-4 py-3 text-sm">${getResourceLabel(log.resource)}</td>
+            <td class="px-4 py-3 text-sm max-w-xs truncate" title="${log.description || ''}">${log.description || '-'}</td>
+            <td class="px-4 py-3">
+                <span class="px-2 py-1 text-xs font-medium rounded ${log.status === 'SUCCESS' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}">
+                    ${log.status === 'SUCCESS' ? 'Thành công' : 'Thất bại'}
+                </span>
+            </td>
+            <td class="px-4 py-3 text-xs text-gray-500">${log.ipAddress || '-'}</td>
+        </tr>
+    `).join('');
+}
+
+function renderPagination(pagination) {
+    const { currentPage: cp, totalPages: tp, totalItems, itemsPerPage } = pagination;
+    const from = (cp - 1) * itemsPerPage + 1;
+    const to = Math.min(cp * itemsPerPage, totalItems);
+    
+    document.getElementById('showingFrom').textContent = from;
+    document.getElementById('showingTo').textContent = to;
+    document.getElementById('totalItems').textContent = totalItems;
+    
+    let html = '';
+    
+    if (tp > 1) {
+        html += `<button onclick="loadLogs(${cp - 1})" class="px-3 py-1 rounded ${cp === 1 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300'}" ${cp === 1 ? 'disabled' : ''}>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>`;
+        
+        for (let i = 1; i <= tp; i++) {
+            if (i === 1 || i === tp || (i >= cp - 2 && i <= cp + 2)) {
+                html += `<button onclick="loadLogs(${i})" class="px-3 py-1 rounded ${i === cp ? 'bg-blue-600 text-white' : 'bg-gray-200 hover:bg-gray-300'}">${i}</button>`;
+            } else if (i === cp - 3 || i === cp + 3) {
+                html += '<span class="px-2">...</span>';
+            }
+        }
+        
+        html += `<button onclick="loadLogs(${cp + 1})" class="px-3 py-1 rounded ${cp === tp ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-gray-200 hover:bg-gray-300'}" ${cp === tp ? 'disabled' : ''}>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>`;
+    }
+    
+    document.getElementById('pagination').innerHTML = html;
+}
+
+async function showLogDetail(logId) {
+    try {
+        const res = await fetch(`/api/v1/activity-logs/${logId}`, {
+            headers: { 'Authorization': `Bearer ${getToken()}` }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            const log = data.data;
+            document.getElementById('logDetailContent').innerHTML = `
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-sm text-gray-500">Người dùng</label>
+                            <p class="font-medium">${log.userName}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Vai trò</label>
+                            <p class="font-medium">${getRoleLabel(log.userRole)}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Hành động</label>
+                            <p class="font-medium">${getActionLabel(log.action)}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Tài nguyên</label>
+                            <p class="font-medium">${getResourceLabel(log.resource)}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Thời gian</label>
+                            <p class="font-medium">${formatDateTime(log.createdAt)}</p>
+                        </div>
+                        <div>
+                            <label class="text-sm text-gray-500">Trạng thái</label>
+                            <p class="font-medium ${log.status === 'SUCCESS' ? 'text-green-600' : 'text-red-600'}">${log.status === 'SUCCESS' ? 'Thành công' : 'Thất bại'}</p>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-500">Mô tả</label>
+                        <p class="mt-1 p-3 bg-gray-50 rounded-lg">${log.description || '-'}</p>
+                    </div>
+                    ${log.changes ? `
+                    <div>
+                        <label class="text-sm text-gray-500">Thay đổi</label>
+                        <div class="grid grid-cols-2 gap-4 mt-1">
+                            <div class="p-3 bg-red-50 rounded-lg">
+                                <p class="text-xs text-red-600 mb-1">Trước</p>
+                                <pre class="text-xs overflow-x-auto">${JSON.stringify(log.changes.before, null, 2)}</pre>
+                            </div>
+                            <div class="p-3 bg-green-50 rounded-lg">
+                                <p class="text-xs text-green-600 mb-1">Sau</p>
+                                <pre class="text-xs overflow-x-auto">${JSON.stringify(log.changes.after, null, 2)}</pre>
+                            </div>
+                        </div>
+                    </div>
+                    ` : ''}
+                    <div>
+                        <label class="text-sm text-gray-500">IP Address</label>
+                        <p class="font-mono text-sm">${log.ipAddress || '-'}</p>
+                    </div>
+                    <div>
+                        <label class="text-sm text-gray-500">User Agent</label>
+                        <p class="text-xs text-gray-600 break-all">${log.userAgent || '-'}</p>
+                    </div>
+                </div>
+            `;
+            document.getElementById('logDetailModal').classList.remove('hidden');
+        }
+    } catch (error) {
+        console.error('Error loading log detail:', error);
+    }
+}
+
+function closeLogDetail() {
+    document.getElementById('logDetailModal').classList.add('hidden');
+}
+
+function exportLogs() {
+    const params = new URLSearchParams({
+        search: document.getElementById('searchInput').value,
+        action: document.getElementById('actionFilter').value,
+        resource: document.getElementById('resourceFilter').value,
+        startDate: document.getElementById('startDate').value,
+        endDate: document.getElementById('endDate').value
+    });
+    window.open(`/api/v1/activity-logs/export?${params}`, '_blank');
+}
+
+// Helper functions
+function getActionLabel(action) {
+    const labels = {
+        'CREATE': 'Tạo mới',
+        'UPDATE': 'Cập nhật',
+        'DELETE': 'Xóa',
+        'LOGIN': 'Đăng nhập',
+        'LOGOUT': 'Đăng xuất',
+        'BULK_UPDATE': 'Cập nhật hàng loạt',
+        'IMPORT': 'Import',
+        'EXPORT': 'Export',
+        'VIEW': 'Xem',
+        'LOGIN_FAILED': 'Đăng nhập thất bại'
+    };
+    return labels[action] || action;
+}
+
+function getActionClass(action) {
+    const classes = {
+        'CREATE': 'bg-blue-100 text-blue-700',
+        'UPDATE': 'bg-yellow-100 text-yellow-700',
+        'DELETE': 'bg-red-100 text-red-700',
+        'LOGIN': 'bg-green-100 text-green-700',
+        'LOGOUT': 'bg-gray-100 text-gray-700',
+        'BULK_UPDATE': 'bg-purple-100 text-purple-700',
+        'IMPORT': 'bg-cyan-100 text-cyan-700',
+        'EXPORT': 'bg-teal-100 text-teal-700',
+        'VIEW': 'bg-gray-100 text-gray-600',
+        'LOGIN_FAILED': 'bg-red-100 text-red-700'
+    };
+    return classes[action] || 'bg-gray-100 text-gray-700';
+}
+
+function getResourceLabel(resource) {
+    const labels = {
+        'PRODUCT': 'Sản phẩm',
+        'CATEGORY': 'Danh mục',
+        'ORDER': 'Đơn hàng',
+        'QUOTE': 'Báo giá',
+        'CUSTOMER': 'Khách hàng',
+        'BLOG': 'Blog',
+        'PROJECT': 'Dự án',
+        'BRAND': 'Thương hiệu',
+        'PAGE': 'Trang tĩnh',
+        'SETTING': 'Cấu hình',
+        'INVENTORY': 'Tồn kho',
+        'PRICE': 'Giá',
+        'USER': 'Người dùng',
+        'SYSTEM': 'Hệ thống'
+    };
+    return labels[resource] || resource;
+}
+
+function getRoleLabel(role) {
+    const labels = {
+        'super_admin': 'Super Admin',
+        'admin': 'Admin',
+        'sales': 'Nhân viên bán hàng',
+        'content': 'Nhân viên nội dung',
+        'warehouse_staff': 'Nhân viên kho',
+        'agent': 'Đại lý',
+        'customer': 'Khách hàng'
+    };
+    return labels[role] || role;
+}
+
+function formatDate(date) {
+    return new Date(date).toLocaleDateString('vi-VN');
+}
+
+function formatTime(date) {
+    return new Date(date).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDateTime(date) {
+    return new Date(date).toLocaleString('vi-VN');
+}
+
+function getToken() {
+    return localStorage.getItem('token') || '';
+}
+</script>
+
+<%- include('../layouts/admin-footer') %>

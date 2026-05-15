@@ -1,0 +1,190 @@
+<%- include('partials/head', { title: (typeof currentCategory !== 'undefined' && currentCategory ? currentCategory.name : 'Danh mục Sản phẩm') + ' - Nhất Linh Nhi' }) %>
+<%- include('partials/header') %>
+
+<!-- ==================== MAIN CONTENT: DANH SÁCH SẢN PHẨM ==================== -->
+<div id="view-category" class="container mx-auto px-4 max-w-7xl mt-6 mb-12">
+    <!-- Breadcrumb -->
+    <nav class="text-sm text-gray-500 mb-6">
+        <a href="/" class="hover:text-primary transition-colors"><i class="fa-solid fa-house mr-1"></i> Trang Chủ</a>
+        <% if (typeof breadcrumbs !== 'undefined' && breadcrumbs.length > 0) { %>
+            <% breadcrumbs.forEach((bc, index) => { %>
+                <i class="fa-solid fa-angle-right mx-2 text-xs"></i>
+                <% if (index === breadcrumbs.length - 1) { %>
+                    <span class="text-gray-800 font-medium"><%= bc.name %></span>
+                <% } else { %>
+                    <a href="/category?cat=<%= bc.slug %>" class="hover:text-primary transition-colors"><%= bc.name %></a>
+                <% } %>
+            <% }) %>
+        <% } else { %>
+            <i class="fa-solid fa-angle-right mx-2 text-xs"></i>
+            <span class="text-gray-800 font-medium">Tất cả sản phẩm</span>
+        <% } %>
+    </nav>
+
+    <div class="flex flex-col md:flex-row gap-6">
+        <!-- SIDEBAR: BỘ LỌC & DANH MỤC -->
+        <aside class="w-full md:w-1/4 flex flex-col gap-6">
+            
+            <!-- Danh mục 3 cấp (Dynamic Tree) -->
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <h3 class="font-bold text-primary mb-3 border-b pb-2 uppercase text-sm"><i class="fa-solid fa-list-ul mr-2"></i>Danh Mục Sản Phẩm</h3>
+                <ul class="text-sm flex flex-col gap-2">
+                    <% if (typeof categoryTree !== 'undefined' && categoryTree.length > 0) { %>
+                        <% categoryTree.forEach((lvl1, index) => { %>
+                            <% const isLvl1Open = (typeof breadcrumbs !== 'undefined' && breadcrumbs.length > 0 && breadcrumbs[0].slug === lvl1.slug) || (!currentCategory && index === 0); %>
+                            <li class="<%= index > 0 ? 'pt-2' : '' %>">
+                                <div class="flex justify-between items-center cursor-pointer hover:text-primary font-bold text-gray-700" onclick="toggleAccordion('cat-<%= lvl1._id %>', this)">
+                                    <span onclick="window.location.href='/category?cat=<%= lvl1.slug %>'; event.stopPropagation();"><%= lvl1.name %></span>
+                                    <i class="fa-solid fa-chevron-down transition-transform <%= isLvl1Open ? 'rotate-180' : '' %> text-xs"></i>
+                                </div>
+                                <ul id="cat-<%= lvl1._id %>" class="ml-4 mt-2 border-l pl-3 <%= isLvl1Open ? 'flex' : 'hidden' %> flex-col gap-3">
+                                    <% if (lvl1.children && lvl1.children.length > 0) { %>
+                                        <% lvl1.children.forEach(lvl2 => { %>
+                                            <% const isLvl2Open = (typeof breadcrumbs !== 'undefined' && breadcrumbs.length > 1 && breadcrumbs[1].slug === lvl2.slug); %>
+                                            <li>
+                                                <div class="flex justify-between items-center cursor-pointer hover:text-secondary font-semibold text-gray-800" onclick="toggleAccordion('cat-<%= lvl2._id %>', this)">
+                                                    <span onclick="window.location.href='/category?cat=<%= lvl2.slug %>'; event.stopPropagation();" class="hover:text-primary transition-colors"><%= lvl2.name %></span>
+                                                    <% if (lvl2.subChildren && lvl2.subChildren.length > 0) { %>
+                                                        <i class="fa-solid fa-chevron-down transition-transform <%= isLvl2Open ? 'rotate-180' : '' %> text-xs"></i>
+                                                    <% } %>
+                                                </div>
+                                                <% if (lvl2.subChildren && lvl2.subChildren.length > 0) { %>
+                                                    <ul id="cat-<%= lvl2._id %>" class="ml-4 mt-2 border-l pl-3 <%= isLvl2Open ? 'flex' : 'hidden' %> flex-col gap-2 text-gray-600">
+                                                        <% lvl2.subChildren.forEach(lvl3 => { %>
+                                                            <% const isLvl3Active = (currentCategory && currentCategory.slug === lvl3.slug); %>
+                                                            <li><a href="/category?cat=<%= lvl3.slug %>" class="hover:text-primary transition-colors <%= isLvl3Active ? 'text-primary font-medium flex items-center before:content-[\'\'] before:w-1.5 before:h-1.5 before:bg-primary before:rounded-full before:mr-2' : '' %>"><%= lvl3.name %></a></li>
+                                                        <% }) %>
+                                                    </ul>
+                                                <% } %>
+                                            </li>
+                                        <% }) %>
+                                    <% } %>
+                                </ul>
+                            </li>
+                        <% }) %>
+                    <% } %>
+                </ul>
+            </div>
+
+            <!-- Bộ lọc nâng cao -->
+            <div class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                <h3 class="font-bold text-primary mb-3 border-b pb-2 uppercase text-sm"><i class="fa-solid fa-filter mr-2"></i>Lọc Tìm Kiếm</h3>
+                <form action="/category" method="GET" id="filter-form">
+                    <% if (query.cat) { %><input type="hidden" name="cat" value="<%= query.cat %>"><% } %>
+                    <% if (query.sort) { %><input type="hidden" name="sort" value="<%= query.sort %>"><% } %>
+                    
+                    <div class="mb-5">
+                        <h4 class="font-semibold text-gray-700 mb-2 text-sm">Khoảng Giá</h4>
+                        <div class="flex items-center gap-2 text-sm">
+                            <input type="number" name="minPrice" value="<%= query.minPrice || '' %>" placeholder="Từ..." class="w-full border rounded px-2 py-1.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                            <span class="text-gray-400">-</span>
+                            <input type="number" name="maxPrice" value="<%= query.maxPrice || '' %>" placeholder="Đến..." class="w-full border rounded px-2 py-1.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary">
+                        </div>
+                        <button type="submit" class="w-full bg-blue-50 text-primary border border-blue-100 hover:bg-primary hover:text-white text-sm font-medium py-1.5 rounded mt-3 transition-colors">Áp dụng giá</button>
+                    </div>
+                </form>
+            </div>
+        </aside>
+
+        <!-- MAIN: DANH SÁCH SẢN PHẨM -->
+        <div class="w-full md:w-3/4">
+            <!-- Header / Toolbar -->
+            <div class="bg-white p-3 rounded-lg border border-gray-200 flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 shadow-sm">
+                <h1 class="text-xl font-bold text-gray-800">
+                    <span id="category-page-title"><%= typeof currentCategory !== 'undefined' && currentCategory ? currentCategory.name : 'Tất cả sản phẩm' %></span> 
+                    <span id="category-page-count" class="text-sm font-normal text-gray-500">(<%= pagination.totalProducts %> sản phẩm)</span>
+                </h1>
+                <div class="flex items-center gap-3 text-sm">
+                    <label class="text-gray-600 hidden sm:block">Sắp xếp theo:</label>
+                    <select onchange="changeSort(this.value)" class="border border-gray-300 rounded px-3 py-1.5 outline-none focus:border-primary focus:ring-1 focus:ring-primary bg-white cursor-pointer font-medium text-gray-700">
+                        <option value="newest" <%= query.sort === 'newest' ? 'selected' : '' %>>Hàng mới nhất</option>
+                        <option value="popular" <%= query.sort === 'popular' ? 'selected' : '' %>>Mức độ phổ biến</option>
+                        <option value="price_asc" <%= query.sort === 'price_asc' ? 'selected' : '' %>>Giá: Thấp đến Cao</option>
+                        <option value="price_desc" <%= query.sort === 'price_desc' ? 'selected' : '' %>>Giá: Cao xuống Thấp</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Grid Lưới sản phẩm -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 md:gap-4 mb-10" id="product-grid-container">
+                <% if (typeof products !== 'undefined' && products.length > 0) { %>
+                    <% products.forEach(product => { %>
+                        <%- include('partials/_product-card', { product: product }) %>
+                    <% }) %>
+                <% } else { %>
+                    <div class="col-span-full py-12 text-center text-gray-500">
+                        <i class="fa-solid fa-box-open text-4xl mb-3 text-gray-300"></i>
+                        <p>Không tìm thấy sản phẩm nào phù hợp với bộ lọc hiện tại.</p>
+                        <a href="/category<%= query.cat ? '?cat=' + query.cat : '' %>" class="inline-block mt-4 text-primary font-semibold hover:underline">Xóa bộ lọc giá</a>
+                    </div>
+                <% } %>
+            </div>
+
+            <!-- Phân trang -->
+            <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+                <div class="flex justify-center items-center gap-2 mt-8">
+                    <% 
+                        let currentParams = {};
+                        if(typeof query !== 'undefined') currentParams = query;
+                        
+                        const getPageUrl = (p) => {
+                            const params = new URLSearchParams(currentParams);
+                            params.set('page', p);
+                            return '/category?' + params.toString();
+                        };
+                    %>
+                    
+                    <!-- Nút Previous -->
+                    <% if (pagination.currentPage > 1) { %>
+                        <a href="<%= getPageUrl(pagination.currentPage - 1) %>" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition"><i class="fa-solid fa-angle-left"></i></a>
+                    <% } else { %>
+                        <span class="w-10 h-10 flex items-center justify-center rounded border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"><i class="fa-solid fa-angle-left"></i></span>
+                    <% } %>
+
+                    <!-- Các trang số -->
+                    <% for(let i = 1; i <= pagination.totalPages; i++) { %>
+                        <% if (i === 1 || i === pagination.totalPages || (i >= pagination.currentPage - 1 && i <= pagination.currentPage + 1)) { %>
+                            <a href="<%= getPageUrl(i) %>" class="w-10 h-10 flex items-center justify-center rounded border <%= pagination.currentPage === i ? 'border-primary bg-primary text-white font-bold' : 'border-gray-300 bg-white text-gray-700 hover:bg-primary hover:text-white hover:border-primary transition' %>">
+                                <%= i %>
+                            </a>
+                        <% } else if (i === pagination.currentPage - 2 || i === pagination.currentPage + 2) { %>
+                            <span class="w-10 h-10 flex items-center justify-center text-gray-400">...</span>
+                        <% } %>
+                    <% } %>
+
+                    <!-- Nút Next -->
+                    <% if (pagination.currentPage < pagination.totalPages) { %>
+                        <a href="<%= getPageUrl(pagination.currentPage + 1) %>" class="w-10 h-10 flex items-center justify-center rounded border border-gray-300 bg-white text-gray-600 hover:bg-primary hover:text-white hover:border-primary transition"><i class="fa-solid fa-angle-right"></i></a>
+                    <% } else { %>
+                        <span class="w-10 h-10 flex items-center justify-center rounded border border-gray-200 bg-gray-50 text-gray-400 cursor-not-allowed"><i class="fa-solid fa-angle-right"></i></span>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</div>
+
+<script>
+    function changeSort(sortValue) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('sort', sortValue);
+        urlParams.set('page', 1); // Trở về trang 1 khi đổi sắp xếp
+        window.location.search = urlParams.toString();
+    }
+
+    function toggleAccordion(id, el) {
+        const ul = document.getElementById(id);
+        const icon = el.querySelector('.fa-chevron-down');
+        if(ul.classList.contains('hidden')) {
+            ul.classList.remove('hidden');
+            ul.classList.add('flex');
+            if(icon) icon.classList.add('rotate-180');
+        } else {
+            ul.classList.add('hidden');
+            ul.classList.remove('flex');
+            if(icon) icon.classList.remove('rotate-180');
+        }
+    }
+</script>
+
+<%- include('partials/footer') %>

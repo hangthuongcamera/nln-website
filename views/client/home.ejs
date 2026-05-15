@@ -1,0 +1,357 @@
+<%- include('partials/head', { title: 'Nhất Linh Nhi - Thiết Bị Điện, Nước & Kim Khí Tổng Hợp' }) %>
+<%- include('partials/header') %>
+
+<!-- ==================== MAIN CONTENT: TRANG CHỦ ==================== -->
+    <div id="view-home">
+    <!-- BANNER -->
+        <section class="container mx-auto px-4 mt-4 max-w-7xl mb-8">
+            <div class="flex flex-col md:flex-row gap-4 h-auto md:h-80">
+                <!-- Main Carousel -->
+                <div class="w-full md:w-2/3 bg-gray-200 rounded-lg overflow-hidden relative flex group">
+                    <!-- Slides container -->
+                    <div id="carousel-slides" class="flex transition-transform duration-700 ease-in-out h-full w-full">
+                        <!-- Slide 1 -->
+                        <div class="min-w-full h-full relative cursor-pointer overflow-hidden group/slide">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-transparent flex items-center z-10">
+                                <div class="p-8 text-white w-2/3">
+                                    <h1 class="text-3xl font-bold mb-2">Cung cấp Vật tư Công trình Giá Sỉ</h1>
+                                    <p class="mb-4">Hơn 15.000+ mã hàng điện, nước, kim khí chính hãng.</p>
+                                    <button onclick="switchView('category')" class="bg-secondary px-6 py-2 rounded-full font-bold hover:bg-orange-600 transition shadow-lg">Mua Hàng Ngay</button>
+                                </div>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1581092921461-eab62e97a780?auto=format&fit=crop&q=80&w=800" alt="Banner 1" class="w-full h-full object-cover group-hover/slide:scale-105 transition duration-700">
+                        </div>
+                        <!-- Slide 2 -->
+                        <div class="min-w-full h-full relative cursor-pointer overflow-hidden group/slide">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-transparent flex items-center z-10">
+                                <div class="p-8 text-white w-2/3">
+                                    <h2 class="text-3xl font-bold mb-2">Thiết Bị Điện Công Nghiệp & Dân Dụng</h2>
+                                    <p class="mb-4">Đa dạng sản phẩm - An toàn tuyệt đối - Chiết khấu cao.</p>
+                                    <button onclick="switchView('category')" class="bg-secondary px-6 py-2 rounded-full font-bold hover:bg-orange-600 transition shadow-lg">Xem Báo Giá</button>
+                                </div>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&q=80&w=800" alt="Banner 2" class="w-full h-full object-cover group-hover/slide:scale-105 transition duration-700">
+                        </div>
+                        <!-- Slide 3 -->
+                        <div class="min-w-full h-full relative cursor-pointer overflow-hidden group/slide">
+                            <div class="absolute inset-0 bg-gradient-to-r from-blue-900/90 to-transparent flex items-center z-10">
+                                <div class="p-8 text-white w-2/3">
+                                    <h2 class="text-3xl font-bold mb-2">Dụng Cụ Cầm Tay & Kim Khí Chính Hãng</h2>
+                                    <p class="mb-4">Đại lý phân phối Makita, Bosch, Tolsen... với giá siêu tốt.</p>
+                                    <button onclick="switchView('category')" class="bg-secondary px-6 py-2 rounded-full font-bold hover:bg-orange-600 transition shadow-lg">Khám Phá Ngay</button>
+                                </div>
+                            </div>
+                            <img src="https://images.unsplash.com/photo-1530124566582-a618bc2615dc?auto=format&fit=crop&q=80&w=800" alt="Banner 3" class="w-full h-full object-cover group-hover/slide:scale-105 transition duration-700">
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Buttons -->
+                    <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 bg-white/50 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow"><i class="fa-solid fa-chevron-right"></i></button>
+                    
+                    <!-- Indicators -->
+                    <div class="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-20">
+                        <button onclick="goToSlide(0)" class="w-3 h-3 rounded-full bg-white opacity-100 indicator-btn transition-opacity"></button>
+                        <button onclick="goToSlide(1)" class="w-3 h-3 rounded-full bg-white opacity-50 indicator-btn transition-opacity"></button>
+                        <button onclick="goToSlide(2)" class="w-3 h-3 rounded-full bg-white opacity-50 indicator-btn transition-opacity"></button>
+                    </div>
+                </div>
+                <div class="w-full md:w-1/3 flex flex-col gap-4">
+                    <%
+                    const banner1 = (typeof setting !== 'undefined' && setting && setting.secondaryBanners && setting.secondaryBanners[0]) ? setting.secondaryBanners[0] : { imageUrl: 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400', link: '#', title: 'Thiết Bị Điện' };
+                    const banner2 = (typeof setting !== 'undefined' && setting && setting.secondaryBanners && setting.secondaryBanners[1]) ? setting.secondaryBanners[1] : { imageUrl: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400', link: '#', title: 'Dụng Cụ Kim Khí' };
+                    %>
+                    <a href="<%= banner1.link || '#' %>" class="h-1/2 rounded-lg overflow-hidden relative group cursor-pointer block">
+                        <div class="absolute inset-0 bg-black/30 z-10 group-hover:bg-transparent transition duration-300"></div>
+                        <img src="<%= banner1.imageUrl %>" alt="<%= banner1.title %>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <div class="absolute bottom-4 left-4 z-20 text-white font-bold text-lg bg-primary/80 px-3 py-1 rounded"><%= banner1.title %></div>
+                    </a>
+                    <a href="<%= banner2.link || '#' %>" class="h-1/2 rounded-lg overflow-hidden relative group cursor-pointer block">
+                        <div class="absolute inset-0 bg-black/30 z-10 group-hover:bg-transparent transition duration-300"></div>
+                        <img src="<%= banner2.imageUrl %>" alt="<%= banner2.title %>" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                        <div class="absolute bottom-4 left-4 z-20 text-white font-bold text-lg bg-secondary/80 px-3 py-1 rounded"><%= banner2.title %></div>
+                    </a>
+                </div>
+            </div>
+        </section>
+    <!-- DANH MỤC NỔI BẬT (Cards) -->
+    <section class="container mx-auto px-4 max-w-7xl mb-12">
+        <h2 class="text-2xl font-bold text-primary mb-6 border-l-4 border-secondary pl-3">Danh Mục Nổi Bật</h2>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+            <!-- Dữ liệu Danh Mục Động từ Database -->
+            <% if (typeof categories !== 'undefined' && categories.length > 0) { %>
+                <% categories.slice(0, 10).forEach(cat => { %>
+                    <div onclick="window.location.href='/category?cat=<%= cat.slug %>'" class="bg-white p-4 rounded-xl shadow-sm hover:shadow-md border border-gray-100 flex flex-col items-center justify-center cursor-pointer transition-transform hover:-translate-y-1">
+                        <div class="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-primary text-2xl mb-3">
+                            <i class="fa-solid <%= cat.icon || 'fa-box' %>"></i>
+                        </div>
+                        <h3 class="font-semibold text-center text-sm"><%= cat.name %></h3>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <div class="col-span-full text-center text-gray-500 py-4">Chưa có danh mục nào được hiển thị.</div>
+            <% } %>
+        </div>
+    </section>
+    <!-- FLASH SALE / HOT DEALS -->
+    <% if (!setting || !setting.uiFlags || setting.uiFlags.showFlashSale !== false) { %>
+        <section class="container mx-auto px-4 max-w-7xl mb-12">
+            <div class="bg-white rounded-xl shadow-sm border border-red-100 overflow-hidden">
+                <div class="bg-gradient-to-r from-red-600 to-orange-500 p-4 flex justify-between items-center text-white">
+                    <h2 class="text-2xl font-bold italic"><i class="fa-solid fa-bolt mr-2 text-yellow-300"></i>GIÁ SỐC HÔM NAY</h2>
+                    <div class="flex items-center gap-2 font-mono text-lg bg-black/20 px-3 py-1 rounded">
+                        <span id="fs-hours">00</span>:<span id="fs-mins">00</span>:<span id="fs-secs">00</span>
+                    </div>
+                </div>
+                <div class="p-6 relative group/flashsale">
+                    <div id="flash-sale-container" class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 scroll-smooth">
+                        <!-- Dữ liệu Động: Vòng lặp Sản Phẩm Flash Sale -->
+                        <% if (typeof flashSales !== 'undefined' && flashSales.length > 0) { %>
+                            <% flashSales.forEach(product => { %>
+                                <% 
+                                let discountPercent = 0;
+                                let displayOldPrice = null;
+                                if (product.oldPrice && product.oldPrice > product.retailPrice) {
+                                    discountPercent = Math.round((1 - product.retailPrice/product.oldPrice)*100);
+                                    displayOldPrice = product.oldPrice;
+                                } else {
+                                    discountPercent = Math.floor(Math.random() * 20 + 10);
+                                    displayOldPrice = product.retailPrice ? Math.round(product.retailPrice / (1 - discountPercent/100) / 1000) * 1000 : 0;
+                                }
+                                %>
+                                <div class="min-w-[200px] md:min-w-[250px] bg-white border rounded-lg p-3 relative group flex flex-col" style="height: 100%;">
+                                    <span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-10">-<%= discountPercent %>%</span>
+                                    <a href="/product/<%= product.slug %>" class="block w-full overflow-hidden rounded-md mb-3 relative" style="aspect-ratio: 1 / 1;">
+                                        <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/img/placeholder.png' %>" alt="<%= product.name %>" class="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    </a>
+                                    <a href="/product/<%= product.slug %>" class="block">
+                                        <h3 class="text-sm font-semibold line-clamp-2 mb-2 group-hover:text-primary transition-colors h-10"><%= product.name %></h3>
+                                    </a>
+                                    <div class="text-lg font-bold text-red-600 mb-1"><%= product.retailPrice ? product.retailPrice.toLocaleString('vi-VN') + 'đ' : 'Liên hệ' %></div>
+                                    <div class="text-xs text-gray-400 line-through mb-3"><%- displayOldPrice ? displayOldPrice.toLocaleString('vi-VN') + 'đ' : '&nbsp;' %></div>
+                                    <button type="button" 
+                                        data-id="<%= product.slug %>" 
+                                        data-name="<%= product.name ? product.name.replace(/"/g, '&quot;') : 'Sản phẩm' %>" 
+                                        data-sku="<%= product.sku || 'Đang cập nhật' %>" 
+                                        data-price="<%= product.retailPrice || 0 %>" 
+                                        data-image="<%= product.images && product.images.length > 0 ? product.images[0] : '/img/placeholder.png' %>"
+                                        onclick="addCurrentProductToCart(this)" 
+                                        class="w-full bg-red-50 text-red-600 border border-red-200 hover:bg-red-500 hover:text-white py-1.5 rounded text-sm font-bold transition" style="margin-top: auto;">THÊM VÀO GIỎ</button>
+                                </div>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="text-gray-500 py-4 text-center w-full">Đang cập nhật sản phẩm Flash Sale...</div>
+                        <% } %>
+                    </div>
+                    <!-- Navigation Buttons for Flash Sale -->
+                    <button id="flash-sale-prev-btn" onclick="scrollFlashSale(-1)" class="hidden absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/flashsale:opacity-100 transition-all z-20 shadow-lg border"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button id="flash-sale-next-btn" onclick="scrollFlashSale(1)" class="hidden absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/flashsale:opacity-100 transition-all z-20 shadow-lg border"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </section>
+    <% } %>
+    
+    <!-- ==================== MAIN CONTENT & PRODUCT GRID ==================== -->
+    <main class="container mx-auto px-4 max-w-7xl mb-12">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- PRODUCT GRID AREA -->
+            <div class="w-full md:w-4/4">
+                <!-- Tiêu đề & Sort -->
+                <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm border border-gray-100 mb-4">
+                    <h2 class="text-xl font-bold text-primary uppercase border-l-4 border-secondary pl-2">Sản Phẩm Nổi Bật</h2>
+                </div>
+
+                <!-- GRID LIST -->
+                <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4">
+                    <% if (typeof bestSellers !== 'undefined' && bestSellers.slice(0,5).length > 0) { %>
+                        <% bestSellers.slice(0,5).forEach(product => { %>
+                            <%- include('partials/_product-card', { product: product }) %>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="col-span-full text-center text-gray-500 py-4">Chưa có sản phẩm nổi bật.</div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+    <!-- ==================== MAIN CONTENT & PRODUCT GRID ==================== -->
+    <main class="container mx-auto px-4 max-w-7xl mb-12">
+        <div class="flex flex-col md:flex-row gap-6">
+            <!-- PRODUCT GRID AREA -->
+            <div class="w-full md:w-4/4">
+                <!-- Tiêu đề & Sort -->
+                <div class="flex justify-between items-center bg-white p-3 rounded-lg shadow-sm border border-gray-100 mb-4">
+                    <h2 class="text-xl font-bold text-primary uppercase border-l-4 border-secondary pl-2">Sản Phẩm Bán Chạy</h2>
+                </div>
+
+                <!-- GRID LIST -->
+                <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4">
+                    
+                    <!-- Dữ liệu Động: Vòng lặp Sản phẩm Bán chạy -->
+                    <% if (typeof bestSellers !== 'undefined' && bestSellers.length > 0) { %>
+                        <% bestSellers.forEach((product) => { %>
+                            <%- include('partials/_product-card', { product: product }) %>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="col-span-full text-center text-gray-500 py-4">Chưa có sản phẩm bán chạy.</div>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- ==================== SẢN PHẨM MỚI (SLIDER) ==================== -->
+    <section class="container mx-auto px-4 max-w-7xl mb-12">
+        <div class="flex justify-between items-center mb-6 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+            <h2 class="text-xl font-bold text-primary uppercase border-l-4 border-secondary pl-2">Sản Phẩm Mới Nhất</h2>
+        </div>
+        
+        <div class="relative overflow-hidden group/newproducts">
+            <div id="new-products-container" class="flex gap-3 md:gap-4 overflow-x-auto hide-scrollbar pb-4 scroll-smooth snap-x snap-mandatory">
+                <!-- Dữ liệu Động: Vòng lặp Sản phẩm Mới Nhất -->
+                <% if (typeof newProducts !== 'undefined' && newProducts.length > 0) { %>
+                    <% newProducts.forEach((product) => { %>
+                        <div class="flex-none w-[calc(50%-0.375rem)] md:w-[calc(33.333%-0.667rem)] lg:w-[calc(20%-0.8rem)] snap-start"><%- include('partials/_product-card', { product: product }) %></div>
+                    <% }) %>
+                <% } else { %>
+                    <div class="w-full text-center text-gray-500 py-8">Chưa có sản phẩm mới.</div>
+                <% } %>
+            </div>
+
+            <!-- Navigation Buttons for New Products -->
+            <button onclick="scrollNewProducts(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/newproducts:opacity-100 transition-all z-20 shadow-lg border"><i class="fa-solid fa-chevron-left"></i></button>
+            <button onclick="scrollNewProducts(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/newproducts:opacity-100 transition-all z-20 shadow-lg border"><i class="fa-solid fa-chevron-right"></i></button>
+        </div>
+    </section>
+
+    <!-- ==================== 9 COMPONENT DANH MỤC CẤP 2 (PRODUCT GRIDS) ==================== -->
+    
+    <% if (!setting || !setting.uiFlags || setting.uiFlags.showCategoriesCard !== false) { %>
+        <% if (typeof productGridsData !== 'undefined' && productGridsData.length > 0) { %>
+            <% productGridsData.forEach(grid => { %>
+                <section class="container mx-auto px-4 max-w-7xl mb-12">
+                    <div class="flex justify-between items-center mb-4 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                        <h2 class="text-xl font-bold text-primary uppercase border-l-4 border-secondary pl-2"><%= grid.category.name %></h2>
+                        <a href="/category/<%= grid.category.slug %>" class="text-sm font-medium text-secondary hover:text-orange-600 transition whitespace-nowrap">Xem tất cả <i class="fa-solid fa-angle-right ml-1"></i></a>
+                    </div>
+                    <div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 md:gap-4">
+                        <% if (grid.products && grid.products.length > 0) { %>
+                            <% grid.products.forEach(product => { %>
+                                <%- include('partials/_product-card', { product: product }) %>
+                            <% }) %>
+                        <% } else { %>
+                            <div class="col-span-full text-center text-gray-500 py-4">Chưa có sản phẩm nào trong danh mục này.</div>
+                        <% } %>
+                    </div>
+                </section>
+            <% }) %>
+        <% } %>
+    <% } %>
+
+    <!-- ==================== THƯƠNG HIỆU PHÂN PHỐI ==================== -->
+    <% if (!setting || !setting.uiFlags || setting.uiFlags.showBrands !== false) { %>
+        <section class="container mx-auto px-4 max-w-7xl mb-12">
+            <div class="flex justify-between items-center mb-6 bg-white p-3 rounded-lg shadow-sm border border-gray-100">
+                <h2 class="text-xl font-bold text-primary uppercase border-l-4 border-secondary pl-2">Thương Hiệu Phân Phối</h2>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <div class="flex items-center justify-between gap-6 overflow-x-auto hide-scrollbar grayscale hover:grayscale-0 transition-all duration-500">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/e/e3/Panasonic_logo_%28Blue%29.svg" alt="Panasonic" class="h-8 md:h-10 object-contain hover:scale-110 transition opacity-70 hover:opacity-100 cursor-pointer min-w-[100px] md:min-w-[120px]">
+                    <img src="https://tolsen.com.vn/wp-content/uploads/2020/09/logo-tolsen.png" alt="Tolsen" class="h-8 md:h-10 object-contain hover:scale-110 transition opacity-70 hover:opacity-100 cursor-pointer min-w-[100px] md:min-w-[120px]">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/7/7b/Makita_Logo.svg" alt="Makita" class="h-8 md:h-10 object-contain hover:scale-110 transition opacity-70 hover:opacity-100 cursor-pointer min-w-[100px] md:min-w-[120px]">
+                    <img src="https://www.cadivi-vn.com/vnt_upload/weblink/logo_cadivi_2020.png" alt="Cadivi" class="h-8 md:h-10 object-contain hover:scale-110 transition opacity-70 hover:opacity-100 cursor-pointer min-w-[100px] md:min-w-[120px]">
+                    <h3 class="text-xl md:text-2xl font-black text-gray-500 hover:text-primary transition hover:scale-110 cursor-pointer min-w-[100px] md:min-w-[120px] text-center">BÌNH MINH</h3>
+                    <h3 class="text-xl md:text-2xl font-black text-gray-500 hover:text-primary transition hover:scale-110 cursor-pointer min-w-[100px] md:min-w-[120px] text-center">SINO</h3>
+                </div>
+            </div>
+        </section>
+    <% } %>
+
+    <!-- ==================== TIN TỨC & KINH NGHIỆM ==================== -->
+    <% if (!setting || !setting.uiFlags || setting.uiFlags.showNewsSection !== false) { %>
+        <section class="container mx-auto px-4 max-w-7xl mb-12">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-primary border-l-4 border-secondary pl-3">Tin Tức & Kinh Nghiệm</h2>
+                <a href="#" onclick="switchView('blog-list')" class="text-sm font-medium text-secondary hover:text-orange-600 transition">Xem tất cả <i class="fa-solid fa-angle-right ml-1"></i></a>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Article Card 1 -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                    <a href="#" onclick="switchView('blog-detail')" class="block relative aspect-video overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&q=80&w=600" alt="Tin tức 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </a>
+                    <div class="p-4">
+                        <div class="text-xs text-gray-500 mb-2 flex items-center gap-4">
+                            <span><i class="fa-regular fa-calendar mr-1"></i> 28/04/2026</span>
+                            <span><i class="fa-regular fa-folder mr-1"></i> Kinh nghiệm</span>
+                        </div>
+                        <a href="#" onclick="switchView('blog-detail')" class="block text-lg font-bold text-gray-800 hover:text-primary line-clamp-2 mb-2 transition-colors">Hướng dẫn cách chọn dây cáp điện an toàn cho nhà ở dân dụng</a>
+                        <p class="text-sm text-gray-600 line-clamp-3 mb-4">Lựa chọn tiết diện dây cáp điện phù hợp không chỉ giúp tiết kiệm chi phí mà còn đảm bảo an toàn tuyệt đối cho hệ thống điện gia đình bạn...</p>
+                        <a href="#" onclick="switchView('blog-detail')" class="text-sm font-bold text-primary hover:text-secondary transition-colors inline-flex items-center">Đọc tiếp <i class="fa-solid fa-arrow-right-long ml-1.5 text-xs"></i></a>
+                    </div>
+                </div>
+                <!-- Article Card 2 -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                    <a href="#" onclick="switchView('blog-detail')" class="block relative aspect-video overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&q=80&w=600" alt="Tin tức 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </a>
+                    <div class="p-4">
+                        <div class="text-xs text-gray-500 mb-2 flex items-center gap-4">
+                            <span><i class="fa-regular fa-calendar mr-1"></i> 25/04/2026</span>
+                            <span><i class="fa-regular fa-folder mr-1"></i> Kỹ thuật nước</span>
+                        </div>
+                        <a href="#" onclick="switchView('blog-detail')" class="block text-lg font-bold text-gray-800 hover:text-primary line-clamp-2 mb-2 transition-colors">Phân biệt ống nhựa PVC, PPR, HDPE và ứng dụng trong thực tế</a>
+                        <p class="text-sm text-gray-600 line-clamp-3 mb-4">Ống nhựa đóng vai trò quan trọng trong hệ thống cấp thoát nước. Tìm hiểu ngay sự khác biệt giữa các loại ống phổ biến nhất hiện nay để sử dụng đúng mục đích...</p>
+                        <a href="#" onclick="switchView('blog-detail')" class="text-sm font-bold text-primary hover:text-secondary transition-colors inline-flex items-center">Đọc tiếp <i class="fa-solid fa-arrow-right-long ml-1.5 text-xs"></i></a>
+                    </div>
+                </div>
+                <!-- Article Card 3 -->
+                <div class="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow group">
+                    <a href="#" onclick="switchView('blog-detail')" class="block relative aspect-video overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1572981779307-38b8cabb2407?auto=format&fit=crop&q=80&w=600" alt="Tin tức 3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                    </a>
+                    <div class="p-4">
+                        <div class="text-xs text-gray-500 mb-2 flex items-center gap-4">
+                            <span><i class="fa-regular fa-calendar mr-1"></i> 20/04/2026</span>
+                            <span><i class="fa-regular fa-folder mr-1"></i> Khuyến mãi</span>
+                        </div>
+                        <a href="#" onclick="switchView('blog-detail')" class="block text-lg font-bold text-gray-800 hover:text-primary line-clamp-2 mb-2 transition-colors">Bảng báo giá sỉ thiết bị điện Sino, Panasonic mới nhất 2026</a>
+                        <p class="text-sm text-gray-600 line-clamp-3 mb-4">Cập nhật bảng giá chiết khấu cực cao dành riêng cho đại lý và nhà thầu xây dựng đối với các mặt hàng công tắc, ổ cắm, aptomat chính hãng...</p>
+                        <a href="#" onclick="switchView('blog-detail')" class="text-sm font-bold text-primary hover:text-secondary transition-colors inline-flex items-center">Đọc tiếp <i class="fa-solid fa-arrow-right-long ml-1.5 text-xs"></i></a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    <% } %>
+    </div>
+
+<!-- SCRIPT TRANG CHỦ -->
+<script>
+    // Logic đếm ngược thời gian Flash Sale
+    const endTimeStr = "<%= typeof setting !== 'undefined' && setting && setting.flashSale && setting.flashSale.endTime ? new Date(setting.flashSale.endTime).getTime() : '' %>";
+    if (endTimeStr) {
+        const countDownDate = parseInt(endTimeStr);
+        const timerInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = countDownDate - now;
+
+            if (distance < 0) {
+                clearInterval(timerInterval);
+                return;
+            }
+
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const elH = document.getElementById("fs-hours");
+            const elM = document.getElementById("fs-mins");
+            const elS = document.getElementById("fs-secs");
+            
+            if(elH) elH.innerText = hours < 10 ? "0" + hours : hours;
+            if(elM) elM.innerText = minutes < 10 ? "0" + minutes : minutes;
+            if(elS) elS.innerText = seconds < 10 ? "0" + seconds : seconds;
+        }, 1000);
+    }
+</script>
+<%- include('partials/footer') %>
