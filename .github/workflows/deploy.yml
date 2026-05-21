@@ -40,14 +40,22 @@ jobs:
         continue-on-error: true # Bỏ qua lỗi nếu container chưa tồn tại
         shell: powershell
 
-      # Bước 5: Khởi chạy container mới
+      # Bước 5: Kiểm tra sự tồn tại của file .env (Quan trọng để gỡ lỗi)
+      - name: Check for .env file
+        run: |
+          echo "--> Checking for .env file at C:/actions-runner/.env"
+          $env_path = "C:/actions-runner/.env"
+          if (Test-Path $env_path) { echo "OK: File .env found." } else { echo "ERROR: File .env NOT found at $env_path. Please create it on the server."; exit 1 }
+        shell: powershell
+
+      # Bước 6: Khởi chạy container mới
       - name: Run new container
         run: |
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
-          docker run -d -p 89:89 --name nln-container --restart always --env-file ./.env ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
+          docker run -d -p 89:89 --name nln-container --restart always --env-file C:/actions-runner/.env ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
         shell: powershell
 
-      # Bước 6: Dọn dẹp các image cũ không còn dùng đến
+      # Bước 7: Dọn dẹp các image cũ không còn dùng đến
       - name: Cleanup old images
         run: docker image prune -f
         shell: powershell
