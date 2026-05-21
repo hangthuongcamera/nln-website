@@ -17,14 +17,27 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # Bước 2: Đăng nhập vào Docker Hub
+      # Bước 2: Kiểm tra Docker và Môi trường Runner
+      - name: Check Docker and Environment
+        run: |
+          echo "--- Docker Version ---"
+          docker --version
+          echo "--- Docker Info ---"
+          docker info
+          echo "--- Runner Working Directory ---"
+          Get-Location
+          echo "--- Files in C:/actions-runner ---"
+          Get-ChildItem -Path C:/actions-runner
+        shell: powershell
+
+      # Bước 3: Đăng nhập vào Docker Hub
       - name: Login to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # Bước 3: Build và Push Docker image
+      # Bước 4: Build và Push Docker image
       # Tên image sẽ có dạng: your_dockerhub_username/nln-website:latest
       - name: Build and push Docker image
         run: |
@@ -32,30 +45,55 @@ jobs:
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
         shell: powershell
 
-      # Bước 4: Dừng và xóa container cũ đang chạy trên server
+      # Bước 5: Dừng và xóa container cũ đang chạy trên server
       - name: Stop and Remove existing container
         run: |
-          docker stop nln-container -t 0 | Out-Null
-          docker rm nln-container | Out-Null
+          echo "Attempting to stop and remove container 'nln-container'..."
+          docker rm -f nln-container
         continue-on-error: true # Bỏ qua lỗi nếu container chưa tồn tại
         shell: powershell
 
-      # Bước 5: Kiểm tra sự tồn tại của file .env (Quan trọng để gỡ lỗi)
+      # Bước 6: Kiểm tra sự tồn tại của file .env (Quan trọng để gỡ lỗi)
       - name: Check for .env file
         run: |
           echo "--> Checking for .env file at C:/actions-runner/.env"
           $env_path = "C:/actions-runner/.env"
-          if (Test-Path $env_path) { echo "OK: File .env found." } else { echo "ERROR: File .env NOT found at $env_path. Please create it on the server."; exit 1 }
+          if (Test-Path $env_path) { 
+            echo "OK: File .env found." 
+          } else { 
+            echo "FATAL ERROR: File .env NOT found at $env_path. Please create it on the server."
+            exit 1 
+          }
         shell: powershell
 
-      # Bước 6: Khởi chạy container mới
+      # Bước 7: Khởi chạy container mới
       - name: Run new container
         run: |
+          echo "Pulling latest image..."
           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
+          echo "Starting new container..."
           docker run -d -p 89:89 --name nln-container --restart always --env-file C:/actions-runner/.env ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
         shell: powershell
 
-      # Bước 7: Dọn dẹp các image cũ không còn dùng đến
+      # Bước 8: Kiểm tra trạng thái container sau khi khởi chạy
+      - name: Verify container status
+        run: |
+          echo "Waiting for 5 seconds before checking container status..."
+          Start-Sleep -Seconds 5
+          echo "--- Current running containers (docker ps) ---"
+          docker ps
+          $container_status = docker ps -f "name=nln-container" --format "{{.Status}}"
+          if ($container_status -like "Up*") {
+            echo "SUCCESS: Container 'nln-container' is running."
+          } else {
+            echo "ERROR: Container 'nln-container' is not running or exited unexpectedly."
+            echo "--- Container Logs (last 50 lines) ---"
+            docker logs --tail 50 nln-container
+            exit 1
+          }
+        shell: powershell
+
+      # Bước 9: Dọn dẹp các image cũ không còn dùng đến
       - name: Cleanup old images
         run: docker image prune -f
         shell: powershell
