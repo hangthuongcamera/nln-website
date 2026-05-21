@@ -9,6 +9,29 @@ const generateToken = (id) => {
     return jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });
 };
 
+// Hàm helper để gửi token về client và set cookie
+const sendTokenResponse = (user, statusCode, res) => {
+    // Tạo token
+    const token = generateToken(user._id);
+
+    const options = {
+        // Cookie hết hạn sau 30 ngày, khớp với JWT
+        expires: new Date(
+            Date.now() + 30 * 24 * 60 * 60 * 1000
+        ),
+        httpOnly: true, // Ngăn JavaScript phía client truy cập cookie
+    };
+
+    if (process.env.NODE_ENV === 'production') {
+        options.secure = true; // Chỉ gửi cookie qua HTTPS ở môi trường production
+    }
+
+    res.status(statusCode)
+        .cookie('token', token, options) // Gửi cookie về cho trình duyệt
+        // Vẫn gửi token trong body để logic cũ ở client không bị lỗi
+        .json({ success: true, token, data: { _id: user._id, name: user.name, email: user.email, role: user.role } });
+};
+
 // @desc    Đăng ký tài khoản khách hàng mới
 // @route   POST /api/v1/auth/register
 exports.register = async (req, res) => {
@@ -38,9 +61,8 @@ exports.register = async (req, res) => {
             role: 'customer' // Mặc định tài khoản đăng ký mới là khách hàng
         });
 
-        // Cấp phát token
-        const token = generateToken(user._id);
-        res.status(201).json({ success: true, message: 'Đăng ký thành công', token, data: { _id: user._id, name: user.name, email: user.email, role: user.role } });
+        // Gửi token và cookie về cho client
+        sendTokenResponse(user, 201, res);
     } catch (error) {
         res.status(500).json({ success: false, message: 'Lỗi server khi đăng ký', error: error.message });
     }
@@ -78,12 +100,23 @@ exports.login = async (req, res) => {
 
         if (!isMatch) { return res.status(401).json({ success: false, message: 'Email hoặc mật khẩu không chính xác' }); }
 
-        // Cấp phát token
-        const token = generateToken(user._id);
-        res.status(200).json({ success: true, token, data: { _id: user._id, name: user.name, email: user.email, role: user.role } });
+        // Sử dụng hàm helper để gửi token và cookie
+        sendTokenResponse(user, 200, res);
     } catch (error) {
         res.status(500).json({ success: false, message: 'Lỗi server', error: error.message });
     }
+};
+
+// @desc    Đăng xuất người dùng
+// @route   GET /api/v1/auth/logout
+exports.logout = async (req, res, next) => {
+    // Ghi đè cookie cũ bằng một cookie rỗng và hết hạn ngay lập tức
+    res.cookie('token', 'none', {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true,
+    });
+
+    res.status(200).json({ success: true, data: {} });
 };
 
 // @desc    Lấy thông tin User hiện tại (Profile) đang đăng nhập

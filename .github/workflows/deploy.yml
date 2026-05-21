@@ -1,0 +1,53 @@
+# Tên của quy trình CI/CD
+name: Deploy to Local Windows Server
+
+# Kích hoạt quy trình này mỗi khi có code được push lên nhánh `main`
+on:
+  push:
+    branches: [ "main" ]
+
+# Định nghĩa các công việc cần thực hiện
+jobs:
+  build-and-deploy:
+    # Chạy công việc này trên runner mà chúng ta đã cài đặt trên server
+    runs-on: self-hosted
+
+    steps:
+      # Bước 1: Lấy mã nguồn mới nhất từ repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Bước 2: Đăng nhập vào Docker Hub
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      # Bước 3: Build và Push Docker image
+      # Tên image sẽ có dạng: your_dockerhub_username/nln-website:latest
+      - name: Build and push Docker image
+        run: |
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest .
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
+        shell: powershell
+
+      # Bước 4: Dừng và xóa container cũ đang chạy trên server
+      - name: Stop and Remove existing container
+        run: |
+          docker stop nln-container -t 0 | Out-Null
+          docker rm nln-container | Out-Null
+        continue-on-error: true # Bỏ qua lỗi nếu container chưa tồn tại
+        shell: powershell
+
+      # Bước 5: Khởi chạy container mới
+      - name: Run new container
+        run: |
+          docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
+          docker run -d -p 89:89 --name nln-container --restart always --env-file ./.env ${{ secrets.DOCKERHUB_USERNAME }}/nln-website:latest
+        shell: powershell
+
+      # Bước 6: Dọn dẹp các image cũ không còn dùng đến
+      - name: Cleanup old images
+        run: docker image prune -f
+        shell: powershell

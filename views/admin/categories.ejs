@@ -36,6 +36,7 @@
                                     <th class="p-4 font-semibold w-[40%]">Tên danh mục</th>
                                     <th class="p-4 font-semibold text-left">Đường dẫn (Slug)</th>
                                     <th class="p-4 font-semibold text-center w-28">Sản phẩm</th>
+                                    <th class="p-4 font-semibold text-center w-24">Nổi bật</th>
                                     <th class="p-4 font-semibold text-center w-32">Trạng thái</th>
                                     <th class="p-4 font-semibold text-right w-32">Hành động</th>
                                 </tr>
@@ -207,9 +208,15 @@
         const isChecked = cat.isActive !== false;
         const statusBadge = `
             <label class="relative inline-flex items-center cursor-pointer" title="${isChecked ? 'Nhấn để ẩn' : 'Nhấn để hiển thị'}">
-                <input type="checkbox" class="sr-only peer" ${isChecked ? 'checked' : ''} onchange="toggleCategoryStatus('${cat._id}', this.checked)">
+                <input type="checkbox" class="sr-only peer" ${isChecked ? 'checked' : ''} onchange="toggleCategoryStatus(event, '${cat._id}', this.checked)">
                 <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-500"></div>
             </label>`;
+
+        const featuredBadge = `
+            <button type="button" class="w-8 h-8 rounded-full flex items-center justify-center transition-colors ${cat.isFeatured ? 'text-yellow-400 bg-yellow-50 hover:bg-yellow-100' : 'text-gray-300 hover:bg-gray-200'}" onclick="toggleFeaturedStatus(event, '${cat._id}', ${!cat.isFeatured})" title="${cat.isFeatured ? 'Bỏ nổi bật' : 'Ghim lên trang chủ'}">
+                <i class="fa-solid fa-star"></i>
+            </button>
+        `;
 
         const productCountDisplay = cat.totalProducts !== undefined ? cat.totalProducts : (cat.productCount || 0);
         const countBadge = `<span class="inline-flex items-center justify-center min-w-[2rem] px-2 py-0.5 rounded-full text-xs font-bold ${productCountDisplay > 0 ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-gray-100 text-gray-500 border border-gray-200'}">${productCountDisplay}</span>`;
@@ -226,6 +233,7 @@
                 <td class="p-3">${nameColHTML}</td>
                 <td class="p-3 text-left font-mono text-gray-500 text-xs">${cat.slug}</td>
                 <td class="p-3 text-center">${countBadge}</td>
+                <td class="p-3 text-center">${featuredBadge}</td>
                 <td class="p-3 text-center">${statusBadge}</td>
                 <td class="p-3">
                     <div class="flex justify-end gap-1.5">
@@ -297,7 +305,7 @@
     }
 
     // Tính năng mới: Quick Toggle trạng thái
-    async function toggleCategoryStatus(id, newStatus) {
+    async function toggleCategoryStatus(event, id, newStatus) {
         try {
             const res = await fetch(`/api/v1/categories/${id}`, {
                 method: 'PUT',
@@ -308,7 +316,30 @@
             if (res.ok && data.success) {
                 showAdminToast('Thành công', newStatus ? 'Đã bật hiển thị danh mục' : 'Đã ẩn danh mục', 'success');
                 loadCategories();
-            } else { showAdminToast('Lỗi', data.message || 'Không thể cập nhật trạng thái', 'error'); }
+            } else { 
+                showAdminToast('Lỗi', data.message || 'Không thể cập nhật trạng thái', 'error');
+                if(event.target) event.target.checked = !newStatus; // Revert toggle on API error
+            }
+        } catch (error) { 
+            showAdminToast('Lỗi', 'Lỗi kết nối server', 'error'); 
+            if(event.target) event.target.checked = !newStatus; // Revert toggle on network error
+        }
+    }
+
+    // Tính năng mới: Ghim danh mục nổi bật
+    async function toggleFeaturedStatus(event, id, newStatus) {
+        event.stopPropagation(); // Ngăn sự kiện click của cả dòng (nếu có)
+        try {
+            const res = await fetch(`/api/v1/categories/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify({ isFeatured: newStatus })
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showAdminToast('Thành công', newStatus ? 'Đã ghim danh mục nổi bật' : 'Đã bỏ ghim danh mục', 'success');
+                loadCategories(); // Tải lại cây danh mục để cập nhật UI
+            } else { showAdminToast('Lỗi', data.message || 'Không thể cập nhật', 'error'); }
         } catch (error) { showAdminToast('Lỗi', 'Lỗi kết nối server', 'error'); }
     }
 

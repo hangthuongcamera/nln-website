@@ -1,7 +1,7 @@
 # TIẾN TRÌNH THỰC HIỆN DỰ ÁN (TRACKING CHECKLIST)
 **Dự án:** Website E-commerce Nhất Linh Nhi  
 **Trạng thái:** ⏳ Đang triển khai  
-**Ngày cập nhật:** 11/05/2026
+**Ngày cập nhật:** 19/05/2026
 *Sử dụng file này để cung cấp bối cảnh (context) cho AI khi bắt đầu phiên làm việc mới.*
 
 ---
@@ -16,27 +16,43 @@
 
 ## � TÓM TẮT TRẠNG THÁI HIỆN TẠI (CURRENT STATE)
 
-- **Phần 1 - Giao diện Khách hàng (Frontend):** HOÀN THIỆN 100% UI.
-- **Phần 2 - Giao diện Quản trị (Web Admin):** Đã có UI admin cơ bản, nhưng cần tái cấu trúc lại để phù hợp hệ thống lớn hơn 15.000 mã hàng.
-- **Phần 3 - Tích hợp hệ thống (Backend & Frontend Binding):** Đã tích hợp API chính cho Trang chủ, Blog, Trang tĩnh, Dự án, Giỏ hàng, Thanh toán, User Auth, Product, Category.
-- **Phần 4 - Nâng cấp trọng tâm mới:** Tái cấu trúc Admin thành hệ thống quản trị dữ liệu lớn, ưu tiên Catalog/Product Center. **Đã hoàn thành Giai đoạn E - Tách module tồn kho và giá. Đang hoàn thành Giai đoạn F - Phân quyền & Vận hành (LÀM DỞ).**
+- **Giao diện Khách hàng (Frontend):** Đã hoàn thiện UI và tích hợp API đầy đủ. Các chức năng hiển thị động (Flash Sale, Danh mục nổi bật) đã được kết nối với Web Admin.
+- **Giao diện Quản trị (Web Admin):**
+  - **Trung tâm Sản phẩm:** Đã hoàn thiện với bộ lọc nâng cao, phân trang, import/export Excel, và thao tác hàng loạt.
+  - **Quản lý Danh mục:** Đã hoàn thiện với chức năng bật/tắt và ghim danh mục nổi bật.
+  - **Cấu hình Giao diện động:** Đã hoàn thiện, cho phép quản lý hiển thị các khối trên trang chủ và ghim sản phẩm.
+  - **Các module khác:** Đã có khung sườn và API cơ bản.
+
+---
+
+## ✅ CÁC CHỨC NĂNG LỚN VỪA HOÀN THÀNH
+
+1.  **Hoàn thiện Trung tâm Sản phẩm (Product Center):**
+    - Triển khai đầy đủ bộ lọc nâng cao, phân trang server-side, sắp xếp.
+    - Hoàn thiện chức năng Import/Export Excel với khả năng xử lý lỗi thông minh.
+    - Hoàn thiện chức năng Thao tác hàng loạt (Xóa nhiều sản phẩm).
+    - Sửa tất cả các lỗi liên quan đến tải dữ liệu, cập nhật, và xóa sản phẩm.
+2.  **Hoàn thiện Cấu hình Giao diện động (Dynamic UI):**
+    - Triển khai chức năng bật/tắt các khối giao diện trên trang chủ.
+    - Hoàn thiện chức năng ghim sản phẩm "Bán chạy" và "Flash Sale" với cơ chế giá chuyên nghiệp.
+    - Sửa lỗi lưu cấu hình Flash Sale (thời gian, tiêu đề).
+3.  **Hoàn thiện Quản lý Danh mục:**
+    - Triển khai chức năng bật/tắt danh mục.
+    - Triển khai chức năng ghim "Danh mục nổi bật" lên trang chủ.
 
 ---
 
 ## 🔜 BƯỚC TIẾP THEO ƯU TIÊN (NEXT STEPS)
-
-### Ưu tiên cao nhất hiện tại: Hoàn thành Giai đoạn F - Phân quyền & Vận hành
-
-- [x] Lập kế hoạch tái cấu trúc Admin trong `website/Ke_Hoach_Xay_Dung_Admin_UI.md`.
-- [x] Xác định trọng tâm mới: quản trị dữ liệu lớn, không chỉ là UI danh sách đơn giản.
-- [x] Sửa lỗi API sản phẩm khiến số lượng ở trang người dùng/admin không khớp.
-- [ ] **HOÀN THÀNH GIAI ĐOẠN F:** Kiểm tra server chạy được sau khi tạo module Phân quyền & Vận hành.
-- [ ] Nâng cấp API sản phẩm cho bộ lọc nâng cao.
-- [ ] Nâng cấp trang `website/views/admin/products.ejs`.
-- [ ] Bổ sung thống kê sản phẩm vào Dashboard.
-- [ ] Chuẩn bị nền tảng thao tác hàng loạt.
-- [ ] Chuẩn bị Import/Export Excel.
-- [ ] Xây dựng trang kiểm tra chất lượng dữ liệu sản phẩm.
+- [ ] **Triển khai các tính năng mới cho trang Client:**
+  - [x] Phần 1: Xây dựng các tiêu điểm trên header. ✅
+  - [x] Phần 2: Nâng cấp thanh tìm kiếm với bộ lọc danh mục. ✅
+  - [x] Phần 3: Thêm tính năng "So sánh" và "Yêu thích". ✅ (Đã xong phần logic và trang yêu thích)
+  - [ ] Phần 4: Mở rộng "Danh mục nổi bật" với hình ảnh.
+- [ ] **Hoàn thiện các chức năng Admin còn lại:**
+  - [ ] Hoàn thiện chức năng "Thao tác hàng loạt" (Thêm: Bật/Tắt hiển thị, Đổi danh mục).
+  - [ ] Hoàn thiện chức năng quản lý Banner chính (Slider) trong trang Cấu hình Giao diện.
+  - [ ] Xây dựng trang kiểm tra chất lượng dữ liệu sản phẩm.
+  - [ ] Nâng cấp Dashboard với các thống kê chi tiết hơn.
 
 ---
 
@@ -171,11 +187,11 @@
 
 ### 2.1. Quản lý Danh mục
 
-- [x] Giao diện danh sách, tạo, sửa, xóa cây danh mục.
-- [ ] Nâng cấp hiển thị số lượng sản phẩm trong từng danh mục.
+- [x] Giao diện danh sách, tạo, sửa, xóa cây danh mục. ✅
+- [x] Nâng cấp hiển thị số lượng sản phẩm trong từng danh mục. ✅
 - [ ] Cảnh báo danh mục không có sản phẩm.
-- [ ] Ẩn/hiện danh mục.
-- [ ] SEO danh mục.
+- [x] Ẩn/hiện danh mục. ✅
+- [x] SEO danh mục (Ghim danh mục nổi bật). ✅
 
 ### 2.2. Quản lý Sản phẩm
 
@@ -184,29 +200,29 @@
 - [x] Giá gốc, mô tả ngắn, nhãn Mới/Nổi bật/Flash Sale.
 - [x] API sản phẩm đã có lọc/phân trang cơ bản.
 - [x] Đã sửa lỗi tổng số sản phẩm không khớp giữa trang người dùng và trang admin.
-- [ ] Nâng cấp bộ lọc nâng cao:
-  - [ ] Danh mục.
-  - [ ] Trạng thái hiển thị.
-  - [ ] Còn hàng / hết hàng / sắp hết hàng.
-  - [ ] Có ảnh / thiếu ảnh.
-  - [ ] Có giá / thiếu giá.
-  - [ ] Hot / Mới / Flash Sale.
-- [ ] Chọn số dòng/trang: 20 / 50 / 100.
-- [ ] Chọn nhiều sản phẩm.
-- [ ] Thao tác hàng loạt.
+- [x] Nâng cấp bộ lọc nâng cao: ✅
+  - [x] Danh mục.
+  - [x] Trạng thái hiển thị.
+  - [x] Còn hàng / hết hàng / sắp hết hàng.
+  - [x] Có ảnh / thiếu ảnh.
+  - [x] Có giá / thiếu giá.
+  - [x] Hot / Mới / Flash Sale.
+- [x] Chọn số dòng/trang: 20 / 50 / 100. ✅
+- [x] Chọn nhiều sản phẩm. ✅
+- [x] Thao tác hàng loạt (Xóa). ✅
 - [ ] Trang kiểm tra chất lượng dữ liệu sản phẩm.
 
 ### 2.3. Import/Export Excel
 
-- [ ] Xuất danh sách sản phẩm ra Excel.
-- [ ] Nhập sản phẩm từ Excel.
-- [ ] Cập nhật giá/tồn kho bằng Excel.
-- [ ] Kiểm tra lỗi trước khi ghi vào DB:
-  - [ ] SKU trùng.
-  - [ ] Thiếu tên.
-  - [ ] Thiếu danh mục.
-  - [ ] Giá không hợp lệ.
-  - [ ] Tồn kho không hợp lệ.
+- [x] Xuất danh sách sản phẩm ra Excel. ✅
+- [x] Nhập sản phẩm từ Excel. ✅
+- [x] Cập nhật giá/tồn kho bằng Excel. ✅
+- [x] Kiểm tra lỗi trước khi ghi vào DB: ✅
+  - [x] SKU trùng.
+  - [x] Thiếu tên.
+  - [x] Thiếu danh mục.
+  - [x] Giá không hợp lệ.
+  - [x] Tồn kho không hợp lệ.
 
 ---
 
@@ -235,11 +251,11 @@
 ## 🔴 Giai đoạn 4: Cấu hình Giao diện Động & Cài đặt hệ thống
 
 - [x] **4.1. Dynamic UI**
-  - [x] Tắt/mở component.
-  - [x] Quản lý ảnh Slider.
-  - [x] Ghim sản phẩm Bán chạy / Flash Sale.
-  - [x] Thời gian đếm ngược Flash Sale/Banner phụ.
-  - [x] Banner phụ.
+  - [x] Tắt/mở component. ✅
+  - [ ] Quản lý ảnh Slider.
+  - [x] Ghim sản phẩm Bán chạy / Flash Sale. ✅
+  - [x] Thời gian đếm ngược Flash Sale. ✅
+  - [x] Banner phụ. ✅
 
 - [x] **4.2. Settings**
   - [x] Quản lý tài khoản quản trị.
@@ -390,55 +406,55 @@ Biến Admin từ giao diện CRUD cơ bản thành hệ thống vận hành cat
 ## Giai đoạn A — Ổn định nền tảng sản phẩm
 
 - [x] Sửa lỗi tổng số sản phẩm admin/client không khớp.
-- [ ] Chuẩn hóa query API sản phẩm.
-- [ ] Bổ sung bộ lọc nâng cao ở API.
-- [ ] Bổ sung response thống kê sản phẩm.
-- [ ] Tối ưu index MongoDB cho sản phẩm:
-  - [ ] `name`.
-  - [ ] `sku`.
-  - [ ] `slug`.
-  - [ ] `category`.
-  - [ ] `isActive`.
-  - [ ] `stock`.
-  - [ ] `flags.isHot`.
-  - [ ] `flags.isNewProduct`.
-  - [ ] `flags.isFlashSale`.
+- [x] Chuẩn hóa query API sản phẩm. ✅
+- [x] Bổ sung bộ lọc nâng cao ở API. ✅
+- [x] Bổ sung response thống kê sản phẩm. ✅
+- [x] Tối ưu index MongoDB cho sản phẩm: ✅
+  - [x] `name`.
+  - [x] `sku`.
+  - [x] `slug`.
+  - [x] `category`.
+  - [x] `isActive`.
+  - [x] `stock`.
+  - [x] `flags.isHot`.
+  - [x] `flags.isNewProduct`.
+  - [x] `flags.isFlashSale`.
 
 ---
 
 ## Giai đoạn B — Nâng cấp trang danh sách sản phẩm Admin
 
-- [ ] Bộ lọc nâng cao.
-- [ ] Chọn số dòng/trang.
-- [ ] Hiển thị tổng số rõ ràng.
-- [ ] Trạng thái loading/empty/error rõ ràng.
-- [ ] Checkbox chọn nhiều sản phẩm.
-- [ ] Thanh thao tác hàng loạt.
-- [ ] Cảnh báo sản phẩm lỗi ngay trong bảng.
+- [x] Bộ lọc nâng cao. ✅
+- [x] Chọn số dòng/trang. ✅
+- [x] Hiển thị tổng số rõ ràng. ✅
+- [x] Trạng thái loading/empty/error rõ ràng. ✅
+- [x] Checkbox chọn nhiều sản phẩm. ✅
+- [x] Thanh thao tác hàng loạt. ✅
+- [x] Cảnh báo sản phẩm lỗi ngay trong bảng. ✅
 
 ---
 
 ## Giai đoạn C — Dashboard vận hành
 
-- [ ] Thống kê tổng sản phẩm.
-- [ ] Thống kê sản phẩm đang hiển thị/đang ẩn.
-- [ ] Thống kê hết hàng/sắp hết hàng.
-- [ ] Thống kê thiếu ảnh/thiếu giá.
+- [x] Thống kê tổng sản phẩm. ✅
+- [x] Thống kê sản phẩm đang hiển thị/đang ẩn. ✅
+- [x] Thống kê hết hàng/sắp hết hàng. ✅
+- [x] Thống kê thiếu ảnh/thiếu giá. ✅
 - [ ] Danh sách việc cần xử lý.
 
 ---
 
 ## Giai đoạn D — Công cụ dữ liệu lớn
 
-- [ ] Import Excel.
-- [ ] Export Excel.
-- [ ] Màn hình preview lỗi import.
-- [ ] Bulk update:
-  - [ ] Bật/tắt hiển thị.
+- [x] Import Excel. ✅
+- [x] Export Excel. ✅
+- [x] Màn hình preview lỗi import. ✅
+- [x] Bulk update: ✅
+  - [x] Xóa hàng loạt. ✅
+  - [ ] Bật/tắt hiển thị hàng loạt.
   - [ ] Đổi danh mục.
   - [ ] Gắn cờ Hot/Mới/Flash Sale.
   - [ ] Cập nhật giá.
-  - [ ] Cập nhật tồn kho.
 
 ---
 
@@ -448,13 +464,13 @@ Biến Admin từ giao diện CRUD cơ bản thành hệ thống vận hành cat
   - Controller: `website/controllers/api/inventoryController.js`
   - View: `website/views/admin/inventory.ejs`
   - Routes: `/admin/inventory` (admin.js) + API `/api/v1/inventory/*` (api.js)
-  - Tính năng: Phân trang, lọc theo trạng thái tồn kho, cập nhật đơn/hàng loạt, import/export CSV, lịch sử thay đổi
+  - Tính năng: Phân trang, lọc theo trạng thái tồn kho, cập nhật đơn/hàng loạt, import/export Excel, lịch sử thay đổi
 
 - [x] **Module giá.** ✅ HOÀN THÀNH 11/05/2026
   - Controller: `website/controllers/api/priceController.js`
   - View: `website/views/admin/prices.ejs`
   - Routes: `/admin/prices` (admin.js) + API `/api/v1/prices/*` (api.js)
-  - Tính năng: Phân trang, lọc theo trạng thái giá, cập nhật giá bán/sỉ/cũ, import/export CSV, lịch sử thay đổi
+  - Tính năng: Phân trang, lọc theo trạng thái giá, cập nhật giá bán/sỉ/cũ, import/export Excel, lịch sử thay đổi
 
 - [ ] Module kiểm tra chất lượng dữ liệu.
 
@@ -462,10 +478,10 @@ Biến Admin từ giao diện CRUD cơ bản thành hệ thống vận hành cat
 
 ## Giai đoạn F — Phân quyền & Vận hành
 
-### ⚠️ TRẠNG THÁI: ĐANG LÀM DỞ - CẦN KIỂM TRA LẠI
+### ✅ TRẠNG THÁI: HOÀN THÀNH
 
-**Ngày bắt đầu:** 11/05/2026  
-**Ngày tạm dừng:** 11/05/2026 16:58
+**Ngày bắt đầu:** 11/05/2026
+**Ngày hoàn thành:** 19/05/2026
 
 #### ✅ ĐÃ HOÀN THÀNH:
 
@@ -479,7 +495,7 @@ Biến Admin từ giao diện CRUD cơ bản thành hệ thống vận hành cat
      - `getActivityLogById` - Chi tiết log
      - `getActivityStats` - Thống kê
      - `cleanOldLogs` - Xóa log cũ
-     - `exportLogs` - Xuất CSV
+     - `exportLogs` - Xuất Excel
    - ✅ `website/controllers/api/roleController.js` - 5 functions:
      - `getUsersByRole` - Lấy user theo role
      - `getRoleStats` - Thống kê role
@@ -510,57 +526,16 @@ Biến Admin từ giao diện CRUD cơ bản thành hệ thống vận hành cat
 5. **Cập nhật Sidebar:**
    - ✅ `website/views/admin/partials/sidebar.ejs` - Thêm section "Phân Quyền & Vận Hành"
 
-#### ⚠️ VẤN ĐỀ ĐANG GẶP PHẢI:
+#### ✅ VẤN ĐỀ ĐÃ GIẢI QUYẾT:
 
-**Lỗi khi chạy `npm run dev`:**
-```
-Error: listen EADDRINUSE: address already in use :::89
-```
+- Lỗi kẹt port 89 (`EADDRINUSE :::89`).
+- Các lỗi mapping trong `routes/api.js`.
+- **Lỗi render giao diện Admin (trang trắng) do EJS không tìm thấy `partials/head`.** ✅ ĐÃ SỬA
 
-**Nguyên nhân:**
-- Port 89 đang bị chiếm bởi process khác (PID 6548)
-- Không thể kill process do Access Denied
-- Process đã tự tắt nhưng nodemon vẫn đang chờ
+#### 📋 KẾT QUẢ:
 
-**Trạng thái hiện tại:**
-- Port 89 hiện đã trống (kiểm tra bằng `netstat -ano | findstr :89`)
-- Terminal nodemon vẫn đang chạy và chờ file changes
-- Chưa xác nhận được server có chạy thành công sau khi sửa lỗi routes
-
-#### 🔧 ĐÃ SỬA LỖI TRONG routes/api.js:
-
-**3 lỗi route mapping đã sửa:**
-1. Line 304: `roleController.getUsers` → `roleController.getUsersByRole` ✅
-2. Line 296: `activityLogController.exportActivityLogs` → `activityLogController.exportLogs` ✅
-3. Line 311: `systemController.getSystemStatus` → `systemController.getServerStatus` ✅
-
-#### 📋 VIỆC CẦN LÀM NGÀY MAI:
-
-1. **Khởi động lại server:**
-   - Tắt terminal nodemon hiện tại (Ctrl+C)
-   - Chạy lại `npm run dev`
-   - Xác nhận server chạy không lỗi
-
-2. **Kiểm tra các trang mới:**
-   - Truy cập `/admin/activity-logs`
-   - Truy cập `/admin/roles`
-   - Truy cập `/admin/settings`
-   - Kiểm tra sidebar hiển thị đúng
-
-3. **Test API endpoints:**
-   - Test 4 API activity logs
-   - Test 5 API roles
-   - Test 4 API system
-   - Xác nhận middleware `protect` và `authorize` hoạt động
-
-4. **Nếu có lỗi:**
-   - Kiểm tra lại tên functions trong controllers
-   - Kiểm tra imports trong routes/api.js
-   - Kiểm tra middleware authMiddleware
-
-5. **Sau khi hoàn thành:**
-   - Cập nhật trạng thái Giai đoạn F thành "✅ HOÀN THÀNH 100%"
-   - Chuyển sang Giai đoạn tiếp theo (Module kiểm tra chất lượng dữ liệu hoặc Dashboard nâng cao)
+- Các trang `/admin/settings`, `/admin/roles`, `/admin/activity-logs` đã hoạt động bình thường.
+- Giai đoạn F đã hoàn tất, sẵn sàng cho các bước tiếp theo.
 
 ---
 
@@ -604,12 +579,50 @@ Error: listen EADDRINUSE: address already in use :::89
 ### Frontend Files Modified:
 - ✅ `website/views/admin/partials/sidebar.ejs` - Thêm section "Phân Quyền & Vận Hành"
 
-### ⚠️ TRẠNG THÁI HIỆN TẠI:
+### ✅ TRẠNG THÁI HIỆN TẠI:
 - **Đã tạo xong:** Tất cả files cần thiết cho Giai đoạn F
 - **Đã sửa lỗi:** 3 lỗi route mapping trong api.js
-- **Chưa test:** Server chưa chạy được do port conflict
-- **Cần làm tiếp:** Khởi động lại server và test các trang mới
+- **Vấn đề Port:** Lỗi EADDRINUSE :::89 đã được giải quyết.
+- **Trạng thái:** Đã đánh dấu hoàn thành Giai đoạn F.
 
+---
+
+# PHẦN 6: KẾ HOẠCH PHÁT TRIỂN TÍNH NĂNG MỚI (ROADMAP MỞ RỘNG)
+
+## 6.1. Phần 1: Xây dựng các tiêu điểm trên header (Header USPs Bar)
+- [x] **Thiết kế:** ✅
+  - [x] Xây dựng một thanh thông báo (top-bar) nằm ở vị trí trên cùng của trang web.
+  - [x] Thanh này sẽ hiển thị các dòng chữ (cam kết, thông báo khuyến mãi) với hiệu ứng xuất hiện và biến mất tuần tự.
+- [x] **Quản trị động:** ✅
+  - [x] Trong trang Admin "Cấu hình giao diện", tạo một mục mới cho phép quản lý các dòng chữ trên top-bar.
+  - [x] Admin có thể thêm, sửa, xóa, và sắp xếp thứ tự các dòng chữ này.
+
+## 6.2. Phần 2: Nâng cấp thanh tìm kiếm (Advanced Search)
+- [x] **Logic:** ✅
+  - [x] Khi người dùng nhấn Enter hoặc nút tìm kiếm, hệ thống sẽ chuyển hướng đến trang danh sách sản phẩm (`/category`).
+  - [x] URL sẽ chứa cả tham số từ khóa tìm kiếm (`?q=...`).
+  - [x] Trang danh sách sản phẩm (`/category`) sẽ đọc tham số `q` và hiển thị kết quả tìm kiếm tương ứng.
+
+## 6.3. Phần 3: Thêm tính năng "So sánh" và "Yêu thích" (Compare & Wishlist)
+- [x] **Giao diện (UI):** ✅
+  - [x] Header: Thêm 2 icon mới cho "So sánh" và "Yêu thích" bên cạnh icon giỏ hàng, kèm theo số đếm.
+  - [x] Card sản phẩm: Thêm icon "So sánh" và "Yêu thích" trên mỗi card sản phẩm.
+- [x] **Tính năng "Yêu thích" (Wishlist):** ✅
+  - [x] Database: Cập nhật `User` model, thêm một trường `wishlist`.
+  - [x] API: Xây dựng các endpoints để thêm/xóa/lấy sản phẩm yêu thích.
+  - [x] Trang người dùng: Tạo một trang mới trong tài khoản khách hàng để hiển thị danh sách các sản phẩm đã yêu thích. ✅
+- [x] **Tính năng "So sánh" (Compare):** ✅
+  - [x] Logic: Sử dụng `localStorage` của trình duyệt để lưu danh sách ID các sản phẩm người dùng chọn so sánh.
+  - [ ] Giao diện: Tạo một trang "So sánh sản phẩm" riêng biệt, hiển thị các sản phẩm dưới dạng bảng với các thuộc tính/thông số kỹ thuật được liệt kê theo hàng để dễ đối chiếu. (Sẽ làm ở bước sau)
+
+## 6.4. Phần 4: Mở rộng "Danh mục nổi bật" với hình ảnh (Visual Featured Categories)
+- [ ] **Database:**
+  - [ ] Cập nhật `Category` model, thêm trường `image` (String) để lưu đường dẫn ảnh đại diện.
+- [ ] **Giao diện Admin:**
+  - [ ] Trong trang quản lý danh mục, thêm chức năng cho phép upload ảnh đại diện cho mỗi danh mục.
+- [ ] **Giao diện Trang chủ:**
+  - [ ] Thiết kế lại component "Danh mục nổi bật".
+  - [ ] Thay thế các card chỉ có icon và chữ bằng các card sử dụng hình ảnh đã tải lên làm nền, kết hợp hiệu ứng hover để tăng tính tương tác và thu hút.
 ---
 
 ## 📋 CHECKLIST CÁC FILE ĐÃ THAY ĐỔI (GIAI ĐOẠN E - MODULE TỒN KHO & GIÁ) ✅ HOÀN THÀNH
@@ -627,45 +640,8 @@ Error: listen EADDRINUSE: address already in use :::89
 
 ---
 
-## 🚨 LƯU Ý QUAN TRỌNG CHO PHIÊN LÀM VIỆC TIẾP THEO
+## 🎯 ƯU TIÊN TIẾP THEO:
 
-### Trước khi bắt đầu làm việc:
-1. ✅ Đọc file `Tien_Trinh_Thuc_Hien.md` để nắm context
-2. ✅ Kiểm tra section "VẤN ĐỀ ĐANG GẶP PHẢI" trong Giai đoạn F
-3. ✅ Khởi động lại server: `cd website; npm run dev`
-4. ✅ Xác nhận server chạy không lỗi
-5. ✅ Test các trang mới: /admin/activity-logs, /admin/roles, /admin/settings
-
-### Khi gặp lỗi:
-- Đọc kỹ error message
-- Kiểm tra file routes/api.js (đã sửa 3 lỗi mapping)
-- Kiểm tra tên functions trong controllers
-- Kiểm tra imports đầy đủ
-
-### Khi hoàn thành task:
-- Cập nhật trạng thái trong file này
-- Ghi rõ files đã tạo/sửa
-- Ghi rõ vấn đề gặp phải (nếu có)
-- Ghi rõ bước tiếp theo cần làm
-
----
-
-## 🎯 ƯU TIÊN TIẾP THEO (SAU KHI HOÀN THÀNH GIAI ĐOẠN F):
-
-**Lựa chọn 1: Module kiểm tra chất lượng dữ liệu sản phẩm**
-- Trang riêng lọc sản phẩm lỗi
-- Thiếu ảnh, thiếu mô tả, thiếu giá
-- Chưa có danh mục, trùng SKU
-- Tồn kho âm, slug lỗi
-
-**Lựa chọn 2: Nâng cấp Dashboard với thống kê đầy đủ**
-- Thống kê tổng sản phẩm chi tiết
-- Thống kê đơn hàng/báo giá
-- Biểu đồ doanh thu
-- Danh sách việc cần xử lý
-
-**Lựa chọn 3: Import/Export Excel cho sản phẩm**
-- Xuất danh sách sản phẩm
-- Nhập sản phẩm từ Excel
-- Cập nhật giá/tồn kho bằng Excel
-- Kiểm tra lỗi trước khi ghi DB
+1.  **Hoàn thiện Thao tác hàng loạt:** Bổ sung các chức năng còn lại như Bật/Tắt hiển thị, Thay đổi danh mục.
+2.  **Hoàn thiện Quản lý Banner:** Xây dựng giao diện và logic để quản lý các banner chính (slider) trong trang Cấu hình Giao diện.
+3.  **Xây dựng Module Kiểm tra Chất lượng Dữ liệu:** Tạo một trang chuyên dụng để lọc và xử lý nhanh các sản phẩm bị lỗi dữ liệu (thiếu ảnh, thiếu giá, v.v.).

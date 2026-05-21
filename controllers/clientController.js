@@ -1,6 +1,7 @@
 const Category = require('../models/Category');
 const Product = require('../models/Product');
 const Setting = require('../models/Setting');
+const User = require('../models/User'); // Import User model
 const Page = require('../models/Page');
 const Blog = require('../models/Blog');
 const Project = require('../models/Project');
@@ -9,8 +10,8 @@ exports.getHomePage = async (req, res) => {
     try {
         const allCategories = await Category.find({ isActive: true }).sort({ createdAt: 1 });
 
-        // 1. Lọc lấy các danh mục Cấp 2 để truyền cho 10 Card Danh mục nổi bật
-        const level2Categories = allCategories.filter(c => c.level === 2);
+        // 1. Lọc lấy các danh mục được ghim "Nổi bật" để hiển thị trên trang chủ
+        const featuredCategories = allCategories.filter(c => c.isFeatured === true).slice(0, 10);
 
         // 2. Xây dựng Cấu trúc Cây (Tree) cho Mega Menu
         const categoryTree = allCategories.filter(c => c.level === 1).map(parent => {
@@ -37,11 +38,11 @@ exports.getHomePage = async (req, res) => {
         let productGridsData = [];
         // Kiểm tra Feature Flag từ Settings: Chỉ query dữ liệu nếu cờ showCategoriesCard đang bật
         if (!setting || !setting.uiFlags || setting.uiFlags.showCategoriesCard !== false) {
-            const featuredCategories = await Category.find({ level: 2, isActive: true })
+            const categoriesForGrids = await Category.find({ level: 2, isActive: true })
                 .limit(9)
                 .lean();
 
-            const productPromises = featuredCategories.map(category => {
+            const productPromises = categoriesForGrids.map(category => {
                 return Product.find({ category: category._id, isActive: true })
                     .limit(10) // Giới hạn 10 sản phẩm mỗi grid như kế hoạch
                     .select('name slug sku images retailPrice oldPrice flags') // Chỉ lấy các trường cần thiết cho card sản phẩm
@@ -50,7 +51,7 @@ exports.getHomePage = async (req, res) => {
 
             const productResults = await Promise.all(productPromises);
 
-            productGridsData = featuredCategories.map((category, index) => {
+            productGridsData = categoriesForGrids.map((category, index) => {
                 return {
                     category: category,
                     products: productResults[index]
@@ -61,7 +62,7 @@ exports.getHomePage = async (req, res) => {
 
         res.render('client/home', {
             currentPath: '/',
-            categories: level2Categories, // Vẫn giữ nguyên tên biến 'categories' để 10 Card ngoài trang chủ chạy bình thường
+            categories: featuredCategories, // Dùng danh sách danh mục nổi bật đã được ghim
             categoryTree: categoryTree, // Biến mới chuyên phục vụ Mega Menu
             flashSales,
             bestSellers,
@@ -82,6 +83,7 @@ exports.getBlogList = async (req, res) => {
         const skip = (page - 1) * limit;
         
         const query = { status: 'published' };
+        const setting = await Setting.findOne(); // Lấy cấu hình chung
         
         // Xử lý tìm kiếm và lọc chuyên mục (nếu có)
         if (req.query.q) {
@@ -116,7 +118,8 @@ exports.getBlogList = async (req, res) => {
             searchQuery: req.query.q || '',
             currentCategory: req.query.category || '',
             featuredBlogs,
-            categoryCounts
+            categoryCounts,
+            setting
         });
     } catch (error) {
         console.error('Lỗi lấy danh sách blog:', error);
@@ -127,14 +130,17 @@ exports.getBlogList = async (req, res) => {
 exports.getBlogDetail = async (req, res) => {
     try {
         const slug = req.params.slug;
-        const blog = await Blog.findOneAndUpdate(
+        const [blog, setting] = await Promise.all([
+            Blog.findOneAndUpdate(
             { slug, status: 'published' },
             { $inc: { views: 1 } }, // Tự động tăng lượt xem
             { new: true }
-        ).populate('author', 'name').lean(); // Bổ sung populate để lấy tên tác giả
+            ).populate('author', 'name').lean(),
+            Setting.findOne()
+        ]);
 
         if (!blog) {
-            return res.status(404).render('client/404', { currentPath: '/404', message: 'Không tìm thấy bài viết' });
+            return res.status(404).render('client/404', { currentPath: '/404', message: 'Không tìm thấy bài viết', setting });
         }
 
         // Lấy dữ liệu cho Sidebar
@@ -145,7 +151,8 @@ exports.getBlogDetail = async (req, res) => {
             pageTitle: blog.seoTitle || blog.title,
             seoDescription: blog.seoDescription || blog.excerpt,
             blog,
-            featuredBlogs
+            featuredBlogs,
+            setting
         });
     } catch (error) {
         console.error('Lỗi lấy chi tiết blog:', error);
@@ -156,23 +163,25 @@ exports.getBlogDetail = async (req, res) => {
 exports.getStaticPage = async (req, res) => {
     try {
         const slug = req.params.slug;
+        const setting = await Setting.findOne();
 
         // Xử lý ngoại lệ cho trang Giới thiệu (hiển thị UI riêng biệt thay vì UI bài viết chung)
         if (slug === 'gioi-thieu') {
             return res.render('client/about', { 
                 currentPath: `/trang/${slug}`,
                 pageTitle: 'Giới Thiệu Về Chúng Tôi | Nhất Linh Nhi',
-                seoDescription: 'Công ty TNHH Nhất Linh Nhi - Nhà phân phối sỉ lẻ thiết bị điện, vật tư nước, kim khí dụng cụ chính hãng uy tín hàng đầu miền Nam.'
+                seoDescription: 'Công ty TNHH Nhất Linh Nhi - Nhà phân phối sỉ lẻ thiết bị điện, vật tư nước, kim khí dụng cụ chính hãng uy tín hàng đầu miền Nam.',
+                setting
             });
         }
 
         const page = await Page.findOne({ slug: slug, isActive: true }).lean();
         
         if (!page) {
-            return res.status(404).render('client/page', { page: null, currentPath: `/trang/${slug}` });
+            return res.status(404).render('client/page', { page: null, currentPath: `/trang/${slug}`, setting });
         }
         
-        res.render('client/page', { page, currentPath: `/trang/${slug}` });
+        res.render('client/page', { page, currentPath: `/trang/${slug}`, setting });
     } catch (error) {
         console.error('Lỗi khi tải trang tĩnh:', error);
         res.status(500).send('Đã có lỗi xảy ra');
@@ -181,10 +190,12 @@ exports.getStaticPage = async (req, res) => {
 
 exports.getContactPage = async (req, res) => {
     try {
+        const setting = await Setting.findOne();
         res.render('client/contact', {
             currentPath: '/lien-he',
             pageTitle: 'Liên Hệ | Nhất Linh Nhi',
-            seoDescription: 'Liên hệ với Nhất Linh Nhi để được tư vấn, báo giá vật tư điện nước công trình nhanh chóng nhất.'
+            seoDescription: 'Liên hệ với Nhất Linh Nhi để được tư vấn, báo giá vật tư điện nước công trình nhanh chóng nhất.',
+            setting
         });
     } catch (error) {
         console.error('Lỗi khi render trang liên hệ:', error);
@@ -194,10 +205,13 @@ exports.getContactPage = async (req, res) => {
 
 exports.getProfilePage = async (req, res) => {
     try {
+        const setting = await Setting.findOne();
+        // Không cần truyền `user` nữa, middleware `passUserToView` đã tự động làm việc này
         res.render('client/profile', {
             currentPath: '/tai-khoan',
             pageTitle: 'Tài khoản của tôi | Nhất Linh Nhi',
-            seoDescription: 'Quản lý thông tin cá nhân, xem lịch sử mua hàng và yêu cầu báo giá.'
+            seoDescription: 'Quản lý thông tin cá nhân, xem lịch sử mua hàng và yêu cầu báo giá.',
+            setting
         });
     } catch (error) {
         console.error('Lỗi khi render trang tài khoản:', error);
@@ -207,10 +221,12 @@ exports.getProfilePage = async (req, res) => {
 
 exports.getCartPage = async (req, res) => {
     try {
+        const setting = await Setting.findOne();
         res.render('client/cart', {
             currentPath: '/cart',
             pageTitle: 'Giỏ hàng của bạn | Nhất Linh Nhi',
-            seoDescription: 'Xem và quản lý các vật tư điện nước trong giỏ hàng của bạn.'
+            seoDescription: 'Xem và quản lý các vật tư điện nước trong giỏ hàng của bạn.',
+            setting
         });
     } catch (error) {
         console.error('Lỗi khi render trang giỏ hàng:', error);
@@ -220,10 +236,12 @@ exports.getCartPage = async (req, res) => {
 
 exports.getCheckoutPage = async (req, res) => {
     try {
+        const setting = await Setting.findOne();
         res.render('client/checkout', {
             currentPath: '/checkout',
             pageTitle: 'Thanh toán đơn hàng | Nhất Linh Nhi',
-            seoDescription: 'Tiến hành điền thông tin giao hàng và hoàn tất thanh toán đơn hàng.'
+            seoDescription: 'Tiến hành điền thông tin giao hàng và hoàn tất thanh toán đơn hàng.',
+            setting
         });
     } catch (error) {
         console.error('Lỗi khi render trang thanh toán:', error);
@@ -233,14 +251,18 @@ exports.getCheckoutPage = async (req, res) => {
 
 exports.getProjectList = async (req, res) => {
     try {
-        // Lấy tất cả dự án từ database, sắp xếp mới nhất lên đầu
-        const projects = await Project.find({}).sort({ createdAt: -1 }).lean();
+        const [projects, setting] = await Promise.all([
+            // Lấy tất cả dự án từ database, sắp xếp mới nhất lên đầu
+            Project.find({}).sort({ createdAt: -1 }).lean(),
+            Setting.findOne()
+        ]);
 
         res.render('client/projects', {
             currentPath: '/du-an',
             pageTitle: 'Dự Án Công Trình Tiêu Biểu | Nhất Linh Nhi',
             seoDescription: 'Tự hào là đơn vị cung cấp vật tư thiết bị điện, nước, kim khí cho hàng trăm công trình lớn nhỏ trên toàn quốc.',
-            projects
+            projects,
+            setting
         });
     } catch (error) {
         console.error('Lỗi khi render trang danh sách dự án:', error);
@@ -250,10 +272,13 @@ exports.getProjectList = async (req, res) => {
 
 exports.getCategoryPage = async (req, res) => {
     try {
-        const { cat, minPrice, maxPrice, sort, page } = req.query;
+        const { search, cat, minPrice, maxPrice, sort, page } = req.query;
 
-        // 1. Lấy dữ liệu Category Tree cho Sidebar (Danh mục 3 cấp)
-        const allCategories = await Category.find({ isActive: true }).sort({ createdAt: 1 });
+        // 1. Lấy dữ liệu Category Tree cho Sidebar và Settings
+        const [allCategories, setting] = await Promise.all([
+            Category.find({ isActive: true }).sort({ createdAt: 1 }),
+            Setting.findOne()
+        ]);
         const categoryTree = allCategories.filter(c => c.level === 1).map(parent => {
             return {
                 ...parent._doc,
@@ -270,6 +295,16 @@ exports.getCategoryPage = async (req, res) => {
         let query = { isActive: true };
         let currentCategory = null;
         let breadcrumbs = [];
+
+        // Xử lý từ khóa tìm kiếm
+        if (search) {
+            const searchRegex = new RegExp(search, 'i');
+            query.$or = [
+                { name: searchRegex },
+                { sku: searchRegex },
+                { 'variants.sku': searchRegex }
+            ];
+        }
 
         if (cat) {
             currentCategory = allCategories.find(c => c.slug === cat);
@@ -333,16 +368,33 @@ exports.getCategoryPage = async (req, res) => {
             currentCategory,
             breadcrumbs,
             pagination: {
-                currentPage,
-                totalPages,
-                totalProducts,
+                page: currentPage,
+                pages: totalPages,
+                total: totalProducts,
                 limit
             },
-            query: req.query
+            query: req.query,
+            pageTitle: currentCategory ? currentCategory.name : (search ? `Kết quả cho '${search}'` : 'Tất cả sản phẩm'),
+            setting
         });
     } catch (error) {
         console.error("Lỗi khi render trang danh sách sản phẩm:", error);
         res.status(500).send("Lỗi máy chủ nội bộ");
+    }
+};
+
+exports.getComparePage = async (req, res) => {
+    try {
+        const setting = await Setting.findOne();
+        res.render('client/compare', {
+            currentPath: '/so-sanh',
+            pageTitle: 'So sánh sản phẩm | Nhất Linh Nhi',
+            seoDescription: 'So sánh chi tiết các sản phẩm bạn đã chọn.',
+            setting
+        });
+    } catch (error) {
+        console.error('Lỗi khi render trang so sánh:', error);
+        res.status(500).send('Đã có lỗi xảy ra');
     }
 };
 
@@ -353,11 +405,14 @@ exports.getProductDetailPage = async (req, res) => {
             return res.redirect('/category');
         }
 
-        const product = await Product.findOne({ slug: slug, isActive: true }).populate('category').lean();
+        const [product, setting] = await Promise.all([
+            Product.findOne({ slug: slug, isActive: true }).populate('category').lean(),
+            Setting.findOne()
+        ]);
 
         if (!product) {
             // Optional: Render a 404 page
-            return res.status(404).render('client/404', { currentPath: '/404' });
+            return res.status(404).render('client/404', { currentPath: '/404', setting });
         }
 
         // Lấy các sản phẩm liên quan (cùng danh mục, trừ sản phẩm hiện tại)
@@ -365,12 +420,13 @@ exports.getProductDetailPage = async (req, res) => {
             category: product.category._id,
             _id: { $ne: product._id },
             isActive: true
-        }).limit(4).lean(); // Giới hạn 4 sản phẩm liên quan
+        }).limit(4).lean();
 
         res.render('client/product-detail', {
             currentPath: '/product',
             product,
             relatedProducts,
+            setting,
             title: product.name + ' - Nhất Linh Nhi' // For the <head>
         });
 

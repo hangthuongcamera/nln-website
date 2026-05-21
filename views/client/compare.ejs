@@ -1,0 +1,53 @@
+<%- include('partials/head', { title: 'So sánh sản phẩm | Nhất Linh Nhi', seoDescription: 'So sánh chi tiết các sản phẩm bạn đã chọn.' }) %>
+<%- include('partials/header') %>
+
+<main class="container mx-auto px-4 max-w-7xl my-8 md:my-12">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <h1 class="text-2xl md:text-3xl font-bold text-primary mb-6 border-b pb-4">
+            <i class="fa-solid fa-scale-balanced mr-3 text-secondary"></i>So Sánh Sản Phẩm
+        </h1>
+
+        <div id="compare-container">
+            <!-- This will be populated by JavaScript -->
+        </div>
+
+        <!-- Empty State Template -->
+        <template id="empty-compare-template">
+            <div class="text-center py-12">
+                <i class="fa-solid fa-scale-balanced text-6xl text-gray-300 mb-4"></i>
+                <p class="text-xl font-semibold text-gray-700 mb-2">Chưa có sản phẩm nào để so sánh.</p>
+                <p class="text-gray-500 mb-6">Hãy thêm sản phẩm vào danh sách so sánh để xem chi tiết tại đây.</p>
+                <a href="/category" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition font-medium">
+                    <i class="fa-solid fa-shop mr-2"></i> Tiếp tục mua sắm
+                </a>
+            </div>
+        </template>
+
+        <!-- Loading State Template -->
+        <template id="loading-compare-template">
+            <div class="text-center py-12">
+                <i class="fa-solid fa-spinner fa-spin text-4xl text-primary"></i>
+                <p class="mt-4 text-gray-600">Đang tải dữ liệu so sánh...</p>
+            </div>
+        </template>
+
+        <!-- Compare Table Template -->
+        <template id="compare-table-template">
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-sm text-left">
+                    <thead id="compare-table-header">
+                        <!-- Header row will be built by JS -->
+                    </thead>
+                    <tbody id="compare-table-body" class="divide-y divide-gray-200">
+                        <!-- Body rows will be built by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </template>
+    </div>
+</main>
+
+<!-- This script is specific to the compare page -->
+<script src="/js/pages/compare-page.js"></script>
+
+<%- include('partials/footer') %>

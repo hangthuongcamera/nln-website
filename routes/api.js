@@ -5,7 +5,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Import Middlewares
 // Giả định đã có authMiddleware để kiểm tra JWT và phân quyền
-const { protect, authorize, optionalAuth } = require('../middleware/authMiddleware');
+const { protect, authorize } = require('../middleware/authMiddleware');
 
 // Import Controllers
 const authController = require('../controllers/api/authController');
@@ -22,6 +22,7 @@ const contactController = require('../controllers/api/contactController');
 const pageController = require('../controllers/api/pageController');
 const inventoryController = require('../controllers/api/inventoryController');
 const priceController = require('../controllers/api/priceController');
+const wishlistController = require('../controllers/api/wishlistController');
 const activityLogController = require('../controllers/api/activityLogController');
 const roleController = require('../controllers/api/roleController');
 const systemController = require('../controllers/api/systemController');
@@ -31,6 +32,7 @@ const systemController = require('../controllers/api/systemController');
 // ==================================
 router.post('/auth/login', authController.login);
 router.get('/auth/me', protect, authController.getMe);
+router.get('/auth/logout', authController.logout); // API đăng xuất
 router.post('/auth/register', authController.register);
 router.put('/auth/profile', protect, authController.updateProfile); // API Cập nhật thông tin User
 
@@ -58,6 +60,9 @@ router.get('/products/export', protect, authorize('admin', 'super_admin'), produ
 router.post('/products/import', protect, authorize('admin', 'super_admin'), upload.single('file'), productController.importProducts); // Nhập CSV
 router.post('/products/bulk', protect, authorize('admin', 'super_admin'), productController.bulkUpdateProducts); // Thao tác hàng loạt
 router.get('/products/data-quality', protect, authorize('admin', 'super_admin'), productController.getProductDataQuality); // Kiểm tra dữ liệu lỗi
+
+// API để lấy thông tin nhiều sản phẩm theo danh sách ID (phục vụ trang so sánh)
+router.post('/products/by-ids', productController.getProductsByIds);
 
 router.route('/products/:id')
     .get(productController.getProductById) // Lấy chi tiết sản phẩm (public)
@@ -94,8 +99,7 @@ router.get('/prices/history/:id', protect, authorize('admin', 'super_admin'), pr
 // @desc    Tạo đơn hàng mới
 // @access  Public (Khách vãng lai hoặc đã đăng nhập)
 router.post(
-    '/orders', 
-    optionalAuth, // Cho phép cả khách vãng lai tạo đơn hàng
+    '/orders',
     orderController.createOrder
 );
 
@@ -312,5 +316,12 @@ router.get('/system/status', protect, authorize('admin', 'super_admin'), systemC
 router.get('/system/config', protect, authorize('admin', 'super_admin'), systemController.getSystemConfig);
 router.put('/system/config', protect, authorize('super_admin'), systemController.updateSystemConfig);
 router.put('/system/maintenance', protect, authorize('super_admin'), systemController.toggleMaintenance);
+
+// ==================================
+//         WISHLIST ROUTES
+// ==================================
+router.post('/wishlist/toggle', protect, wishlistController.toggleWishlist);
+router.get('/wishlist', protect, wishlistController.getWishlist);
+router.get('/wishlist/check/:productId', protect, wishlistController.checkWishlistStatus);
 
 module.exports = router;

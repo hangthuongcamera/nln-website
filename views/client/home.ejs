@@ -98,45 +98,38 @@
         <section class="container mx-auto px-4 max-w-7xl mb-12">
             <div class="bg-white rounded-xl shadow-sm border border-red-100 overflow-hidden">
                 <div class="bg-gradient-to-r from-red-600 to-orange-500 p-4 flex justify-between items-center text-white">
-                    <h2 class="text-2xl font-bold italic"><i class="fa-solid fa-bolt mr-2 text-yellow-300"></i>GIÁ SỐC HÔM NAY</h2>
-                    <div class="flex items-center gap-2 font-mono text-lg bg-black/20 px-3 py-1 rounded">
-                        <span id="fs-hours">00</span>:<span id="fs-mins">00</span>:<span id="fs-secs">00</span>
-                    </div>
+                    <h2 class="text-2xl font-bold italic"><i class="fa-solid fa-bolt mr-2 text-yellow-300"></i><%= (setting && setting.flashSale && setting.flashSale.title) ? setting.flashSale.title : 'GIÁ SỐC HÔM NAY' %></h2>
+                    <% if (setting && setting.flashSale && setting.flashSale.endTime) { %>
+                        <div id="flash-sale-countdown" data-end-date="<%= setting.flashSale.endTime %>" class="flex items-center gap-1 md:gap-2 text-center">
+                            <div class="bg-white text-primary rounded p-2 w-14 md:w-16">
+                                <div id="countdown-days" class="text-xl md:text-2xl font-bold">00</div>
+                                <div class="text-xs">Ngày</div>
+                            </div>
+                            <div class="text-white font-bold text-xl">:</div>
+                            <div class="bg-white text-primary rounded p-2 w-14 md:w-16">
+                                <div id="countdown-hours" class="text-xl md:text-2xl font-bold">00</div>
+                                <div class="text-xs">Giờ</div>
+                            </div>
+                            <div class="text-white font-bold text-xl">:</div>
+                            <div class="bg-white text-primary rounded p-2 w-14 md:w-16">
+                                <div id="countdown-minutes" class="text-xl md:text-2xl font-bold">00</div>
+                                <div class="text-xs">Phút</div>
+                            </div>
+                            <div class="text-white font-bold text-xl">:</div>
+                            <div class="bg-white text-primary rounded p-2 w-14 md:w-16">
+                                <div id="countdown-seconds" class="text-xl md:text-2xl font-bold">00</div>
+                                <div class="text-xs">Giây</div>
+                            </div>
+                        </div>
+                    <% } %>
                 </div>
                 <div class="p-6 relative group/flashsale">
-                    <div id="flash-sale-container" class="flex gap-4 overflow-x-auto hide-scrollbar pb-4 scroll-smooth">
+                    <div id="flash-sale-container" class="flex gap-3 md:gap-4 overflow-x-auto hide-scrollbar pb-4 scroll-smooth snap-x snap-mandatory">
                         <!-- Dữ liệu Động: Vòng lặp Sản Phẩm Flash Sale -->
                         <% if (typeof flashSales !== 'undefined' && flashSales.length > 0) { %>
                             <% flashSales.forEach(product => { %>
-                                <% 
-                                let discountPercent = 0;
-                                let displayOldPrice = null;
-                                if (product.oldPrice && product.oldPrice > product.retailPrice) {
-                                    discountPercent = Math.round((1 - product.retailPrice/product.oldPrice)*100);
-                                    displayOldPrice = product.oldPrice;
-                                } else {
-                                    discountPercent = Math.floor(Math.random() * 20 + 10);
-                                    displayOldPrice = product.retailPrice ? Math.round(product.retailPrice / (1 - discountPercent/100) / 1000) * 1000 : 0;
-                                }
-                                %>
-                                <div class="min-w-[200px] md:min-w-[250px] bg-white border rounded-lg p-3 relative group flex flex-col" style="height: 100%;">
-                                    <span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-10">-<%= discountPercent %>%</span>
-                                    <a href="/product/<%= product.slug %>" class="block w-full overflow-hidden rounded-md mb-3 relative" style="aspect-ratio: 1 / 1;">
-                                        <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/img/placeholder.png' %>" alt="<%= product.name %>" class="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                                    </a>
-                                    <a href="/product/<%= product.slug %>" class="block">
-                                        <h3 class="text-sm font-semibold line-clamp-2 mb-2 group-hover:text-primary transition-colors h-10"><%= product.name %></h3>
-                                    </a>
-                                    <div class="text-lg font-bold text-red-600 mb-1"><%= product.retailPrice ? product.retailPrice.toLocaleString('vi-VN') + 'đ' : 'Liên hệ' %></div>
-                                    <div class="text-xs text-gray-400 line-through mb-3"><%- displayOldPrice ? displayOldPrice.toLocaleString('vi-VN') + 'đ' : '&nbsp;' %></div>
-                                    <button type="button" 
-                                        data-id="<%= product.slug %>" 
-                                        data-name="<%= product.name ? product.name.replace(/"/g, '&quot;') : 'Sản phẩm' %>" 
-                                        data-sku="<%= product.sku || 'Đang cập nhật' %>" 
-                                        data-price="<%= product.retailPrice || 0 %>" 
-                                        data-image="<%= product.images && product.images.length > 0 ? product.images[0] : '/img/placeholder.png' %>"
-                                        onclick="addCurrentProductToCart(this)" 
-                                        class="w-full bg-red-50 text-red-600 border border-red-200 hover:bg-red-500 hover:text-white py-1.5 rounded text-sm font-bold transition" style="margin-top: auto;">THÊM VÀO GIỎ</button>
+                                <div class="flex-none w-[calc(50%-0.375rem)] md:w-[calc(33.333%-0.667rem)] lg:w-[calc(20%-0.8rem)] snap-start">
+                                    <%- include('partials/_product-card', { product: product }) %>
                                 </div>
                             <% }) %>
                         <% } else { %>
@@ -219,8 +212,8 @@
             </div>
 
             <!-- Navigation Buttons for New Products -->
-            <button onclick="scrollNewProducts(-1)" class="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/newproducts:opacity-100 transition-all z-20 shadow-lg border"><i class="fa-solid fa-chevron-left"></i></button>
-            <button onclick="scrollNewProducts(1)" class="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/newproducts:opacity-100 transition-all z-20 shadow-lg border"><i class="fa-solid fa-chevron-right"></i></button>
+            <button id="new-products-prev-btn" onclick="scrollNewProducts(-1)" class="hidden absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/newproducts:opacity-100 transition-all z-20 shadow-lg border"><i class="fa-solid fa-chevron-left"></i></button>
+            <button id="new-products-next-btn" onclick="scrollNewProducts(1)" class="hidden absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 w-10 h-10 rounded-full flex items-center justify-center opacity-0 group-hover/newproducts:opacity-100 transition-all z-20 shadow-lg border"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
     </section>
 
@@ -325,33 +318,4 @@
     <% } %>
     </div>
 
-<!-- SCRIPT TRANG CHỦ -->
-<script>
-    // Logic đếm ngược thời gian Flash Sale
-    const endTimeStr = "<%= typeof setting !== 'undefined' && setting && setting.flashSale && setting.flashSale.endTime ? new Date(setting.flashSale.endTime).getTime() : '' %>";
-    if (endTimeStr) {
-        const countDownDate = parseInt(endTimeStr);
-        const timerInterval = setInterval(function() {
-            const now = new Date().getTime();
-            const distance = countDownDate - now;
-
-            if (distance < 0) {
-                clearInterval(timerInterval);
-                return;
-            }
-
-            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-
-            const elH = document.getElementById("fs-hours");
-            const elM = document.getElementById("fs-mins");
-            const elS = document.getElementById("fs-secs");
-            
-            if(elH) elH.innerText = hours < 10 ? "0" + hours : hours;
-            if(elM) elM.innerText = minutes < 10 ? "0" + minutes : minutes;
-            if(elS) elS.innerText = seconds < 10 ? "0" + seconds : seconds;
-        }, 1000);
-    }
-</script>
 <%- include('partials/footer') %>

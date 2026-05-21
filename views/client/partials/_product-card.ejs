@@ -4,7 +4,22 @@
     <% } else if (product.flags && product.flags.isNewProduct) { %>
         <span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded z-10">MỚI</span>
     <% } %>
-    <button class="absolute top-2 right-2 text-gray-300 hover:text-red-500 z-10 text-xl transition-colors"><i class="fa-regular fa-heart"></i></button>
+    <div class="absolute top-2 right-2 flex flex-col gap-2 z-10">
+        <!-- Wishlist Button -->
+        <button class="wishlist-btn bg-white/80 backdrop-blur-sm text-gray-600 hover:text-red-500 w-9 h-9 rounded-full shadow-md transition-colors flex items-center justify-center"
+                data-product-id="<%= product._id %>"
+                onclick="toggleWishlist(this, '<%= product._id %>')"
+                title="Thêm vào yêu thích">
+            <i class="fa-regular fa-heart"></i>
+        </button>
+        <!-- Compare Button -->
+        <button class="compare-btn bg-white/80 backdrop-blur-sm text-gray-600 hover:text-primary w-9 h-9 rounded-full shadow-md transition-colors flex items-center justify-center"
+                data-product-id="<%= product._id %>"
+                onclick="toggleCompare(this, '<%= product._id %>')"
+                title="So sánh sản phẩm">
+            <i class="fa-regular fa-code-compare"></i>
+        </button>
+    </div>
     
     <a href="/product/<%= product.slug %>" class="block relative pt-[100%] overflow-hidden">
         <img src="<%= product.images && product.images.length > 0 ? product.images[0] : '/img/placeholder.png' %>" alt="<%= product.name %>" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">

@@ -147,3 +147,51 @@ docker exec nln-container node test-db.js
 ## BƯỚC CUỐI CÙNG: CẤU HÌNH REVERSE PROXY (TÙY CHỌN NHƯNG KHUYẾN NGHỊ)
 
 Để truy cập website qua tên miền (ví dụ: `www.nhatlinhnhi.com`) thay vì `http://localhost:3000`, bạn nên cài đặt một web server như **Nginx** hoặc **IIS** trên Windows để làm **Reverse Proxy**. Web server sẽ lắng nghe ở cổng 80/443 và chuyển tiếp yêu cầu đến ứng dụng Node.js đang chạy ở cổng 3000.
+
+---
+
+## PHƯƠNG ÁN 3: TRIỂN KHAI TỰ ĐỘNG VỚI GITHUB ACTIONS (CI/CD)
+
+Phương án này thiết lập một quy trình hoàn toàn tự động. Mỗi khi bạn đẩy code mới lên nhánh `main`, GitHub sẽ tự động build và triển khai phiên bản mới lên server của bạn.
+
+### Mô hình hoạt động
+1.  **Push code:** Lập trình viên `git push` lên nhánh `main`.
+2.  **GitHub Actions Trigger:** Quy trình được định nghĩa trong `.github/workflows/deploy.yml` được kích hoạt.
+3.  **Self-Hosted Runner:** Một "agent" cài trên server Windows sẽ nhận lệnh từ GitHub.
+4.  **Execution on Server:** Runner sẽ thực hiện các bước:
+    - Build Docker image mới.
+    - Push image lên Docker Hub.
+    - Dừng và xóa container cũ.
+    - Kéo image mới về và khởi chạy container mới.
+
+### Bước 1: Cài đặt Self-Hosted Runner trên Server
+1.  Trên repository GitHub, vào **Settings > Actions > Runners > New self-hosted runner**.
+2.  Chọn **Windows** và làm theo hướng dẫn để tải, cấu hình runner.
+3.  **Quan trọng:** Sau khi cấu hình, hãy cài đặt runner như một dịch vụ của Windows để nó luôn chạy nền:
+    ```powershell
+    # Chạy trong thư mục của runner với quyền Admin
+    .\config.cmd install
+    .\config.cmd start
+    ```
+
+### Bước 2: Cấu hình Secrets trên GitHub
+1.  Tạo một **Access Token** trên Docker Hub (trong mục Security) với quyền Read, Write, Delete.
+2.  Trên repository GitHub, vào **Settings > Secrets and variables > Actions** và tạo 2 secrets:
+    - `DOCKERHUB_USERNAME`: Tên đăng nhập Docker Hub của bạn.
+    - `DOCKERHUB_TOKEN`: Access Token bạn vừa tạo.
+
+### Bước 3: Kích hoạt quy trình
+1.  File quy trình đã được tạo tại `.github/workflows/deploy.yml`.
+2.  Đảm bảo file `.env` trên server của bạn đã được cấu hình đúng (đặc biệt là `MONGODB_URI=mongodb://host.docker.internal:27017/nhatlinhnhi`).
+3.  Bây giờ, mỗi khi bạn đẩy code lên nhánh `main`, quy trình sẽ tự động chạy. Bạn có thể theo dõi tiến trình trong tab **Actions** trên GitHub.
+
+### Các lệnh Docker hữu ích để kiểm tra
+```sh
+# Xem log của container đang chạy
+docker logs nln-container
+
+# Truy cập vào shell bên trong container
+docker exec -it nln-container sh
+```
+
+Để truy cập website qua tên miền (ví dụ: `www.nhatlinhnhi.com`) thay vì `http://localhost:3000`, bạn nên cài đặt một web server như **Nginx** hoặc **IIS** trên Windows để làm **Reverse Proxy**. Web server sẽ lắng nghe ở cổng 80/443 và chuyển tiếp yêu cầu đến ứng dụng Node.js đang chạy ở cổng 3000.

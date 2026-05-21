@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const path = require('path');
 const dotenv = require('dotenv');
 
+const cookieParser = require('cookie-parser');
 // Load cấu hình biến môi trường
 dotenv.config();
 
@@ -20,7 +21,13 @@ app.set('views', path.join(__dirname, 'views'));
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser()); // Thêm middleware để xử lý cookie
 app.use(express.static(path.join(__dirname, 'public')));
+
+// Import the new user identification middleware
+const { identifyUser } = require('./middleware/authMiddleware');
+// This middleware runs on every request to check for a user token and populate req.user and res.locals.user
+app.use(identifyUser);
 
 // ================= API ROUTES =================
 const apiRoutes = require('./routes/api');

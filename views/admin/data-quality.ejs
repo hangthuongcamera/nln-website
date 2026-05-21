@@ -1,0 +1,220 @@
+<%- include('partials/head', { title: 'Kiểm tra Chất lượng Dữ liệu - Admin' }) %>
+
+<div class="flex h-screen w-full">
+    <div id="admin-toast-container" class="fixed top-20 right-6 z-50 flex flex-col gap-3 overflow-x-hidden p-2 pointer-events-none"></div>
+    <%- include('partials/sidebar', { currentPath: currentPath }) %>
+
+    <div class="flex-1 flex flex-col min-w-0 bg-gray-50">
+        <%- include('partials/topbar', { pageTitle: 'Kiểm tra Chất lượng Dữ liệu' }) %>
+
+        <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
+            <div class="admin-page block animate-fade-in">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-gray-800">Kiểm tra Chất lượng Dữ liệu Sản phẩm</h2>
+                        <p class="text-gray-500 text-sm mt-1">Lọc và xử lý nhanh các sản phẩm bị lỗi hoặc thiếu thông tin quan trọng.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                         <a href="/admin/products" class="bg-white border border-gray-200 text-gray-700 font-semibold py-2.5 px-4 rounded-lg hover:bg-gray-50 transition text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-arrow-left"></i> Quay lại
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+                        <div class="relative xl:col-span-2">
+                            <input type="text" id="search-product" placeholder="Tìm theo tên sản phẩm, SKU..." class="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        </div>
+
+                        <select id="filter-error-type" class="border border-gray-300 rounded-lg px-3 py-2.5 outline-none focus:border-primary text-sm text-gray-700">
+                            <option value="">Tất cả các loại lỗi</option>
+                            <option value="missing_images">Thiếu ảnh</option>
+                            <option value="missing_price">Thiếu giá bán</option>
+                            <option value="missing_category">Chưa có danh mục</option>
+                            <option value="missing_description">Thiếu mô tả chi tiết</option>
+                            <option value="duplicate_sku">SKU bị trùng lặp</option>
+                            <option value="negative_stock">Tồn kho âm</option>
+                        </select>
+
+                        <button onclick="loadFaultyProducts(1)" class="bg-blue-50 border border-blue-200 text-primary font-semibold py-2.5 px-4 rounded-lg hover:bg-blue-100 transition text-sm">
+                            <i class="fa-solid fa-filter mr-1"></i> Lọc sản phẩm lỗi
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Results Table -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[1000px]">
+                            <thead>
+                                <tr class="bg-gray-50 text-gray-600 text-sm border-b border-gray-200">
+                                    <th class="p-4 font-semibold">Sản phẩm</th>
+                                    <th class="p-4 font-semibold">Danh mục</th>
+                                    <th class="p-4 font-semibold">Loại lỗi</th>
+                                    <th class="p-4 font-semibold text-center">Tồn kho</th>
+                                    <th class="p-4 font-semibold text-right">Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-100" id="products-tbody">
+                                <tr><td colspan="5" class="p-4 text-center text-gray-500">Chọn bộ lọc và nhấn "Lọc sản phẩm lỗi" để bắt đầu.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 border-t border-gray-100 flex flex-col md:flex-row justify-between items-center gap-4 bg-gray-50">
+                        <div class="text-sm text-gray-500" id="pagination-info">Hiển thị 0 sản phẩm</div>
+                        <div class="flex items-center gap-1 flex-wrap justify-center" id="pagination-controls"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<%- include('partials/scripts') %>
+<script>
+    const token = localStorage.getItem('token');
+    let currentPage = 1;
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!token) window.location.href = '/admin/login';
+
+        document.getElementById('search-product').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') loadFaultyProducts(1);
+        });
+    });
+
+    function getFilterParams(page = 1) {
+        const params = new URLSearchParams({
+            page,
+            limit: 50 // Default to 50 for this page
+        });
+
+        const search = document.getElementById('search-product').value.trim();
+        const issueType = document.getElementById('filter-error-type').value;
+
+        if (search) params.set('search', search);
+        if (issueType) params.set('issueType', issueType);
+
+        return params;
+    }
+
+    async function loadFaultyProducts(page = 1) {
+        currentPage = page;
+        const params = getFilterParams(page);
+
+        const url = `/api/v1/products/data-quality?${params.toString()}`;
+        const tbody = document.getElementById('products-tbody');
+        tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tìm kiếm sản phẩm lỗi...</td></tr>';
+
+        try {
+            const res = await fetch(url, {
+                cache: 'no-store',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                renderProductsTable(data.data);
+                renderPagination(data.pagination, data.data.length);
+            } else {
+                tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-red-500">Không thể tải dữ liệu.</td></tr>';
+                showAdminToast('Lỗi', data.message || 'Không thể tải dữ liệu', 'error');
+            }
+        } catch (error) {
+            console.error('Lỗi khi tải sản phẩm lỗi:', error);
+            tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-red-500">Lỗi kết nối server.</td></tr>';
+            showAdminToast('Lỗi', 'Không thể tải danh sách sản phẩm', 'error');
+        }
+    }
+
+    function renderProductsTable(products) {
+        const tbody = document.getElementById('products-tbody');
+        if (products.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="p-6 text-center text-gray-500">🎉 Tuyệt vời! Không tìm thấy sản phẩm nào bị lỗi theo bộ lọc này.</td></tr>';
+            return;
+        }
+
+        let html = '';
+        products.forEach(p => {
+            const imgUrl = p.images && p.images.length > 0 ? p.images[0] : '/img/placeholder.png';
+            const catName = p.category ? p.category.name : '<span class="text-red-500 font-bold">Chưa có</span>';
+            const stock = Number(p.stock || 0);
+
+            const errorBadges = p.errors.map(err => {
+                const errorMap = {
+                    missing_images: '<span class="px-2 py-1 rounded-full bg-orange-50 text-orange-600 text-[11px] font-bold">Thiếu ảnh</span>',
+                    missing_price: '<span class="px-2 py-1 rounded-full bg-yellow-50 text-yellow-700 text-[11px] font-bold">Thiếu giá</span>',
+                    missing_category: '<span class="px-2 py-1 rounded-full bg-red-50 text-red-600 text-[11px] font-bold">Thiếu danh mục</span>',
+                    missing_description: '<span class="px-2 py-1 rounded-full bg-blue-50 text-blue-600 text-[11px] font-bold">Thiếu mô tả</span>',
+                    duplicate_sku: `<span class="px-2 py-1 rounded-full bg-purple-50 text-purple-600 text-[11px] font-bold">Trùng SKU</span>`,
+                    negative_stock: `<span class="px-2 py-1 rounded-full bg-red-50 text-red-700 text-[11px] font-bold">Tồn kho âm</span>`,
+                };
+                return errorMap[err.code] || `<span class="px-2 py-1 rounded-full bg-gray-100 text-gray-600 text-[11px] font-bold">${err.message}</span>`;
+            }).join('');
+
+            html += `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="p-4">
+                        <div class="flex items-center gap-3">
+                            <img src="${imgUrl}" alt="${p.name || 'Sản phẩm'}" class="w-12 h-12 rounded object-cover border border-gray-200">
+                            <div class="min-w-0">
+                                <a href="/admin/product-form?id=${p._id}" target="_blank" class="font-bold text-gray-800 hover:text-primary line-clamp-1 mb-0.5">${p.name || '<span class="text-red-500">Sản phẩm thiếu tên</span>'}</a>
+                                <div class="flex items-center gap-2 flex-wrap">
+                                    <span class="text-xs font-mono text-gray-500">${p.sku}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="p-4 text-gray-600">${catName}</td>
+                    <td class="p-4"><div class="flex flex-wrap gap-1">${errorBadges}</div></td>
+                    <td class="p-4 text-center font-bold ${stock < 0 ? 'text-red-600' : 'text-gray-800'}">${stock}</td>
+                    <td class="p-4 text-right">
+                        <a href="/admin/product-form?id=${p._id}" target="_blank" class="text-blue-500 hover:text-blue-700 p-2 inline-block" title="Sửa ngay"><i class="fa-solid fa-pen-to-square"></i> Sửa ngay</a>
+                    </td>
+                </tr>`;
+        });
+
+        tbody.innerHTML = html;
+    }
+
+    function renderPagination(pagination, currentDataLength = 0) {
+        const infoEl = document.getElementById('pagination-info');
+        const controlsEl = document.getElementById('pagination-controls');
+
+        if (!pagination || pagination.total === 0) {
+            infoEl.innerText = `Tìm thấy ${currentDataLength} sản phẩm lỗi`;
+            controlsEl.innerHTML = '';
+            return;
+        }
+
+        const start = ((pagination.currentPage - 1) * pagination.itemsPerPage) + 1;
+        const end = Math.min(pagination.currentPage * pagination.itemsPerPage, pagination.totalItems);
+        infoEl.innerText = `Hiển thị ${start}-${end} / ${pagination.totalItems.toLocaleString('vi-VN')} sản phẩm lỗi`;
+
+        const totalPages = pagination.totalPages || 1;
+        const current = pagination.currentPage || 1;
+        let html = '';
+
+        const addButton = (page, label = page, disabled = false, active = false) => {
+            const activeClass = active ? 'border-primary bg-primary text-white font-bold' : 'border-gray-200 bg-white text-gray-700 hover:bg-primary hover:text-white transition';
+            const disabledClass = disabled ? 'opacity-50 cursor-not-allowed hover:bg-white hover:text-gray-700' : '';
+            html += `<button type="button" ${disabled ? 'disabled' : `onclick="loadFaultyProducts(${page})"`} class="min-w-8 h-8 px-2 rounded border text-sm ${activeClass} ${disabledClass}">${label}</button>`;
+        };
+
+        addButton(current - 1, '<i class="fa-solid fa-chevron-left"></i>', current <= 1);
+
+        const pages = new Set([1, totalPages, current, current - 1, current + 1]);
+        let lastPage = 0;
+        [...pages].filter(p => p >= 1 && p <= totalPages).sort((a, b) => a - b).forEach(page => {
+            if (lastPage && page - lastPage > 1) html += '<span class="px-2 text-gray-400">...</span>';
+            addButton(page, page, false, page === current);
+            lastPage = page;
+        });
+
+        addButton(current + 1, '<i class="fa-solid fa-chevron-right"></i>', current >= totalPages);
+        controlsEl.innerHTML = html;
+    }
+</script>

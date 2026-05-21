@@ -58,10 +58,12 @@ exports.getSystemConfig = async (req, res) => {
 exports.updateSystemConfig = async (req, res) => {
     try {
         const configData = req.body;
-
+        
         let setting = await Setting.findOne({ type: 'system' });
+        const oldData = setting ? JSON.parse(JSON.stringify(setting.data)) : {}; // Tạo bản sao của dữ liệu cũ
         
         if (setting) {
+            // Merge dữ liệu mới vào dữ liệu cũ
             setting.data = { ...setting.data, ...configData };
             await setting.save();
         } else {
@@ -82,7 +84,7 @@ exports.updateSystemConfig = async (req, res) => {
             resourceName: 'Cấu hình hệ thống',
             description: `${req.user.name} đã cập nhật cấu hình hệ thống`,
             changes: {
-                before: setting._previousData,
+                before: oldData,
                 after: configData
             },
             ipAddress: req.ip || req.connection.remoteAddress,
@@ -169,6 +171,7 @@ exports.toggleMaintenance = async (req, res) => {
             });
         }
 
+        const oldMaintenanceStatus = setting.data.maintenance?.enabled;
         setting.data.maintenance = {
             enabled: enabled,
             message: message || 'Hệ thống đang bảo trì'
@@ -183,6 +186,10 @@ exports.toggleMaintenance = async (req, res) => {
             action: 'UPDATE',
             resource: 'SYSTEM',
             resourceName: 'Chế độ bảo trì',
+            changes: {
+                before: { enabled: oldMaintenanceStatus },
+                after: { enabled: enabled }
+            },
             description: `${req.user.name} đã ${enabled ? 'bật' : 'tắt'} chế độ bảo trì`,
             ipAddress: req.ip || req.connection.remoteAddress,
             userAgent: req.get('user-agent'),

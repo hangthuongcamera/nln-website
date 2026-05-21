@@ -18,6 +18,7 @@
                 </div>
                 <div class="flex flex-col p-2">
                     <button id="tab-link-info" onclick="switchProfileTab('info')" class="profile-tab-link text-left px-4 py-2.5 rounded font-medium bg-primary text-white transition"><i class="fa-regular fa-user mr-2 w-5"></i> Thông tin cá nhân</button>
+                    <button id="tab-link-wishlist" onclick="switchProfileTab('wishlist')" class="profile-tab-link text-left px-4 py-2.5 rounded font-medium text-gray-700 hover:bg-gray-50 transition"><i class="fa-regular fa-heart mr-2 w-5 text-red-500"></i> Danh sách yêu thích</button>
                     <button id="tab-link-orders" onclick="switchProfileTab('orders')" class="profile-tab-link text-left px-4 py-2.5 rounded font-medium text-gray-700 hover:bg-gray-50 transition"><i class="fa-solid fa-box mr-2 w-5"></i> Lịch sử đơn hàng</button>
                     <button id="tab-link-quotes" onclick="switchProfileTab('quotes')" class="profile-tab-link text-left px-4 py-2.5 rounded font-medium text-gray-700 hover:bg-gray-50 transition"><i class="fa-solid fa-file-invoice mr-2 w-5"></i> Yêu cầu báo giá</button>
                     <button onclick="logoutUser()" class="text-left px-4 py-2.5 rounded font-medium text-red-600 hover:bg-red-50 transition mt-2 border-t border-gray-100"><i class="fa-solid fa-arrow-right-from-bracket mr-2 w-5"></i> Đăng xuất</button>
@@ -77,6 +78,11 @@
                     <p>Bạn chưa gửi yêu cầu báo giá sỉ nào.</p>
                 </div>
             </div>
+
+            <!-- Tab: Wishlist -->
+            <div id="profile-wishlist" class="profile-tab-content bg-white p-6 rounded-xl shadow-sm border border-gray-100 hidden">
+                <!-- Nội dung sẽ được render bằng JavaScript (Fetch API) -->
+            </div>
         </div>
     </div>
 </div>
@@ -104,8 +110,18 @@
 
                 // Gọi hàm lấy lịch sử đơn hàng sau khi đã xác thực user thành công
                 loadMyOrders(token);
+                loadMyWishlist(token);
             } else { localStorage.removeItem('token'); window.location.href = '/'; }
         } catch (error) { localStorage.removeItem('token'); window.location.href = '/'; }
+
+        // Xử lý mở tab dựa trên hash trên URL (VD: /tai-khoan#wishlist)
+        const hash = window.location.hash.substring(1);
+        if (hash) {
+            const tabLink = document.getElementById(`tab-link-${hash}`);
+            if (tabLink) {
+                tabLink.click(); // Giả lập một cú click để chuyển tab
+            }
+        }
     });
 
     // Gọi API cập nhật thông tin
@@ -211,9 +227,97 @@
         }
     }
 
-    function logoutUser() {
-        localStorage.removeItem('token');
-        window.location.href = '/';
+    // Hàm fetch và render danh sách yêu thích
+    async function loadMyWishlist(token) {
+        const wishlistContainer = document.getElementById('profile-wishlist');
+        try {
+            wishlistContainer.innerHTML = '<div class="text-center py-10"><i class="fa-solid fa-spinner fa-spin text-3xl text-primary"></i><p class="mt-3 text-gray-500">Đang tải danh sách yêu thích...</p></div>';
+            
+            const response = await fetch('/api/v1/wishlist', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (response.ok) {
+                const resData = await response.json();
+                const wishlistProducts = resData.data || [];
+
+                let contentHTML = `<h2 class="text-xl font-bold text-gray-800 mb-6 border-l-4 border-primary pl-3">Danh Sách Yêu Thích</h2>`;
+
+                if (wishlistProducts.length === 0) {
+                    contentHTML += `
+                        <div class="text-center py-12">
+                            <i class="fa-regular fa-heart text-6xl text-gray-300 mb-4"></i>
+                            <p class="text-xl font-semibold text-gray-700 mb-2">Danh sách yêu thích của bạn đang trống.</p>
+                            <p class="text-gray-500 mb-6">Hãy thêm những sản phẩm bạn yêu thích vào đây để dễ dàng theo dõi nhé!</p>
+                            <a href="/category" class="bg-primary text-white px-6 py-3 rounded-lg hover:bg-blue-800 transition font-medium">
+                                <i class="fa-solid fa-shop mr-2"></i> Tiếp tục mua sắm
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    contentHTML += `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">`;
+                    wishlistProducts.forEach(product => {
+                        const imageUrl = product.images && product.images.length > 0 ? product.images[0] : '/img/placeholder.png';
+                        const price = product.retailPrice ? product.retailPrice.toLocaleString('vi-VN') + 'đ' : 'Liên hệ';
+                        const oldPriceHTML = (product.oldPrice && product.oldPrice > product.retailPrice) ? `<span class="text-xs text-gray-400 line-through block">${product.oldPrice.toLocaleString('vi-VN')}đ</span>` : '';
+                        const discountBadge = (product.oldPrice && product.oldPrice > product.retailPrice) ? `<span class="absolute top-2 left-2 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded z-10">-${Math.round((1 - product.retailPrice/product.oldPrice)*100)}%</span>` : (product.flags && product.flags.isNewProduct ? `<span class="absolute top-2 left-2 bg-green-500 text-white text-xs font-bold px-2 py-1 rounded z-10">MỚI</span>` : '');
+                        
+                        contentHTML += `
+                            <div class="bg-white rounded-lg border border-gray-200 hover:shadow-xl transition-shadow duration-300 flex flex-col group relative overflow-hidden h-full">
+                                ${discountBadge}
+                                <div class="absolute top-2 right-2 flex flex-col gap-2 z-10">
+                                    <button class="wishlist-btn bg-white/80 backdrop-blur-sm text-red-500 w-9 h-9 rounded-full shadow-md transition-colors flex items-center justify-center"
+                                            data-product-id="${product._id}"
+                                            onclick="toggleWishlist(this, '${product._id}')"
+                                            title="Xóa khỏi yêu thích">
+                                        <i class="fa-solid fa-heart"></i>
+                                    </button>
+                                    <button class="compare-btn bg-white/80 backdrop-blur-sm text-gray-600 hover:text-primary w-9 h-9 rounded-full shadow-md transition-colors flex items-center justify-center"
+                                            data-product-id="${product._id}"
+                                            onclick="toggleCompare(this, '${product._id}')"
+                                            title="So sánh sản phẩm">
+                                        <i class="fa-regular fa-code-compare"></i>
+                                    </button>
+                                </div>
+                                <a href="/product/${product.slug}" class="block relative pt-[100%] overflow-hidden">
+                                    <img src="${imageUrl}" alt="${product.name}" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                </a>
+                                <div class="p-3 md:p-4 flex flex-col flex-grow">
+                                    <p class="text-xs text-gray-500 mb-1 font-mono">Mã: ${product.sku || 'Đang cập nhật'}</p>
+                                    <a href="/product/${product.slug}" class="text-sm md:text-base font-semibold text-gray-800 hover:text-primary line-clamp-2 mb-2 h-10 md:h-12">${product.name}</a>
+                                    <div class="mt-auto mb-3">
+                                        <span class="text-lg font-bold text-red-600">${price}</span>
+                                        ${oldPriceHTML}
+                                    </div>
+                                    <div class="flex flex-col gap-2 mt-auto">
+                                        <button type="button" data-id="${product.slug}" data-name="${product.name ? product.name.replace(/"/g, '&quot;') : 'Sản phẩm'}" data-sku="${product.sku || 'Đang cập nhật'}" data-price="${product.retailPrice || 0}" data-image="${imageUrl}" onclick="addCurrentProductToCart(this)" class="w-full bg-white border border-primary text-primary hover:bg-primary hover:text-white py-1.5 md:py-2 rounded text-sm font-medium transition-colors flex items-center justify-center">
+                                            <i class="fa-solid fa-cart-plus mr-1.5"></i> Thêm vào giỏ
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    contentHTML += `</div>`;
+                }
+                wishlistContainer.innerHTML = contentHTML;
+                
+                // Khởi tạo lại trạng thái cho các nút so sánh vừa được render
+                const currentCompareList = JSON.parse(localStorage.getItem('compareList')) || [];
+                wishlistContainer.querySelectorAll('.compare-btn').forEach(btn => {
+                    const productId = btn.dataset.productId;
+                    const icon = btn.querySelector('i');
+                    if (currentCompareList.includes(productId)) {
+                        btn.classList.add('text-secondary');
+                        btn.classList.remove('text-gray-600', 'hover:text-primary');
+                        if (icon) { icon.classList.add('fa-solid'); icon.classList.remove('fa-regular'); }
+                    }
+                });
+            } else { throw new Error('Lỗi fetch dữ liệu'); }
+        } catch (error) {
+            console.error('Lỗi khi tải danh sách yêu thích:', error);
+            wishlistContainer.innerHTML = '<h2 class="text-xl font-bold text-gray-800 mb-6 border-l-4 border-primary pl-3">Danh Sách Yêu Thích</h2><div class="text-center py-10 text-red-500">Không thể tải danh sách yêu thích lúc này. Vui lòng thử lại sau.</div>';
+        }
     }
 
     function switchProfileTab(tabId) {

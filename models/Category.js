@@ -6,7 +6,12 @@ const categorySchema = new mongoose.Schema({
     icon: { type: String }, // Tên class FontAwesome
     parentCategory: { type: mongoose.Schema.Types.ObjectId, ref: 'Category', default: null }, // Trỏ tới danh mục cha
     level: { type: Number, default: 1 }, // Cấp bậc danh mục (1, 2, 3...)
-    isActive: { type: Boolean, default: true } // Trạng thái hiển thị/ẩn
+    isActive: { type: Boolean, default: true }, // Trạng thái hiển thị/ẩn
+    isFeatured: {
+        type: Boolean,
+        default: false,
+        index: true // Thêm index để tối ưu truy vấn các danh mục nổi bật
+    }
 }, { timestamps: true });
 
 module.exports = mongoose.model('Category', categorySchema);

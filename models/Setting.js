@@ -32,14 +32,26 @@ const settingSchema = new mongoose.Schema({
             component7: { type: Boolean, default: true },
             component8: { type: Boolean, default: true },
             component9: { type: Boolean, default: true }
+        },
+        searchSuggestionType: {
+            type: String,
+            enum: ['newest', 'hot', 'flash_sale'],
+            default: 'newest'
         }
     },
     // Cấu hình đếm ngược Flash Sale
     flashSale: {
-        endTime: { type: Date }
+        endTime: { type: Date },
+        title: { type: String, default: 'GIÁ SỐC HÔM NAY' } // Đã thêm trường title
     },
     mainSliders: [bannerSchema], // Cấu hình Slider Banner chính
-    subBanners: [bannerSchema] // Cấu hình các Banner phụ
+    subBanners: [bannerSchema], // Cấu hình các Banner phụ
+    // --- THÊM MỚI: Dành cho các tiêu điểm trên Header ---
+    headerUsps: [{
+        text: { type: String, required: true },
+        icon: { type: String }, // VD: 'fa-truck'
+        link: { type: String, default: '#' }
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Setting', settingSchema);

@@ -12,9 +12,9 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
                     <div>
                         <h2 class="text-2xl font-bold text-gray-800">Cấu Hình Giao Diện (Dynamic UI)</h2>
-                        <p class="text-gray-500 text-sm mt-1">Quản lý banner, bật tắt component và thiết lập sản phẩm nổi bật trên trang chủ.</p>
+                        <p class="text-gray-500 text-sm mt-1">Quản lý banner, bật tắt component và thiết lập các cài đặt hiển thị trên trang chủ.</p>
                     </div>
-                    <button onclick="showAdminToast('Thành công', 'Đã lưu cấu hình giao diện!', 'success')" class="bg-primary text-white font-bold py-2.5 px-5 rounded-lg hover:bg-blue-800 transition shadow-md flex items-center gap-2 text-sm">
+                    <button type="button" onclick="saveSettings()" class="bg-primary text-white font-bold py-2.5 px-5 rounded-lg hover:bg-blue-800 transition shadow-md flex items-center gap-2 text-sm">
                         <i class="fa-solid fa-floppy-disk"></i> Lưu Cấu Hình
                     </button>
                 </div>
@@ -32,55 +32,85 @@
                                         <p class="text-sm font-bold text-gray-800">Main Banner (Slider)</p>
                                         <p class="text-xs text-gray-500">Khu vực banner chính trên cùng</p>
                                     </div>
-                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" name="uiFlags.showMainBanner" id="showMainBanner" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm font-bold text-gray-800">Danh Mục Nổi Bật</p>
                                         <p class="text-xs text-gray-500">10 Card danh mục</p>
                                     </div>
-                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" name="uiFlags.showCategoriesCard" id="showCategoriesCard" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm font-bold text-gray-800">Flash Sale (Giá Sốc)</p>
                                         <p class="text-xs text-gray-500">Slider đếm ngược thời gian</p>
                                     </div>
-                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" name="uiFlags.showFlashSale" id="showFlashSale" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm font-bold text-gray-800">Sản Phẩm Mới Nhất</p>
                                         <p class="text-xs text-gray-500">Slider sản phẩm mới</p>
                                     </div>
-                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" name="uiFlags.showNewProducts" id="showNewProducts" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
                                 </div>
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm font-bold text-gray-800">Tin Tức & Kinh Nghiệm</p>
                                         <p class="text-xs text-gray-500">3 bài viết mới nhất</p>
                                     </div>
-                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" class="sr-only peer" checked><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
+                                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" name="uiFlags.showNewsSection" id="showNewsSection" class="sr-only peer"><div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div></label>
                                 </div>
                             </div>
                         </div>
+
+                        <div class="mt-6">
+                            <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-lightbulb mr-2 text-primary"></i>Cấu hình Gợi ý Tìm kiếm</h3>
+                            <p class="text-xs text-gray-500 mb-4">Chọn loại sản phẩm sẽ được gợi ý khi người dùng nhấp vào ô tìm kiếm.</p>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="searchSuggestionType" class="block text-sm font-bold text-gray-700 mb-2">Loại sản phẩm gợi ý</label>
+                                    <select id="searchSuggestionType" name="uiFlags.searchSuggestionType" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm text-gray-700">
+                                        <option value="newest">Sản phẩm mới nhất</option>
+                                        <option value="hot">Sản phẩm bán chạy (Hot)</option>
+                                        <option value="flash_sale">Sản phẩm Flash Sale</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
 
                     <!-- Column 2 & 3: Banner & Highlights -->
                     <div class="xl:col-span-2 flex flex-col gap-6">
                         
+                        <!-- ==================== QUẢN LÝ TIÊU ĐIỂM HEADER ==================== -->
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                            <h3 class="font-bold text-gray-800 mb-2 border-b pb-2"><i class="fa-solid fa-bullhorn mr-2 text-primary"></i>Quản lý Tiêu điểm Header (Top Bar)</h3>
+                            <p class="text-sm text-gray-500 mb-4">Thêm, sửa, xóa các dòng chữ chạy trên thanh thông báo ở đầu trang. Kéo thả để thay đổi thứ tự.</p>
+                            
+                            <div id="usps-container" class="space-y-3">
+                                <!-- Dữ liệu sẽ được JS render vào đây -->
+                            </div>
+
+                            <button type="button" id="add-usp-btn" class="mt-4 bg-blue-50 border border-dashed border-blue-300 text-primary font-semibold py-2 px-4 rounded-lg hover:bg-blue-100 transition text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Thêm Tiêu điểm
+                            </button>
+                        </div>
+
                         <!-- CẤU HÌNH FLASH SALE MỚI THÊM -->
                         <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
                             <h3 class="font-bold text-gray-800 mb-4 border-b pb-2"><i class="fa-solid fa-stopwatch mr-2 text-primary"></i>Cấu hình Flash Sale (Giá Sốc)</h3>
                             <div class="flex flex-col md:flex-row gap-6">
                                 <div class="flex-1">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Thời điểm kết thúc đếm ngược</label>
-                                    <input type="datetime-local" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm text-gray-700" value="2026-05-07T23:59">
+                                    <label for="flashSaleEndTime" class="block text-sm font-bold text-gray-700 mb-2">Thời điểm kết thúc đếm ngược</label>
+                                    <input type="datetime-local" id="flashSaleEndTime" name="flashSale.endTime" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm text-gray-700">
                                     <p class="text-xs text-gray-500 mt-2">Hệ thống tự động hiển thị đồng hồ đếm ngược trên Frontend.</p>
                                 </div>
                                 <div class="flex-1">
-                                    <label class="block text-sm font-bold text-gray-700 mb-2">Tiêu đề khu vực hiển thị</label>
-                                    <input type="text" value="GIÁ SỐC HÔM NAY" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm font-bold text-red-600">
+                                    <label for="flashSaleTitle" class="block text-sm font-bold text-gray-700 mb-2">Tiêu đề khu vực hiển thị</label>
+                                    <input type="text" id="flashSaleTitle" name="flashSale.title" class="w-full px-3 py-2 border border-gray-300 rounded-lg outline-none focus:border-primary text-sm font-bold text-red-600">
                                 </div>
                             </div>
                         </div>
@@ -91,19 +121,19 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:border-primary transition relative group">
                                     <label class="block text-sm font-bold text-gray-700 mb-2">Banner Phụ 1 (Trên)</label>
-                                    <div class="relative w-full h-32 mb-3 rounded-lg overflow-hidden border border-gray-300">
-                                        <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover" alt="Banner Phụ 1">
+                                    <div class="relative w-full h-32 mb-3 rounded-lg overflow-hidden border border-gray-300" id="secondaryBanner1ImagePreview">
+                                        <img src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover" alt="Banner Phụ 1" id="secondaryBanner1Img">
                                         <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"><span class="text-white text-sm font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Thay đổi ảnh</span></div>
                                     </div>
-                                    <input type="text" value="/category?cat=thiet-bi-dien" class="w-full text-xs px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-gray-600" placeholder="Đường dẫn liên kết (URL)">
+                                    <input type="text" id="secondaryBanner1Link" name="secondaryBanners.0.link" class="w-full text-xs px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-gray-600" placeholder="Đường dẫn liên kết (URL)">
                                 </div>
                                 <div class="border border-gray-200 rounded-lg p-4 bg-gray-50 hover:border-primary transition relative group">
                                     <label class="block text-sm font-bold text-gray-700 mb-2">Banner Phụ 2 (Dưới)</label>
-                                    <div class="relative w-full h-32 mb-3 rounded-lg overflow-hidden border border-gray-300">
-                                        <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover" alt="Banner Phụ 2">
+                                    <div class="relative w-full h-32 mb-3 rounded-lg overflow-hidden border border-gray-300" id="secondaryBanner2ImagePreview">
+                                        <img src="https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400" class="w-full h-full object-cover" alt="Banner Phụ 2" id="secondaryBanner2Img">
                                         <div class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"><span class="text-white text-sm font-bold"><i class="fa-solid fa-cloud-arrow-up mr-1"></i> Thay đổi ảnh</span></div>
                                     </div>
-                                    <input type="text" value="/category?cat=kim-khi-dung-cu" class="w-full text-xs px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-gray-600" placeholder="Đường dẫn liên kết (URL)">
+                                    <input type="text" id="secondaryBanner2Link" name="secondaryBanners.1.link" class="w-full text-xs px-3 py-2 border border-gray-300 rounded outline-none focus:border-primary text-gray-600" placeholder="Đường dẫn liên kết (URL)">
                                 </div>
                             </div>
                         </div>
@@ -148,20 +178,17 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-2 text-red-600">Flash Sale (Giá Sốc)</label>
-                                    <div class="border border-gray-200 rounded-lg p-3 h-56 overflow-y-auto hide-scrollbar bg-gray-50 flex flex-col gap-2">
-                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Máy bơm tăng áp Panasonic</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
-                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Cuộn dây Cadivi VCmo 2x1.5</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
-                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Máy khoan pin Makita 12V</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
-                                        <button class="w-full text-center text-sm font-bold text-primary hover:bg-primary hover:text-white border border-dashed border-primary bg-blue-50 py-2 rounded mt-1 transition-colors"><i class="fa-solid fa-plus mr-1"></i> Thêm sản phẩm</button>
+                                    <div id="pinned-flash-sale-list" class="border border-gray-200 rounded-lg p-3 h-56 overflow-y-auto hide-scrollbar bg-gray-50 flex flex-col gap-2">
+                                        <!-- JS will render content here -->
                                     </div>
+                                    <button onclick="openProductPicker('flash_sale')" class="w-full text-center text-sm font-bold text-primary hover:bg-primary hover:text-white border border-dashed border-primary bg-blue-50 py-2 rounded mt-2 transition-colors"><i class="fa-solid fa-plus mr-1"></i> Thêm sản phẩm</button>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-bold text-gray-700 mb-2 text-green-600">Sản Phẩm Bán Chạy</label>
-                                    <div class="border border-gray-200 rounded-lg p-3 h-56 overflow-y-auto hide-scrollbar bg-gray-50 flex flex-col gap-2">
-                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Dây cáp điện Cadivi CV 4.0</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
-                                        <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group"><span class="line-clamp-1 font-medium text-gray-700">Ống nhựa PVC Bình Minh Phi 27</span><button class="text-gray-400 hover:text-red-500 transition px-2"><i class="fa-solid fa-xmark"></i></button></div>
-                                        <button class="w-full text-center text-sm font-bold text-primary hover:bg-primary hover:text-white border border-dashed border-primary bg-blue-50 py-2 rounded mt-1 transition-colors"><i class="fa-solid fa-plus mr-1"></i> Thêm sản phẩm</button>
+                                    <div id="pinned-hot-list" class="border border-gray-200 rounded-lg p-3 h-56 overflow-y-auto hide-scrollbar bg-gray-50 flex flex-col gap-2">
+                                        <!-- JS will render content here -->
                                     </div>
+                                    <button onclick="openProductPicker('hot')" class="w-full text-center text-sm font-bold text-primary hover:bg-primary hover:text-white border border-dashed border-primary bg-blue-50 py-2 rounded mt-2 transition-colors"><i class="fa-solid fa-plus mr-1"></i> Thêm sản phẩm</button>
                                 </div>
                             </div>
                         </div>
@@ -172,4 +199,425 @@
     </div>
 </div>
 
+<%- include('partials/product-picker-modal') %>
+<%- include('partials/flash-sale-price-modal') %>
+<!-- Cần thêm thư viện SortableJS để có thể kéo thả -->
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 <%- include('partials/scripts') %>
+<script>
+    const token = localStorage.getItem('token');
+    let currentPickerType = null; // 'hot' or 'flash_sale'
+    let productToPin = null; // Biến lưu sản phẩm đang được chọn để ghim
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (!token) {
+            window.location.href = '/admin/login';
+            return;
+        }
+        loadSettings();
+        loadPinnedProducts();
+        initUspManager(); // Khởi tạo phần quản lý USP
+        initProductPicker();
+    });
+
+    async function loadSettings() {
+        try {
+            const res = await fetch('/api/v1/settings', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+
+            if (res.ok && data.success && data.data) {
+                const settings = data.data;
+
+                // Populate Header USPs
+                if (settings.headerUsps) {
+                    const uspsContainer = document.getElementById('usps-container');
+                    uspsContainer.innerHTML = settings.headerUsps.map((usp, index) => renderUspItem(usp, index)).join('');
+                } else {
+                    document.getElementById('usps-container').innerHTML = '';
+                }
+
+                // Populate Feature Flags
+                document.getElementById('showMainBanner').checked = settings.uiFlags?.showMainBanner !== false;
+                document.getElementById('showCategoriesCard').checked = settings.uiFlags?.showCategoriesCard !== false;
+                document.getElementById('showFlashSale').checked = settings.uiFlags?.showFlashSale !== false;
+                document.getElementById('showNewProducts').checked = settings.uiFlags?.showNewProducts !== false;
+                document.getElementById('showNewsSection').checked = settings.uiFlags?.showNewsSection !== false;
+                document.getElementById('searchSuggestionType').value = settings.uiFlags?.searchSuggestionType || 'newest';
+
+                // Populate Flash Sale Config
+                if (settings.flashSale?.endTime) {
+                    const endTime = new Date(settings.flashSale.endTime);
+                    // Format to YYYY-MM-DDTHH:MM for datetime-local input
+                    const formattedEndTime = endTime.toISOString().slice(0, 16);
+                    document.getElementById('flashSaleEndTime').value = formattedEndTime;
+                }
+                document.getElementById('flashSaleTitle').value = settings.flashSale?.title || ''; // Hiển thị chuỗi rỗng nếu không có tiêu đề
+
+                // Populate Secondary Banners
+                if (settings.secondaryBanners && settings.secondaryBanners[0]) {
+                    document.getElementById('secondaryBanner1Img').src = settings.secondaryBanners[0].imageUrl || 'https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=400';
+                    document.getElementById('secondaryBanner1Link').value = settings.secondaryBanners[0].link || '';
+                }
+                if (settings.secondaryBanners && settings.secondaryBanners[1]) {
+                    document.getElementById('secondaryBanner2Img').src = settings.secondaryBanners[1].imageUrl || 'https://images.unsplash.com/photo-1504148455328-c376907d081c?auto=format&fit=crop&q=80&w=400';
+                    document.getElementById('secondaryBanner2Link').value = settings.secondaryBanners[1].link || '';
+                }
+
+                // TODO: Populate Main Banner Slider and Highlight Products
+
+            } else {
+                showAdminToast('Lỗi', data.message || 'Không thể tải cài đặt giao diện.', 'error');
+            }
+        } catch (error) {
+            console.error('Lỗi khi tải cài đặt:', error);
+            showAdminToast('Lỗi', 'Lỗi kết nối server khi tải cài đặt.', 'error');
+        }
+    }
+
+    async function saveSettings() {
+        const payload = {};
+
+        // Collect Header USPs
+        const uspItems = document.querySelectorAll('#usps-container .usp-item');
+        payload.headerUsps = Array.from(uspItems).map(item => ({
+            text: item.querySelector('input[name*="[text]"]').value.trim(),
+            icon: item.querySelector('input[name*="[icon]"]').value.trim(),
+            link: item.querySelector('input[name*="[link]"]').value.trim()
+        })).filter(usp => usp.text); // Chỉ lưu những item có text
+
+
+        // Collect Feature Flags
+        payload.uiFlags = {
+            showMainBanner: document.getElementById('showMainBanner').checked,
+            showCategoriesCard: document.getElementById('showCategoriesCard').checked,
+            showFlashSale: document.getElementById('showFlashSale').checked,
+            showNewProducts: document.getElementById('showNewProducts').checked,
+            showNewsSection: document.getElementById('showNewsSection').checked,
+            searchSuggestionType: document.getElementById('searchSuggestionType').value
+        };
+
+        // Collect Flash Sale Config
+        const flashSaleEndTime = document.getElementById('flashSaleEndTime').value;
+        if (flashSaleEndTime) {
+            payload.flashSale = {
+                endTime: new Date(flashSaleEndTime).toISOString(), // Convert to ISO string for storage
+                title: document.getElementById('flashSaleTitle').value.trim(),
+            };
+        } else {
+            payload.flashSale = {
+                endTime: null, // If input is empty, set endTime to null
+                title: document.getElementById('flashSaleTitle').value.trim(),
+            };
+        }
+
+        // Collect Secondary Banners (assuming fixed 2 banners for now)
+        payload.secondaryBanners = [
+            { imageUrl: document.getElementById('secondaryBanner1Img').src, link: document.getElementById('secondaryBanner1Link').value.trim() },
+            { imageUrl: document.getElementById('secondaryBanner2Img').src, link: document.getElementById('secondaryBanner2Link').value.trim() },
+        ];
+
+        console.log('Payload sent to server:', payload); // Dòng này giúp bạn kiểm tra dữ liệu gửi đi
+
+        try {
+            const res = await fetch('/api/v1/settings', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showAdminToast('Thành công', 'Đã lưu cấu hình giao diện!', 'success');
+                loadSettings(); // Reload settings to ensure UI reflects saved data
+            } else {
+                let errorMessage = data.message || 'Không thể lưu cấu hình giao diện.';
+                if (data.error) { // Hiển thị chi tiết lỗi từ server nếu có
+                    errorMessage += ` Chi tiết: ${data.error}`;
+                }
+                showAdminToast('Lỗi', errorMessage, 'error');
+            }
+        } catch (error) {
+            console.error('Lỗi khi lưu cài đặt:', error);
+            showAdminToast('Lỗi', 'Lỗi kết nối server khi lưu cài đặt.', 'error');
+        }
+    }
+
+    // --- USP Manager Logic ---
+    function initUspManager() {
+        const container = document.getElementById('usps-container');
+        const addBtn = document.getElementById('add-usp-btn');
+
+        addBtn.addEventListener('click', () => {
+            const index = container.children.length;
+            const newItem = renderUspItem({ text: '', icon: '', link: '' }, index);
+            container.insertAdjacentHTML('beforeend', newItem);
+        });
+
+        container.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-usp-btn')) {
+                e.target.closest('.usp-item').remove();
+            }
+        });
+
+        new Sortable(container, {
+            animation: 150,
+            handle: '.usp-handle',
+            ghostClass: 'bg-blue-50'
+        });
+    }
+
+    function renderUspItem(usp, index) {
+        return `
+            <div class="usp-item flex items-center gap-2 p-2 bg-gray-50 rounded-lg border">
+                <i class="usp-handle fa-solid fa-grip-vertical text-gray-400 cursor-move p-2" title="Kéo để sắp xếp"></i>
+                <div class="flex-grow grid grid-cols-1 md:grid-cols-2 gap-2">
+                    <input type="text" name="headerUsps[${index}][text]" value="${usp.text || ''}" placeholder="Nội dung (VD: Miễn phí vận chuyển)" class="w-full border border-gray-300 rounded-md px-3 py-2 outline-none focus:border-primary text-sm">
+                    <div class="flex gap-2">
+                        <input type="text" name="headerUsps[${index}][icon]" value="${usp.icon || ''}" placeholder="Icon (VD: fa-truck)" class="w-1/2 border border-gray-300 rounded-md px-3 py-2 outline-none focus:border-primary text-sm">
+                        <input type="text" name="headerUsps[${index}][link]" value="${usp.link || ''}" placeholder="Link (VD: /khuyen-mai)" class="w-1/2 border border-gray-300 rounded-md px-3 py-2 outline-none focus:border-primary text-sm">
+                    </div>
+                </div>
+                <button type="button" class="remove-usp-btn text-red-500 hover:text-red-700 p-2 rounded-full hover:bg-red-50" title="Xóa">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        `;
+    }
+    // --- End USP Manager Logic ---
+
+
+    async function loadPinnedProducts() {
+        try {
+            const [hotRes, flashRes] = await Promise.all([
+                fetch('/api/v1/products?flag=hot&limit=100', { headers: { 'Authorization': `Bearer ${token}` } }),
+                fetch('/api/v1/products?flag=flash_sale&limit=100', { headers: { 'Authorization': `Bearer ${token}` } })
+            ]);
+
+            const hotData = await hotRes.json();
+            const flashData = await flashRes.json();
+
+            if (hotData.success) {
+                renderPinnedList('hot', hotData.data);
+            }
+            if (flashData.success) {
+                renderPinnedList('flash_sale', flashData.data);
+            }
+        } catch (error) {
+            console.error("Lỗi khi tải sản phẩm đã ghim:", error);
+        }
+    }
+
+    function renderPinnedList(type, products) {
+        const containerId = type === 'hot' ? 'pinned-hot-list' : 'pinned-flash-sale-list';
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        if (products.length === 0) {
+            container.innerHTML = '<p class="text-center text-gray-500 text-sm p-4">Chưa có sản phẩm nào được ghim.</p>';
+            return;
+        }
+
+        container.innerHTML = products.map(p => `
+            <div class="flex justify-between items-center bg-white p-2 rounded border border-gray-200 text-sm shadow-sm group">
+                <span class="line-clamp-1 font-medium text-gray-700" title="${p.name}">${p.name}</span>
+                <button onclick="unpinProduct('${p._id}', '${type}')" class="text-gray-400 hover:text-red-500 transition px-2" title="Bỏ ghim">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        `).join('');
+    }
+
+    async function unpinProduct(productId, type) {
+        const flagName = type === 'hot' ? 'isHot' : 'isFlashSale';
+        const payload = {
+            flags: { [flagName]: false }
+        };
+
+        try {
+            const res = await fetch(`/api/v1/products/${productId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showAdminToast('Thành công', 'Đã bỏ ghim sản phẩm.', 'success');
+                loadPinnedProducts(); // Refresh both lists
+            } else {
+                showAdminToast('Lỗi', data.message || 'Không thể bỏ ghim sản phẩm.', 'error');
+            }
+        } catch (error) {
+            showAdminToast('Lỗi', 'Lỗi kết nối server.', 'error');
+        }
+    }
+
+    // --- Flash Sale Price Modal Logic ---
+    const flashSalePriceModal = document.getElementById('flash-sale-price-modal');
+    const flashSalePriceInput = document.getElementById('flash-sale-price-input');
+    const flashSaleProductName = document.getElementById('flash-sale-product-name');
+    const flashSaleCurrentPrice = document.getElementById('flash-sale-current-price');
+    const flashSaleOldPrice = document.getElementById('flash-sale-old-price');
+    const confirmFlashSalePriceBtn = document.getElementById('confirm-flash-sale-price-btn');
+
+    function openFlashSalePriceModal(product) {
+        productToPin = product; // Store the product object
+        if (flashSalePriceModal) {
+            flashSalePriceModal.classList.remove('hidden');
+            flashSaleProductName.textContent = product.name;
+            flashSaleCurrentPrice.textContent = product.retailPrice ? product.retailPrice.toLocaleString('vi-VN') + 'đ' : 'Liên hệ';
+            flashSaleOldPrice.textContent = product.oldPrice ? product.oldPrice.toLocaleString('vi-VN') + 'đ' : 'Không có';
+            flashSalePriceInput.value = ''; // Xóa giá trị cũ
+            flashSalePriceInput.placeholder = `Nhập giá thấp hơn ${product.retailPrice.toLocaleString('vi-VN')}đ`;
+            confirmFlashSalePriceBtn.onclick = () => confirmFlashSalePrice();
+        }
+    }
+
+    function closeFlashSalePriceModal() {
+        if (flashSalePriceModal) {
+            flashSalePriceModal.classList.add('hidden');
+            productToPin = null;
+        }
+    }
+
+    async function confirmFlashSalePrice() {
+        const price = parseFloat(flashSalePriceInput.value);
+        if (isNaN(price) || price < 0) {
+            return showAdminToast('Lỗi', 'Vui lòng nhập giá Flash Sale hợp lệ (số dương).', 'error');
+        }
+        if (productToPin && price >= productToPin.retailPrice) {
+            return showAdminToast('Cảnh báo', 'Giá Flash Sale phải thấp hơn giá bán hiện tại.', 'warning');
+        }
+
+        const confirmBtn = document.getElementById('confirm-flash-sale-price-btn');
+        const originalBtnHtml = confirmBtn.innerHTML;
+        confirmBtn.disabled = true;
+        confirmBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang xử lý...`;
+
+        try {
+            // Let pinProduct handle everything, including closing modals
+            await pinProduct(productToPin._id, 'flash_sale', price);
+        } finally {
+            // Restore button state in case of failure and the modal is still open
+            confirmBtn.disabled = false;
+            confirmBtn.innerHTML = originalBtnHtml;
+        }
+    }
+
+    function openProductPicker(type) {
+        currentPickerType = type;
+        const modal = document.getElementById('product-picker-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            document.getElementById('picker-search-input').value = '';
+            // Clear previous results and load default products
+            const resultsContainer = document.getElementById('picker-search-results');
+            if (resultsContainer) {
+                resultsContainer.innerHTML = '<div class="text-center text-gray-500 p-8">Đang tải sản phẩm...</div>';
+            }
+            fetchAndRenderPickerResults(''); // Tải sản phẩm mặc định khi mở modal
+        }
+    }
+
+    function closeProductPickerModal() {
+        const modal = document.getElementById('product-picker-modal');
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    function initProductPicker() {
+        const searchInput = document.getElementById('picker-search-input');
+        if (!searchInput) return;
+
+        let searchTimeout;
+        // Event listener cho ô tìm kiếm
+        searchInput.addEventListener('input', (e) => {
+            clearTimeout(searchTimeout);
+            const query = e.target.value.trim();
+            if (query.length < 2) {
+                resultsContainer.innerHTML = '<div class="text-center text-gray-500 p-8">Nhập ít nhất 2 ký tự để tìm...</div>';
+                return;
+            }
+            searchTimeout = setTimeout(() => fetchAndRenderPickerResults(query), 500); // Chờ 500ms trước khi tìm kiếm
+        });
+    }
+
+    async function fetchAndRenderPickerResults(query) {
+        const resultsContainer = document.getElementById('picker-search-results');
+        if (!resultsContainer) return;
+
+        resultsContainer.innerHTML = '<div class="text-center text-gray-500 p-8"><i class="fa-solid fa-spinner fa-spin mr-2"></i>Đang tìm kiếm...</div>';
+
+        try {
+            // Nếu query rỗng, tải 20 sản phẩm mới nhất. Ngược lại, tìm kiếm theo query.
+            const url = query ? `/api/v1/products?search=${encodeURIComponent(query)}&limit=50` : `/api/v1/products?limit=20&sort=newest`;
+            const res = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success && data.data.length > 0) {
+                resultsContainer.innerHTML = data.data.map(p => {
+                    const isHot = p.flags?.isHot;
+                    const isFlash = p.flags?.isFlashSale;
+                    let btnHtml = '';
+                    if (currentPickerType === 'hot') {
+                        btnHtml = isHot 
+                            ? '<button class="bg-gray-200 text-gray-500 text-xs font-bold py-1 px-3 rounded-full cursor-not-allowed" disabled>Đã Ghim</button>'
+                            : `<button onclick="pinProduct('${p._id}', 'hot')" class="bg-green-100 text-green-700 hover:bg-green-600 hover:text-white text-xs font-bold py-1 px-3 rounded-full transition">Ghim Bán Chạy</button>`;
+                    } else if (currentPickerType === 'flash_sale') {
+                                btnHtml = isFlash
+                            ? '<button class="bg-gray-200 text-gray-500 text-xs font-bold py-1 px-3 rounded-full cursor-not-allowed" disabled>Đã Ghim</button>'
+                                    : `<button onclick='openFlashSalePriceModal(${JSON.stringify(p)})' class="bg-red-100 text-red-700 hover:bg-red-600 hover:text-white text-xs font-bold py-1 px-3 rounded-full transition">Ghim Flash Sale</button>`;
+                    }
+
+                    return `
+                        <div class="flex items-center justify-between p-2 bg-white rounded border border-gray-200 mb-2">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <img src="${p.images && p.images.length > 0 ? p.images[0] : '/img/placeholder.png'}" class="w-10 h-10 object-cover rounded flex-shrink-0">
+                                <div class="min-w-0">
+                                    <p class="text-sm font-semibold text-gray-800 truncate" title="${p.name}">${p.name}</p>
+                                    <p class="text-xs text-gray-500 font-mono">${p.sku}</p>
+                                            <p class="text-xs text-gray-700 font-semibold">Giá bán: ${p.retailPrice ? p.retailPrice.toLocaleString('vi-VN') + 'đ' : 'Liên hệ'}</p>
+                                            ${p.oldPrice && p.oldPrice > 0 ? `<p class="text-xs text-gray-400 line-through">Giá cũ: ${p.oldPrice.toLocaleString('vi-VN')}đ</p>` : ''}
+                                </div>
+                            </div>
+                            <div class="flex-shrink-0 ml-2">${btnHtml}</div>
+                        </div>`;
+                }).join('');
+            } else {
+                resultsContainer.innerHTML = `<div class="text-center text-gray-500 p-8">Không tìm thấy sản phẩm nào.</div>`;
+            }
+        } catch (error) {
+            resultsContainer.innerHTML = `<div class="text-center text-red-500 p-8">Lỗi khi tìm kiếm sản phẩm.</div>`;
+        }
+    }
+
+    async function pinProduct(productId, type, flashSalePrice = null) { // Add flashSalePrice parameter
+        const flagName = type === 'hot' ? 'isHot' : 'isFlashSale';
+        let payload = { flags: { [flagName]: true } };
+
+        if (type === 'flash_sale') {
+            if (flashSalePrice !== null) payload.flashSalePrice = parseFloat(flashSalePrice);
+        }
+
+        try {
+            const res = await fetch(`/api/v1/products/${productId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                showAdminToast('Thành công', 'Đã ghim sản phẩm.', 'success');
+                loadPinnedProducts(); // Refresh lists on the main page
+                closeFlashSalePriceModal(); // Close the price modal
+                closeProductPickerModal(); // Close the picker modal
+            } else {
+                showAdminToast('Lỗi', data.message || 'Không thể ghim sản phẩm.', 'error');
+            }
+        } catch (error) {
+            showAdminToast('Lỗi', 'Lỗi kết nối server.', 'error');
+        }
+    }
+</script>

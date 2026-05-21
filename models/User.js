@@ -21,7 +21,11 @@ const userSchema = new mongoose.Schema({
         type: String, 
         enum: ['retail', 'wholesale', 'dealer'],
         default: 'retail'
-    }
+    },
+    wishlist: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product'
+    }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('User', userSchema);

@@ -35,6 +35,10 @@ router.get('/product-form', (req, res) => {
     res.render('admin/product-form');
 });
 
+router.get('/data-quality', (req, res) => {
+    res.render('admin/data-quality', { currentPath: '/admin/data-quality' });
+});
+
 // ==================================
 //         INVENTORY & PRICING
 // ==================================

@@ -21,6 +21,13 @@
     <!-- Tích hợp Font Awesome cho Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <script>
+        // Pass EJS settings to global JS scope for main.js to use
+        window.APP_SETTINGS = <%- JSON.stringify({
+            uiFlags: typeof setting !== 'undefined' && setting.uiFlags ? setting.uiFlags : {}
+        }) %>;
+    </script>
+    
     <!-- Cấu hình Tailwind (Theme Colors) -->
     <script>
         tailwind.config = {
@@ -45,42 +52,40 @@
         .animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans antialiased">
-    <!-- ==================== TOP BAR (Thông tin liên hệ & Auth) ==================== -->
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">    
+    <!-- ==================== TOP BAR (Thông tin liên hệ, Auth & USPs) ==================== -->
     <div class="bg-primary text-white text-sm py-2 hidden md:block">
         <div class="container mx-auto px-4 flex justify-between items-center max-w-7xl">
-            <div class="flex space-x-6">
-                <span><i class="fa-solid fa-phone mr-2"></i> Hotline: 0938.117.848</span>
-                <span><i class="fa-solid fa-envelope mr-2"></i> info@nhatlinhnhi.com</span>
-            </div>
-            <div class="flex space-x-4" id="auth-links">
-                <a href="javascript:void(0)" onclick="openAuthModal('login')" class="hover:text-gray-300 transition-colors">Đăng nhập</a>
-                <span class="border-l border-gray-400"></span>
-                <a href="javascript:void(0)" onclick="openAuthModal('register')" class="hover:text-gray-300 transition-colors">Đăng ký</a>
-            </div>
+            <% if (typeof setting !== 'undefined' && setting && setting.headerUsps && setting.headerUsps.length > 0) { %>
+                <!-- Animated USPs Bar -->
+                <div id="animated-usps-container" class="flex-1 flex items-center justify-start overflow-hidden relative h-6">
+                    <!-- USPs will be injected here by JS -->
+                </div>
+                <div class="flex space-x-4 z-10" id="auth-links">
+                    <a href="javascript:void(0)" onclick="openAuthModal('login')" class="hover:text-gray-300 transition-colors">Đăng nhập</a>
+                    <span class="border-l border-gray-400"></span>
+                    <a href="javascript:void(0)" onclick="openAuthModal('register')" class="hover:text-gray-300 transition-colors">Đăng ký</a>
+                </div>
+            <% } else { %>
+                <!-- Default Contact Info -->
+                <div class="flex space-x-6">
+                    <% if (typeof setting !== 'undefined' && setting && setting.companyInfo) { %>
+                        <span>
+                            <i class="fa-solid fa-phone mr-2"></i> Hotline: <a href="tel:<%= setting.companyInfo.hotline %>" class="hover:text-yellow-300"><%= setting.companyInfo.hotline %></a>
+                        </span>
+                        <span>
+                            <i class="fa-solid fa-envelope mr-2"></i> <a href="mailto:<%= setting.companyInfo.email %>" class="hover:text-yellow-300"><%= setting.companyInfo.email %></a>
+                        </span>
+                    <% } %>
+                </div>
+                <div class="flex space-x-4" id="auth-links">
+                    <a href="javascript:void(0)" onclick="openAuthModal('login')" class="hover:text-gray-300 transition-colors">Đăng nhập</a>
+                    <span class="border-l border-gray-400"></span>
+                    <a href="javascript:void(0)" onclick="openAuthModal('register')" class="hover:text-gray-300 transition-colors">Đăng ký</a>
+                </div>
+            <% } %>
         </div>
     </div>
-
-    <!-- Kiểm tra trạng thái Đăng nhập -->
-    <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            const token = localStorage.getItem('token');
-            if (token) {
-                try {
-                    const response = await fetch('/api/v1/auth/me', { headers: { 'Authorization': `Bearer ${token}` } });
-                    if (response.ok) {
-                        const resData = await response.json();
-                        const user = resData.data || resData;
-                        document.getElementById('auth-links').innerHTML = `
-                            <a href="/tai-khoan" class="hover:text-yellow-300 transition-colors font-semibold"><i class="fa-regular fa-user mr-1"></i> Xin chào, ${user.name}</a>
-                            <span class="border-l border-gray-400"></span>
-                            <a href="javascript:void(0)" onclick="localStorage.removeItem('token'); window.location.reload();" class="hover:text-red-300 transition-colors text-red-200">Đăng xuất</a>
-                        `;
-                    } else { localStorage.removeItem('token'); }
-                } catch (error) { console.error('Lỗi xác thực:', error); }
-            }
-        });
-    </script>
 
     <!-- ==================== HEADER (Logo, Search, Cart) ==================== -->
     <header class="bg-white shadow-sm relative">
@@ -95,10 +100,10 @@
 
             <!-- Khung Tìm Kiếm -->
             <div class="w-full md:flex-1 md:max-w-2xl md:mx-8 relative">
-                <form action="/search" method="GET" class="flex w-full border-2 border-primary rounded-lg overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
-                    <input type="text" id="search-input" name="q" autocomplete="off" class="w-full px-4 py-2 md:py-3 outline-none focus:ring-0 text-gray-700">
-                    <button type="submit" class="bg-primary text-white px-12 py-2 md:py-1 hover:bg-blue-900 transition-colors font-medium">
-                        <i class="fa-solid fa-magnifying-glass md:mr-2"></i> 
+                <form action="/category" method="GET" class="flex w-full border-2 border-primary rounded-lg overflow-hidden bg-white shadow-sm hover:shadow transition-shadow">
+                    <input type="text" id="search-input" name="search" autocomplete="off" placeholder="Tìm kiếm sản phẩm..." class="w-full px-4 py-2 md:py-3 outline-none focus:ring-0 text-gray-700">
+                    <button type="submit" class="bg-primary text-white px-6 py-2 md:py-1 hover:bg-blue-900 transition-colors font-medium flex items-center justify-center">
+                        <i class="fa-solid fa-magnifying-glass"></i> 
                     </button>
                 </form>
                 <div id="search-suggestions" class="absolute top-full left-0 w-full bg-white shadow-xl rounded-b-lg border border-gray-200 hidden z-50 overflow-hidden mt-1 max-h-96 overflow-y-auto">
@@ -106,7 +111,21 @@
             </div>
 
             <!-- Giỏ hàng & Tư vấn nhanh -->
-            <div class="hidden md:flex items-center space-x-6">
+            <div class="hidden md:flex items-center space-x-6"> 
+                <!-- Wishlist Icon -->
+                <a href="/tai-khoan/yeu-thich" class="text-center cursor-pointer group block relative">
+                    <i class="fa-regular fa-heart text-2xl text-primary group-hover:text-secondary transition-colors"></i>
+                    <div class="text-xs font-semibold mt-1 text-gray-600 group-hover:text-primary">Yêu thích</div>
+                    <span id="wishlist-count" class="absolute -top-2 -right-3 bg-secondary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center transition-transform duration-200 hidden">0</span>
+                </a>
+                <!-- Compare Icon -->
+                <a href="/so-sanh" class="text-center cursor-pointer group block relative">
+                    <i class="fa-solid fa-code-compare text-2xl text-primary group-hover:text-secondary transition-colors"></i>
+                    <div class="text-xs font-semibold mt-1 text-gray-600 group-hover:text-primary">So sánh</div>
+                    <span id="compare-count" class="absolute -top-2 -right-3 bg-secondary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center transition-transform duration-200 hidden">0</span>
+                </a>
+                
+                <!-- Cart Icon -->
                 <a href="/cart" class="text-center cursor-pointer group block">
                     <div class="relative inline-block">
                         <i class="fa-solid fa-cart-shopping text-2xl text-primary group-hover:text-secondary transition-colors"></i>
@@ -169,3 +188,46 @@
             </div>
         </nav>
     </header>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const animatedUspsContainer = document.getElementById('animated-usps-container');
+    
+    // Chỉ chạy script này nếu container tồn tại (tức là có USPs để hiển thị)
+    if (animatedUspsContainer) {
+        // Lấy dữ liệu USPs từ biến setting đã được truyền vào EJS, đảm bảo an toàn nếu không có dữ liệu
+        const usps = <%- JSON.stringify(typeof setting !== 'undefined' && setting.headerUsps ? setting.headerUsps : []) %>;
+        if (!usps || usps.length === 0) return;
+
+        let currentIndex = 0;
+
+        function showNextUsp() {
+            // Tạo phần tử mới cho USP hiện tại
+            const usp = usps[currentIndex];
+            const newEl = document.createElement('div');
+            newEl.className = 'absolute inset-0 flex items-center justify-start transition-all duration-500 opacity-0 translate-y-3';
+            newEl.innerHTML = `
+                <a href="${usp.link || '#'}" class="flex items-center gap-2 hover:text-yellow-300 transition-colors">
+                    ${usp.icon ? `<i class="fa-solid ${usp.icon}"></i>` : ''}
+                    <span>${usp.text}</span>
+                </a>
+            `;
+            animatedUspsContainer.appendChild(newEl);
+
+            // Hiển thị phần tử mới
+            setTimeout(() => newEl.classList.remove('opacity-0', 'translate-y-3'), 100);
+
+            // Xóa phần tử cũ nếu có
+            if (animatedUspsContainer.children.length > 1) {
+                const oldEl = animatedUspsContainer.children[0];
+                oldEl.classList.add('opacity-0', '-translate-y-3');
+                setTimeout(() => oldEl.remove(), 500);
+            }
+
+            currentIndex = (currentIndex + 1) % usps.length;
+        }
+        showNextUsp(); // Hiển thị USP đầu tiên ngay lập tức
+        setInterval(showNextUsp, 4000); // Đổi chữ sau mỗi 4 giây
+    }
+});
+</script>
